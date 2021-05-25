@@ -14,4 +14,20 @@
  */
 --%>
 
-TODO
+<%@ include file="/init.jsp" %>
+
+<%
+ObjectDefinitionDisplayContext objectDefinitionDisplayContext = (ObjectDefinitionDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
+%>
+
+<clay:headless-data-set-display
+	apiURL="<%= objectDefinitionDisplayContext.getAPIURL() %>"
+	clayDataSetActionDropdownItems="<%= objectDefinitionDisplayContext.getClayDataSetActionDropdownItems() %>"
+	formId="fm"
+	id="<%= objectDefinitionDisplayContext.getClayHeadlessDataSetDisplayId() %>"
+	itemsPerPage="<%= 20 %>"
+	namespace="<%= liferayPortletResponse.getNamespace() %>"
+	pageNumber="<%= 1 %>"
+	portletURL="<%= liferayPortletResponse.createRenderURL() %>"
+	style="fluid"
+/>

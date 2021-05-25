@@ -14,11 +14,37 @@
 
 package com.liferay.digital.signature.model;
 
-import org.osgi.annotation.versioning.ProviderType;
-
 /**
  * @author Brian Wing Shun Chan
  */
-@ProviderType
-public interface DSRecipient {
+public class DSRecipient {
+
+	public String getDSRecipientId() {
+		return dsRecipientId;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setDSRecipientId(String dsRecipientId) {
+		this.dsRecipientId = dsRecipientId;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	protected String dsRecipientId;
+	protected String emailAddress;
+	protected String name;
+
 }

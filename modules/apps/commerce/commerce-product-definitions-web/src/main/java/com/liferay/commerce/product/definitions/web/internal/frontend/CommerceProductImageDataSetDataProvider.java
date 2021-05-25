@@ -14,6 +14,7 @@
 
 package com.liferay.commerce.product.definitions.web.internal.frontend;
 
+import com.liferay.commerce.account.constants.CommerceAccountConstants;
 import com.liferay.commerce.frontend.model.ImageField;
 import com.liferay.commerce.frontend.model.LabelField;
 import com.liferay.commerce.media.CommerceMediaResolverUtil;
@@ -31,7 +32,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.search.Sort;
-import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -107,10 +107,10 @@ public class CommerceProductImageDataSetDataProvider
 					cpAttachmentFileEntryId,
 					new ImageField(
 						title, "rounded", "lg",
-						CommerceMediaResolverUtil.getThumbnailUrl(
+						CommerceMediaResolverUtil.getThumbnailURL(
+							CommerceAccountConstants.ACCOUNT_ID_GUEST,
 							cpAttachmentFileEntryId)),
-					HtmlUtil.escape(title),
-					HtmlUtil.escape(fileEntry.getExtension()),
+					title, fileEntry.getExtension(),
 					cpAttachmentFileEntry.getPriority(),
 					LanguageUtil.format(
 						httpServletRequest, "x-ago", modifiedDateDescription,

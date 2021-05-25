@@ -42,15 +42,12 @@ import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -109,26 +106,26 @@ public class CommercePaymentMethodClayTable
 
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
-				PortletURL portletURL = PortletURLBuilder.create(
-					PortletProviderUtil.getPortletURL(
-						httpServletRequest,
-						CommercePaymentMethodGroupRel.class.getName(),
-						PortletProvider.Action.EDIT)
-				).setParameter(
-					"commerceChannelId",
-					ParamUtil.getLong(httpServletRequest, "commerceChannelId")
-				).setParameter(
-					"commercePaymentMethodEngineKey",
-					() -> {
-						PaymentMethod paymentMethod = (PaymentMethod)model;
+				dropdownItem.setHref(
+					PortletURLBuilder.create(
+						PortletProviderUtil.getPortletURL(
+							httpServletRequest,
+							CommercePaymentMethodGroupRel.class.getName(),
+							PortletProvider.Action.EDIT)
+					).setParameter(
+						"commerceChannelId",
+						ParamUtil.getLong(
+							httpServletRequest, "commerceChannelId")
+					).setParameter(
+						"commercePaymentMethodEngineKey",
+						() -> {
+							PaymentMethod paymentMethod = (PaymentMethod)model;
 
-						return paymentMethod.getKey();
-					}
-				).setWindowState(
-					LiferayWindowState.POP_UP
-				).build();
-
-				dropdownItem.setHref(portletURL);
+							return paymentMethod.getKey();
+						}
+					).setWindowState(
+						LiferayWindowState.POP_UP
+					).build());
 
 				dropdownItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "edit"));
@@ -184,12 +181,9 @@ public class CommercePaymentMethodClayTable
 
 			paymentMethods.add(
 				new PaymentMethod(
-					HtmlUtil.escape(commercePaymentDescription),
-					commercePaymentMethod.getKey(),
-					HtmlUtil.escape(commercePaymentName),
-					HtmlUtil.escape(
-						commercePaymentMethod.getName(
-							themeDisplay.getLocale())),
+					commercePaymentDescription, commercePaymentMethod.getKey(),
+					commercePaymentName,
+					commercePaymentMethod.getName(themeDisplay.getLocale()),
 					CommerceChannelClayTableUtil.getLabelField(
 						_isActive(commercePaymentMethodGroupRel),
 						themeDisplay.getLocale())));

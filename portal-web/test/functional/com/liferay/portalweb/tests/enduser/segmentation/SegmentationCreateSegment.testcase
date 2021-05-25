@@ -1,6 +1,7 @@
 @component-name = "portal-segmentation"
 definition {
 
+	property custom.properties = "jsonws.web.service.paths.excludes=";
 	property portal.release = "true";
 	property portal.upstream = "true";
 	property testray.main.component.name = "Segmentation";
@@ -81,7 +82,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Country");
 
@@ -126,7 +127,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Date Modified");
 
@@ -188,7 +189,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Hierarchy Path");
 
@@ -231,7 +232,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Name");
 
@@ -275,11 +276,11 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Organization");
 
-		Segmentation.assignOrganization(orgName = "Organization Name");
+		Segmentation.fillProperty(selectCheckbox = "Organization Name");
 
 		Segmentation.fillTitle(titleField = "AddSegmentByOrganizationOrganization Test");
 
@@ -325,11 +326,11 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Parent Organization");
 
-		Segmentation.assignOrganization(orgName = "Parent Organization Name");
+		Segmentation.fillProperty(selectCheckbox = "Parent Organization Name");
 
 		Segmentation.fillTitle(titleField = "AddSegmentByOrganizationParentOrganization Test");
 
@@ -389,7 +390,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Region");
 
@@ -447,11 +448,11 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Tag");
 
-		Segmentation.fillProperty(tagName = "tagname");
+		Segmentation.fillProperty(selectLink = "tagname");
 
 		Segmentation.fillTitle(titleField = "AddSegmentByOrganizationTag Test");
 
@@ -492,7 +493,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectOrganization();
+		Segmentation.gotoSidebar(fieldType = "Organization");
 
 		Segmentation.addProperties(propertyOption = "Type");
 
@@ -512,31 +513,143 @@ definition {
 	}
 
 	@description = "This is a test for LPS-130345."
-	@ignore = "true"
 	@priority = "5"
 	test AddSegmentByOtherSegments {
 		property portal.acceptance = "false";
 
-		// TODO LPS-130345 AddSegmentByOtherSegments pending implementation
+		JSONUser.addUser(
+			userEmailAddress = "userea1@liferay.com",
+			userFirstName = "userfn1",
+			userLastName = "userln1",
+			userScreenName = "usersn1");
 
+		JSONUser.addUser(
+			userEmailAddress = "userea2@liferay.com",
+			userFirstName = "userfn2",
+			userLastName = "userln2",
+			userScreenName = "usersn2");
+
+		JSONSegmentsentry.addSegment(
+			fieldName = "Screen Name",
+			groupName = "Global",
+			operator = "equals",
+			segmentName = "Segment With User1",
+			text = "usersn1");
+
+		JSONSegmentsentry.addSegment(
+			fieldName = "Screen Name",
+			groupName = "Global",
+			operator = "equals",
+			segmentName = "Segment With User2",
+			text = "usersn2");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.gotoSidebar(fieldType = "Segments");
+
+		Segmentation.addProperties(propertyOption = "Segment");
+
+		Segmentation.fillProperty(selectLink = "Segment With User1");
+
+		Segmentation.addProperties(propertyOption = "Segment");
+
+		Segmentation.fillProperty(
+			indexNumber = "2",
+			selectLink = "Segment With User2");
+
+		Segmentation.changeCriterionConjunction(criterionConjunctionItem = "Or");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByOtherSegments Test");
+
+		Segmentation.viewMembers(memberNameList = "userfn1 userln1,userfn2 userln2");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
 	}
 
 	@description = "This is a test for LPS-130346."
-	@ignore = "true"
 	@priority = "5"
 	test AddSegmentByOtherSegmentsUnableToAddNewSegments {
 		property portal.acceptance = "false";
 
-		// TODO LPS-130346 AddSegmentByOtherSegmentsUnableToAddNewSegments pending implementation
+		LexiconEntry.gotoAdd();
+
+		Segmentation.gotoSidebar(fieldType = "Segments");
+
+		Segmentation.addProperties(propertyOption = "Segment");
+
+		AssertElementNotPresent(locator1 = "Button#PLUS");
+
+		Click(locator1 = "Button#SELECT");
+
+		SelectFrame(locator1 = "IFrame#MODAL_BODY");
+
+		AssertElementNotPresent(locator1 = "Button#PLUS");
+
+		SelectFrame.selectFrameTop();
+
+		Click(locator1 = "Icon#CLOSE");
 	}
 
 	@description = "This is a test for LPS-130347."
-	@ignore = "true"
 	@priority = "5"
 	test AddSegmentByOtherSegmentsWarning {
 		property portal.acceptance = "false";
 
-		// TODO LPS-130347 AddSegmentByOtherSegmentsWarning pending implementation
+		JSONUser.addUser(
+			userEmailAddress = "userea1@liferay.com",
+			userFirstName = "userfn1",
+			userLastName = "userln1",
+			userScreenName = "usersn1");
+
+		JSONUser.addUser(
+			userEmailAddress = "userea2@liferay.com",
+			userFirstName = "userfn2",
+			userLastName = "userln2",
+			userScreenName = "usersn2");
+
+		JSONSegmentsentry.addSegment(
+			fieldName = "First Name",
+			groupName = "Global",
+			operator = "equals",
+			segmentName = "Segment With User1",
+			text = "userfn1");
+
+		JSONSegmentsentry.addSegment(
+			fieldName = "First Name",
+			groupName = "Global",
+			operator = "equals",
+			segmentName = "Segment With User2",
+			text = "userfn2");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.gotoSidebar(fieldType = "Segments");
+
+		Segmentation.addProperties(propertyOption = "Segment");
+
+		Segmentation.fillProperty(selectLink = "Segment With User1");
+
+		Segmentation.addProperties(propertyOption = "Segment");
+
+		Segmentation.fillProperty(
+			indexNumber = "2",
+			selectLink = "Segment With User2");
+
+		Segmentation.changeCriterionConjunction(criterionConjunctionItem = "Or");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByOtherSegmentsWarning Test");
+
+		Button.clickSave();
+
+		Segmentation.openSegmentsAdmin(siteURLKey = "guest");
+
+		Segmentation.deleteSegment(entry = "Segment With User1");
+
+		Segmentation.editSegment(entry = "AddSegmentByOtherSegmentsWarning Test");
+
+		Alert.viewErrorMessage(errorMessage = "Delete this condition. It was created from an element that no longer exists.");
 	}
 
 	@description = "This is a test for LPS-130313."
@@ -546,7 +659,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Browser");
 
@@ -570,7 +683,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Cookies");
 
@@ -598,7 +711,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Device Brand");
 
@@ -622,7 +735,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Device Model");
 
@@ -646,7 +759,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Device Screen Resolution Height");
 
@@ -672,7 +785,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Device Screen Resolution Width");
 
@@ -698,7 +811,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Hostname");
 
@@ -722,7 +835,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Language");
 
@@ -751,7 +864,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Last Sign In Date");
 
@@ -777,7 +890,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Local Date");
 
@@ -803,7 +916,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Referrer URL");
 
@@ -827,7 +940,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Request Parameters");
 
@@ -855,7 +968,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "Signed In");
 
@@ -884,7 +997,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "URL");
 
@@ -908,7 +1021,7 @@ definition {
 
 		LexiconEntry.gotoAdd();
 
-		Segmentation.selectSession();
+		Segmentation.gotoSidebar(fieldType = "Session");
 
 		Segmentation.addProperties(propertyOption = "URL");
 
@@ -930,107 +1043,136 @@ definition {
 	}
 
 	@description = "This is a test for LPS-130284."
-	@ignore = "true"
 	@priority = "5"
 	test AddSegmentByUserDateModified {
 		property portal.acceptance = "false";
 
-		// TODO LPS-130284 AddSegmentByUserDateModified pending implementation
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Date Modified");
+
+		Segmentation.changeCriterionInput(criterionInputOption = "Greater Than");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserDateModified Test");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserDateModified Test");
+
+		var displayDateDay = DateUtil.getCurrentDate();
+		var displayDateMonth = DateUtil.getCurrentMonth();
+
+		if (("${displayDateMonth}" != "10") && ("${displayDateMonth}" != "11") && ("${displayDateMonth}" != "12")) {
+			var displayDateMonth= "0${displayDateMonth}";
+		}
+
+		var displayDateYear = DateUtil.getCurrentYear();
+
+		var i = MathUtil.quotient("${displayDateDay}", "10");
+
+		if ("${i}" == "0") {
+			var displayDateDay= "0${displayDateDay}";
+		}
+
+		var displayDate = "${displayDateYear}-${displayDateMonth}-${displayDateDay}";
+
+		Segmentation.viewSegment(
+			criterion = "date",
+			value = "${displayDate}");
 	}
 
 	@description = "This is a test for LPS-130285."
-	@ignore = "true"
 	@priority = "5"
 	test AddSegmentByUserDateOfBirth {
 		property portal.acceptance = "false";
 
-		// TODO LPS-130285 AddSegmentByUserDateOfBirth pending implementation
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Date of Birth");
+
+		Segmentation.fillProperty(dateValue = "05/31/1986");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserDateOfBirth Test");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserDateOfBirth Test");
+
+		Segmentation.viewSegment(
+			criterion = "date",
+			value = "1986-05-31");
 	}
 
 	@description = "This is a test for LPS-130291."
-	@ignore = "true"
 	@priority = "5"
 	test AddSegmentByUserEmailAddress {
 		property portal.acceptance = "false";
 
-		// TODO LPS-130291 AddSegmentByUserEmailAddress pending implementation. This test is already created as AddSegmentUserEmailAddressContains, but if you are able to do it better, delete the test AddSegmentUserEmailAddressContains.
-	}
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
 
-	@description = "This is a test for LPS-130286."
-	@ignore = "true"
-	@priority = "5"
-	test AddSegmentByUserFirstName {
-		property portal.acceptance = "false";
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
 
-		// TODO LPS-130286 AddSegmentByUserFirstName pending implementation
-	}
-
-	@description = "This is a test for LPS-130287."
-	@ignore = "true"
-	@priority = "5"
-	test AddSegmentByUserJobTitle {
-		property portal.acceptance = "false";
-
-		// TODO LPS-130287 AddSegmentByUserJobTitle pending implementation
-	}
-
-	@description = "This is a test for LPS-130288."
-	@ignore = "true"
-	@priority = "5"
-	test AddSegmentByUserLastName {
-		property portal.acceptance = "false";
-
-		// TODO LPS-130288 AddSegmentByUserLastName pending implementation
-	}
-
-	@description = "This is a test for LPS-130292."
-	@ignore = "true"
-	@priority = "5"
-	test AddSegmentByUserName {
-		property portal.acceptance = "false";
-
-		// TODO LPS-130292 AddSegmentByUserName pending implementation
-	}
-
-	@description = "This is a test for LPS-130289."
-	@ignore = "true"
-	@priority = "5"
-	test AddSegmentByUserRole {
-		property portal.acceptance = "false";
-
-		// TODO LPS-130289 AddSegmentByUserRole pending implementation
-	}
-
-	@description = "This is a test for LPS-130290."
-	@ignore = "true"
-	@priority = "5"
-	test AddSegmentByUserScreenName {
-		property portal.acceptance = "false";
-
-		// TODO LPS-130290 AddSegmentByUserScreenName pending implementation
-	}
-
-	@description = "Validate if the user can create a segment with Properties User and Email Segment with Contains Option"
-	@priority = "5"
-	test AddSegmentUserEmailAddressContains {
 		LexiconEntry.gotoAdd();
 
 		Segmentation.addProperties(propertyOption = "Email Address");
 
-		Segmentation.fillTitle(titleField = "AddSegmentUserEmailAddressContains Test");
+		Segmentation.fillTitle(titleField = "AddSegmentByUserEmailAddress Test");
 
 		Segmentation.changeCriterionInput(criterionInputOption = "Contains");
 
 		Segmentation.fillProperty(propertyField = "liferay");
 
+		Segmentation.viewMembers(memberName = "userfn userln");
+
 		Button.clickSave();
 
 		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserEmailAddress Test");
+
+		Segmentation.viewSegment(propertyField = "liferay");
 	}
 
 	@description = "Validate if the user can create a segment with Properties User and Email Segment with Equals Option"
 	@priority = "5"
-	test AddSegmentUserEmailAddressEquals {
+	test AddSegmentByUserEmailAddressEquals {
 		LexiconEntry.gotoAdd();
 
 		Segmentation.addProperties(propertyOption = "Email Address");
@@ -1048,7 +1190,7 @@ definition {
 
 	@description = "Validate if the user can create a segment with Properties User and Email Segment with Not Contains Option"
 	@priority = "5"
-	test AddSegmentUserEmailAddressNotContains {
+	test AddSegmentByUserEmailAddressNotContains {
 		LexiconEntry.gotoAdd();
 
 		Segmentation.addProperties(propertyOption = "Email Address");
@@ -1066,7 +1208,7 @@ definition {
 
 	@description = "Validate if the user can create a segment with Properties User and Email Segment with Not Equals Option"
 	@priority = "5"
-	test AddSegmentUserEmailAddressNotEquals {
+	test AddSegmentByUserEmailAddressNotEquals {
 		LexiconEntry.gotoAdd();
 
 		Segmentation.addProperties(propertyOption = "Email Address");
@@ -1082,64 +1224,489 @@ definition {
 		Alert.viewSuccessMessage();
 	}
 
-	@description = "When the user selects the Assign Site Roles option in the Segments Editor, it shows a dialog allowing user to assign/unassign site roles"
+	@description = "This is a test for LPS-130286."
 	@priority = "5"
-	test AssignSiteRolesOptionEnabled {
-		property portal.acceptance = "true";
-		property test.name.skip.portal.instance = "SegmentationCreateSegment#AssignSiteRolesOptionEnabled";
+	test AddSegmentByUserFirstName {
+		property portal.acceptance = "false";
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
 
-		SystemSettings.gotoConfiguration(
-			configurationCategory = "Segments",
-			configurationName = "Segments Service",
-			configurationScope = "System Scope");
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
 
-		Segmentation.enableAssingRolesBySegmentsCheckbox();
+		LexiconEntry.gotoAdd();
 
-		Navigator.openURL();
+		Segmentation.addProperties(propertyOption = "First Name");
 
-		ProductMenu.gotoPortlet(
-			category = "People",
-			portlet = "Segments");
+		Segmentation.fillTitle(titleField = "AddSegmentByUserFirstName Test");
+
+		Segmentation.fillProperty(propertyField = "userfn");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserFirstName Test");
+
+		Segmentation.viewSegment(propertyField = "userfn");
+	}
+
+	@description = "This is a test for LPS-130287."
+	@priority = "5"
+	test AddSegmentByUserJobTitle {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			jobTitle = "QA",
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Job Title");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserJobTitle Test");
+
+		Segmentation.fillProperty(propertyField = "QA");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserJobTitle Test");
+
+		Segmentation.viewSegment(propertyField = "QA");
+	}
+
+	@description = "This is a test for LPS-130288."
+	@priority = "5"
+	test AddSegmentByUserLastName {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Last Name");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserLastName Test");
+
+		Segmentation.fillProperty(propertyField = "userln");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserLastName Test");
+
+		Segmentation.viewSegment(propertyField = "userln");
+	}
+
+	@description = "This is a test for LPS-130292."
+	@priority = "5"
+	test AddSegmentByUserName {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Name");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserName Test");
+
+		Segmentation.fillProperty(propertyField = "userfn userln");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserName Test");
+
+		Segmentation.viewSegment(propertyField = "userfn userln");
+	}
+
+	@description = "This is a test for LPS-130289."
+	@priority = "5"
+	test AddSegmentByUserRole {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONRole.addRegularRole(
+			roleKey = "Regular Role",
+			roleTitle = "Regular Role");
+
+		JSONRole.assignRoleToUser(
+			roleTitle = "Regular Role",
+			userEmailAddress = "userea@liferay.com");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Regular Role");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserRole Test");
+
+		Segmentation.fillProperty(selectCheckbox = "Regular Role");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserRole Test");
+
+		Segmentation.viewSegment(
+			criterion = "select-input",
+			value = "Regular Role");
+	}
+
+	@description = "This is a test for LPS-130290."
+	@priority = "5"
+	test AddSegmentByUserScreenName {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
 
 		LexiconEntry.gotoAdd();
 
 		Segmentation.addProperties(propertyOption = "Screen Name");
 
-		Segmentation.fillTitle(titleField = "Segment test");
+		Segmentation.fillTitle(titleField = "AddSegmentByUserScreenName Test");
 
-		Segmentation.fillProperty(propertyField = "test");
+		Segmentation.fillProperty(propertyField = "usersn");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
 
 		Button.clickSave();
 
-		Segmentation.clickAssignSiteRolesOption(segmentTitle = "Segment test");
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserScreenName Test");
+
+		Segmentation.viewSegment(propertyField = "usersn");
+	}
+
+	@description = "This is a test for LPS-132107."
+	@priority = "5"
+	test AddSegmentByUserSite {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONGroup.addGroup(groupName = "Test Site Name");
+
+		JSONGroup.assignUserToGroup(
+			groupName = "Test Site Name",
+			userEmailAddress = "userea@liferay.com");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Site");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserSite Test");
+
+		Segmentation.fillProperty(selectLink = "Test Site Name");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserSite Test");
+
+		Segmentation.viewSegment(
+			criterion = "select-input",
+			value = "Test Site Name");
+	}
+
+	@description = "This is a test for LPS-132108."
+	@priority = "5"
+	test AddSegmentByUserSiteOrganizationRole {
+		property portal.acceptance = "false";
+		property test.name.skip.portal.instance = "SegmentationCreateSegment#AddSegmentByUserSiteOrganizationRole";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONGroup.addGroup(groupName = "Test Site Name");
+
+		JSONGroup.assignUserToGroup(
+			groupName = "Test Site Name",
+			userEmailAddress = "userea@liferay.com");
+
+		JSONRole.addSiteRole(
+			roleKey = "Site Role Name",
+			roleTitle = "Site Role Name");
+
+		JSONGroup.assignGroupRoleToUser(
+			groupName = "Test Site Name",
+			roleTitle = "Site Role Name",
+			userEmailAddress = "userea@liferay.com");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
-			portlet = "System Settings");
+			portlet = "Search");
 
-		SystemSettings.gotoConfiguration(
-			configurationCategory = "Segments",
-			configurationName = "Segments Service",
-			configurationScope = "System Scope");
+		SearchAdministration.executeSearchActions(actionsDescription = "Reindex all search indexes.");
 
-		Segmentation.enableAssingRolesBySegmentsCheckbox();
+		Segmentation.openSegmentsAdmin(siteURLKey = "guest");
 
-		Navigator.openURL();
+		LexiconEntry.gotoAdd();
 
-		ProductMenu.gotoPortlet(
-			category = "People",
-			portlet = "Segments");
+		Segmentation.addProperties(propertyOption = "Site and Organization Role");
+
+		Segmentation.fillProperty(selectCheckbox = "Site Role Name");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserSiteOrganizationRole Test");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserSiteOrganizationRole Test");
+
+		Segmentation.viewSegment(
+			criterion = "select-input",
+			value = "Site Role Name");
+	}
+
+	@description = "This is a test for LPS-132109."
+	@priority = "5"
+	test AddSegmentByUserTag {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			assetTagNames = "tagname",
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Tag");
+
+		Segmentation.fillProperty(selectLink = "tagname");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserSiteOrganizationRole Test");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserSiteOrganizationRole Test");
+
+		Segmentation.viewSegment(
+			criterion = "select-input",
+			value = "tagname");
+	}
+
+	@description = "This is a test for LPS-132110."
+	@priority = "5"
+	test AddSegmentByUserTeam {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONGroup.addGroup(groupName = "Test Site Name");
+
+		JSONGroup.assignUserToGroup(
+			groupName = "Test Site Name",
+			userEmailAddress = "userea@liferay.com");
+
+		Site.openSiteTeamsAdmin(siteURLKey = "test-site-name");
+
+		Team.addCP(
+			teamDescription = "Site Team Description",
+			teamName = "Site Team Name");
+
+		Team.assignMembersCP(
+			teamName = "Site Team Name",
+			userScreenName = "usersn");
+
+		Segmentation.openSegmentsAdmin(siteURLKey = "test-site-name");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "Team");
+
+		Segmentation.fillProperty(selectLink = "Site Team Name");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserTeam Test");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserTeam Test");
+
+		Segmentation.viewSegment(
+			criterion = "select-input",
+			value = "Site Team Name");
+	}
+
+	@description = "This is a test for LPS-132111."
+	@priority = "5"
+	test AddSegmentByUserUser {
+		property portal.acceptance = "false";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "User");
+
+		Segmentation.fillProperty(selectCheckbox = "userfn userln");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserUser Test");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserUser Test");
+
+		Segmentation.viewSegment(
+			criterion = "select-input",
+			value = "userfn userln");
+	}
+
+	@description = "This is a test for LPS-132112."
+	@priority = "5"
+	test AddSegmentByUserUserGroup {
+		property portal.acceptance = "false";
+		property test.name.skip.portal.instance = "SegmentationCreateSegment#AddSegmentByUserUserGroup";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUserGroup.addUserGroup(
+			userGroupDescription = "UG UserGroup Name Description",
+			userGroupName = "UG UserGroup Name");
+
+		JSONUser.addUserToUserGroup(
+			userEmailAddress = "userea@liferay.com",
+			userGroupName = "UG UserGroup Name");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "Search");
+
+		SearchAdministration.executeSearchActions(actionsDescription = "Reindex all search indexes.");
+
+		Segmentation.openSegmentsAdmin(siteURLKey = "guest");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.addProperties(propertyOption = "User Group");
+
+		Segmentation.fillProperty(chooseItem = "UG UserGroup Name");
+
+		Segmentation.fillTitle(titleField = "AddSegmentByUserUserGroup Test");
+
+		Segmentation.viewMembers(memberName = "userfn userln");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Segmentation.editSegment(entry = "AddSegmentByUserUserGroup Test");
+
+		Segmentation.viewSegment(
+			criterion = "select-input",
+			value = "UG UserGroup Name");
 	}
 
 	@description = "Validate if the members are assigned correctly depending on the criteria selected"
+	@ignore = "true"
 	@priority = "5"
 	test SegmentationCheckMembers {
+
+		// TODO LPS-132013 It is a little bit flaky, waiting for fix
+
 		property portal.acceptance = "true";
 
 		JSONUser.addUser(
@@ -1173,6 +1740,38 @@ definition {
 		Segmentation.viewMembers(memberName = "Test");
 
 		Segmentation.viewMembers(memberName = "User 1");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+	}
+
+	@description = "This is a use case for LPS-131815"
+	@priority = "5"
+	test SegmentationCheckSpecialCharacters {
+		property portal.acceptance = "true";
+
+		JSONUser.addUser(
+			userEmailAddress = "u1@liferay.com",
+			userFirstName = "User",
+			userLastName = "1 + / ? # &",
+			userScreenName = "u1");
+
+		LexiconEntry.gotoAdd();
+
+		Segmentation.fillTitle(titleField = "Segment With Special Characters");
+
+		Segmentation.addProperties(propertyOption = "Last Name");
+
+		Segmentation.changeCriterionInput(criterionInputOption = "Contains");
+
+		Segmentation.fillProperty(propertyField = "+ / ? # &");
+
+		AssertTextEquals(
+			locator1 = "Segmentation#MEMBERS_MATCHED",
+			value1 = "1 Member");
+
+		Segmentation.viewMembers(memberName = "User 1 + / ? # &");
 
 		Button.clickSave();
 

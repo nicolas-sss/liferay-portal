@@ -581,3 +581,32 @@ channel. The `Liferay.State` API is a better fit for modules that wish to
 coordinate at a distance in this way, and it does so in a type-safe manner.
 
 ---------------------------------------
+
+### OAuth 2 Token Instrospection feature identifier has changed
+- **Date:** 2021-May-04
+- **JIRA Ticket:** [LPS-131573](https://issues.liferay.com/browse/LPS-131573)
+
+#### What changed?
+
+The feature identifier for Token Introspection at OAuth2 has changed from
+`token_introspection` to `token.introspection` due to standarization of
+OAuth 2 constants.
+
+#### Who is affected?
+
+This affects any development that uses the Token Introspection feature
+identifier. For example where an OAuth2Application is added programatically
+with this specific feature enabled, or when inspecting an OAuth2Application to
+see if the feature is enabled.
+
+#### How should I update my code?
+
+If you are using the Token Introspection feature identifier, you should
+manually change it from `token_introspection` to `token.introspection`.
+
+#### Why was this change made?
+
+This change was made to align and standarize all OAuth 2 constants in our code.
+We recommend that feature identifiers use a dot to separate words.
+
+---------------------------------------

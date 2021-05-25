@@ -93,13 +93,14 @@ public abstract class BaseInstanceResourceImpl
 			@Parameter(in = ParameterIn.PATH, name = "processId"),
 			@Parameter(in = ParameterIn.QUERY, name = "assigneeIds"),
 			@Parameter(in = ParameterIn.QUERY, name = "classPKs"),
-			@Parameter(in = ParameterIn.QUERY, name = "completed"),
 			@Parameter(in = ParameterIn.QUERY, name = "dateEnd"),
 			@Parameter(in = ParameterIn.QUERY, name = "dateStart"),
 			@Parameter(in = ParameterIn.QUERY, name = "slaStatuses"),
+			@Parameter(in = ParameterIn.QUERY, name = "statuses"),
 			@Parameter(in = ParameterIn.QUERY, name = "taskNames"),
 			@Parameter(in = ParameterIn.QUERY, name = "page"),
-			@Parameter(in = ParameterIn.QUERY, name = "pageSize")
+			@Parameter(in = ParameterIn.QUERY, name = "pageSize"),
+			@Parameter(in = ParameterIn.QUERY, name = "sort")
 		}
 	)
 	@Path("/processes/{processId}/instances")
@@ -111,17 +112,16 @@ public abstract class BaseInstanceResourceImpl
 			@Parameter(hidden = true) @QueryParam("assigneeIds") Long[]
 				assigneeIds,
 			@Parameter(hidden = true) @QueryParam("classPKs") Long[] classPKs,
-			@Parameter(hidden = true) @QueryParam("completed") Boolean
-				completed,
 			@Parameter(hidden = true) @QueryParam("dateEnd") java.util.Date
 				dateEnd,
 			@Parameter(hidden = true) @QueryParam("dateStart") java.util.Date
 				dateStart,
 			@Parameter(hidden = true) @QueryParam("slaStatuses") String[]
 				slaStatuses,
+			@Parameter(hidden = true) @QueryParam("statuses") String[] statuses,
 			@Parameter(hidden = true) @QueryParam("taskNames") String[]
 				taskNames,
-			@Context Pagination pagination)
+			@Context Pagination pagination, @Context Sort[] sorts)
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
@@ -299,7 +299,8 @@ public abstract class BaseInstanceResourceImpl
 		throws Exception {
 
 		for (Instance instance : instances) {
-			postProcessInstance((Long)parameters.get("processId"), instance);
+			postProcessInstance(
+				Long.parseLong((String)parameters.get("processId")), instance);
 		}
 	}
 
@@ -332,14 +333,14 @@ public abstract class BaseInstanceResourceImpl
 		throws Exception {
 
 		return getProcessInstancesPage(
-			(Long)parameters.get("processId"),
+			Long.parseLong((String)parameters.get("processId")),
 			(Long[])parameters.get("assigneeIds"),
 			(Long[])parameters.get("classPKs"),
-			(Boolean)parameters.get("completed"),
-			(java.util.Date)parameters.get("dateEnd"),
-			(java.util.Date)parameters.get("dateStart"),
+			new java.util.Date((String)parameters.get("dateEnd")),
+			new java.util.Date((String)parameters.get("dateStart")),
 			(String[])parameters.get("slaStatuses"),
-			(String[])parameters.get("taskNames"), pagination);
+			(String[])parameters.get("statuses"),
+			(String[])parameters.get("taskNames"), pagination, sorts);
 	}
 
 	@Override

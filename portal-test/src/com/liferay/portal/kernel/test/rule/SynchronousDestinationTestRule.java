@@ -14,12 +14,13 @@
 
 package com.liferay.portal.kernel.test.rule;
 
-import com.liferay.petra.lang.SafeClosable;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dependency.manager.DependencyManagerSyncUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.increment.BufferedIncrementThreadLocal;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.BaseDestination;
@@ -127,6 +128,8 @@ public class SynchronousDestinationTestRule
 		}
 
 		public void enableSync() {
+			Filter audioProcessorFilter = _registerDestinationFilter(
+				DestinationNames.DOCUMENT_LIBRARY_AUDIO_PROCESSOR);
 			Filter auditFilter = _registerDestinationFilter(
 				DestinationNames.AUDIT);
 			Filter asyncFilter = _registerDestinationFilter(
@@ -165,25 +168,30 @@ public class SynchronousDestinationTestRule
 				DestinationNames.DOCUMENT_LIBRARY_VIDEO_PROCESSOR);
 
 			_waitForDependencies(
-				auditFilter, asyncFilter, backgroundTaskFilter,
-				backgroundTaskStatusFilter, commerceOrderFilter,
-				commercePaymentFilter, commerceShipmentFilter,
-				commerceStockFilter, commerceSubscriptionFilter,
-				ddmStructureReindexFilter, kaleoGraphWalkerFilter, mailFilter,
-				pdfProcessorFilter, rawMetaDataProcessorFilter,
-				segmentsEntryReindexFilter, subscrpitionSenderFilter,
-				tensorflowModelDownloadFilter, videoProcessorFilter);
+				audioProcessorFilter, auditFilter, asyncFilter,
+				backgroundTaskFilter, backgroundTaskStatusFilter,
+				commerceOrderFilter, commercePaymentFilter,
+				commerceShipmentFilter, commerceStockFilter,
+				commerceSubscriptionFilter, ddmStructureReindexFilter,
+				kaleoGraphWalkerFilter, mailFilter, pdfProcessorFilter,
+				rawMetaDataProcessorFilter, segmentsEntryReindexFilter,
+				subscrpitionSenderFilter, tensorflowModelDownloadFilter,
+				videoProcessorFilter);
 
 			_destinations = ReflectionTestUtil.getFieldValue(
 				MessageBusUtil.getMessageBus(), "_destinations");
 
-			_forceSyncSafeClosable = ProxyModeThreadLocal.setWithSafeClosable(
+			_bufferedIncrementForceSyncSafeCloseable =
+				BufferedIncrementThreadLocal.setWithSafeCloseable(true);
+			_forceSyncSafeCloseable = ProxyModeThreadLocal.setWithSafeCloseable(
 				true);
 
 			replaceDestination(DestinationNames.AUDIT);
 			replaceDestination(DestinationNames.ASYNC_SERVICE);
 			replaceDestination(DestinationNames.BACKGROUND_TASK);
 			replaceDestination(DestinationNames.BACKGROUND_TASK_STATUS);
+			replaceDestination(
+				DestinationNames.DOCUMENT_LIBRARY_AUDIO_PROCESSOR);
 			replaceDestination(DestinationNames.DOCUMENT_LIBRARY_PDF_PROCESSOR);
 			replaceDestination(
 				DestinationNames.DOCUMENT_LIBRARY_RAW_METADATA_PROCESSOR);
@@ -327,8 +335,12 @@ public class SynchronousDestinationTestRule
 		}
 
 		public void restorePreviousSync() {
-			if (_forceSyncSafeClosable != null) {
-				_forceSyncSafeClosable.close();
+			if (_bufferedIncrementForceSyncSafeCloseable != null) {
+				_bufferedIncrementForceSyncSafeCloseable.close();
+			}
+
+			if (_forceSyncSafeCloseable != null) {
+				_forceSyncSafeCloseable.close();
 			}
 
 			for (Destination destination : _asyncServiceDestinations) {
@@ -414,8 +426,9 @@ public class SynchronousDestinationTestRule
 		private final List<String> _absentDestinationNames = new ArrayList<>();
 		private final List<Destination> _asyncServiceDestinations =
 			new ArrayList<>();
+		private SafeCloseable _bufferedIncrementForceSyncSafeCloseable;
 		private Map<String, Destination> _destinations;
-		private SafeClosable _forceSyncSafeClosable;
+		private SafeCloseable _forceSyncSafeCloseable;
 		private final List<InvokerMessageListener>
 			_schedulerInvokerMessageListeners = new ArrayList<>();
 		private Sync _sync;

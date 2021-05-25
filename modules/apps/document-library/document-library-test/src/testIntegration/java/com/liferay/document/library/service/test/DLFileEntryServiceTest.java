@@ -316,11 +316,11 @@ public class DLFileEntryServiceTest {
 		String fileEntryTitle = RandomTestUtil.randomString();
 
 		return DLFileEntryLocalServiceUtil.addFileEntry(
-			TestPropsValues.getUserId(), _group.getGroupId(),
+			null, TestPropsValues.getUserId(), _group.getGroupId(),
 			_group.getGroupId(), folderId, sourceFileName, null, fileEntryTitle,
 			RandomTestUtil.randomString(), StringPool.BLANK,
 			DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT, null,
-			null, new ByteArrayInputStream(_CONTENT.getBytes()), 0,
+			null, new ByteArrayInputStream(_CONTENT.getBytes()), 0, null, null,
 			serviceContext);
 	}
 
@@ -335,6 +335,7 @@ public class DLFileEntryServiceTest {
 			StringPool.BLANK, DLVersionNumberIncrease.MINOR,
 			dlFileEntry.getFileEntryTypeId(), null, null,
 			dlFileEntry.getContentStream(), dlFileEntry.getSize(),
+			dlFileEntry.getExpirationDate(), dlFileEntry.getReviewDate(),
 			serviceContext);
 	}
 

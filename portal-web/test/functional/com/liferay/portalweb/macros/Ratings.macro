@@ -9,8 +9,10 @@ definition {
 		}
 
 		Click(
-			key_url = "site-configuration-ratings",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Community Tools",
+			locator1 = "ListGroupItem#ITEM_TEXT");
+
+		Navigator.gotoNavTab(navTab = "Ratings");
 
 		Select(
 			key_applications = "${applications}",

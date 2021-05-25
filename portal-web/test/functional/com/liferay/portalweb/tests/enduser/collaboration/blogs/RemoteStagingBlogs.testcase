@@ -12,13 +12,15 @@ definition {
 
 		JSONGroup.addGroup(groupName = "Site Name");
 
-		SitePages.openPagesAdmin(siteURLKey = "Site Name");
+		JSONLayout.addPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Staging Blogs Page");
 
-		ProductMenu.gotoPortlet(
-			category = "Site Builder",
-			portlet = "Pages");
-
-		SitePages.addPublicPage(pageName = "Staging Blogs Page");
+		JSONLayout.addWidgetToPublicLayout(
+			column = "1",
+			groupName = "Site Name",
+			layoutName = "Staging Blogs Page",
+			widgetName = "Blogs");
 	}
 
 	tearDown {
@@ -40,17 +42,9 @@ definition {
 		property custom.properties = "tunneling.servlet.shared.secret=1234567890123456${line.separator}auth.verifier.TunnelAuthVerifier.hosts.allowed=";
 		property test.name.skip.portal.instance = "Staging#StagingRemoteLiveBlogsPG";
 
-		Staging.remoteStagingSetUp(siteName = "Site Name");
-
-		Navigator.gotoSitePage(
-			pageName = "Staging Blogs Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
-
-		Staging.gotoPublishToLive();
-
-		Staging.publishToLive(remoteStaging = "true");
+		Staging.remoteStagingSetUpViaJson(
+			groupName = "Remote Site",
+			remotePort = "9080");
 
 		Navigator.gotoSitePage(
 			pageName = "Staging Blogs Page",
@@ -111,12 +105,6 @@ definition {
 		Workflow.configureWorkflow(
 			workflowDefinition = "Single Approver",
 			workflowResourceValue = "Blogs Entry");
-
-		Navigator.gotoSitePage(
-			pageName = "Staging Blogs Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		Navigator.gotoSitePage(
 			pageName = "Staging Blogs Page",
@@ -195,12 +183,6 @@ definition {
 			sourceFileName = "Document_2.jpg");
 
 		Staging.remoteStagingSetUp(siteName = "Site Name");
-
-		Navigator.gotoSitePage(
-			pageName = "Staging Blogs Page",
-			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",

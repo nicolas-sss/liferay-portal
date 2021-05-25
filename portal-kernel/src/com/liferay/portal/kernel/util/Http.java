@@ -522,6 +522,12 @@ public interface Http {
 			_location = location;
 		}
 
+		public void setMethod(Method method) {
+			if (method != null) {
+				_method = method;
+			}
+		}
+
 		public void setParts(Map<String, String> parts) {
 			_parts = parts;
 		}

@@ -12,6 +12,7 @@
 import ClayTable from '@clayui/table';
 import React from 'react';
 
+import ListHeadItem from '../../shared/components/list/ListHeadItem.es';
 import Item from './InstanceListPageItem.es';
 
 const Table = ({items, totalCount}) => {
@@ -20,15 +21,19 @@ const Table = ({items, totalCount}) => {
 			<ClayTable.Head>
 				<ClayTable.Row>
 					<ClayTable.Cell headingCell style={{width: '5%'}} />
+
 					<ClayTable.Cell headingCell style={{width: '5%'}}>
 						{Liferay.Language.get('id')}
 					</ClayTable.Cell>
 
 					<ClayTable.Cell headingCell style={{width: '14%'}}>
-						{Liferay.Language.get('due-date')}
+						<ListHeadItem
+							name="dateOverdue"
+							title={Liferay.Language.get('due-date')}
+						/>
 					</ClayTable.Cell>
 
-					<ClayTable.Cell headingCell style={{width: '14%'}}>
+					<ClayTable.Cell headingCell style={{width: '13%'}}>
 						{Liferay.Language.get('item-subject')}
 					</ClayTable.Cell>
 
@@ -43,8 +48,12 @@ const Table = ({items, totalCount}) => {
 					<ClayTable.Cell headingCell style={{width: '14%'}}>
 						{Liferay.Language.get('created-by')}
 					</ClayTable.Cell>
-					<ClayTable.Cell headingCell style={{width: '15%'}}>
-						{Liferay.Language.get('creation-date')}
+
+					<ClayTable.Cell headingCell style={{width: '16%'}}>
+						<ListHeadItem
+							name="dateCreated"
+							title={Liferay.Language.get('creation-date')}
+						/>
 					</ClayTable.Cell>
 
 					<ClayTable.Cell headingCell style={{width: '5%'}} />

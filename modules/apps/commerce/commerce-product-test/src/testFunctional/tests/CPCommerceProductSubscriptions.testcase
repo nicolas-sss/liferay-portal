@@ -11,13 +11,6 @@ definition {
 		User.firstLoginPG();
 
 		CommerceConfiguration.commerceStoreFrontSetUp();
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "Search");
-
-		SearchAdministration.executeSearchActions(actionsDescription = "Reindex all search indexes.");
 	}
 
 	tearDown {
@@ -42,6 +35,8 @@ definition {
 	test UseSubscriptions {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductSubscriptions#UseSubscriptions";
+
+		// TODO Review
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",

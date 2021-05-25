@@ -155,18 +155,28 @@
     <td></td>
 </tr>
 <tr>
-    <td>ADD_FIELD_TYPE</td>
-    <td>//div[contains(@class,'field-type')]//span[contains(text(),'${key_fieldType}')]</td>
+    <td>ADD_FIELD_NAME</td>
+    <td>//div[contains(@class,'field-type')]//span[normalize-space(text())='${key_fieldType}']</td>
     <td></td>
 </tr>
 <tr>
     <td>ADD_FIELD_POSITION</td>
-    <td>xpath=(//div[contains(@class,'yui3-dd-drop') and contains(@class,'col-empty')] | //div[contains(@class,'col-empty')])[${key_fieldLocation}]</td>
+    <td>//div[(@data-ddm-field-page='${key_formPageNumber}') and (@data-ddm-field-row = '${key_fieldPositionNumber}') and contains(@class,'col-empty')]/div[contains(@class,'target')  ]</td>
     <td></td>
 </tr>
 <tr>
     <td>ADD_FIELD_POSITION_1</td>
     <td>//div[contains(@class,'ddm-target')]</td>
+    <td></td>
+</tr>
+<tr>
+    <td>ADD_FIELD_TARGET</td>
+    <td>//div[contains(@class,'col-empty')]/div[contains(@class,'target')]</td>
+    <td></td>
+</tr>
+<tr>
+    <td>ADD_FIELD_TYPE</td>
+    <td>//div[contains(@class,'field-type')]//span[contains(text(),'${key_fieldType}')]</td>
     <td></td>
 </tr>
 <tr>
@@ -196,6 +206,11 @@
     <td></td>
 </tr>
 <!--PUBLISH-->
+<tr>
+    <td>PUBLISH_FORM_DESCRIPTION_FIELD</td>
+    <td>//div[contains(@class,'ddm-form-basic-info')]//p[contains(text(), '${key_formDescription}')]</td>
+    <td></td>
+</tr>
 <tr>
     <td>PUBLISH_FORM_NAME_FIELD</td>
     <td>//h1[contains(@class,'form-name') and contains(.,'${key_formName}')]</td>
@@ -287,18 +302,28 @@
 </tr>
 <!--SIDEBAR -->
 <tr>
+	<td>ACTIVE_BUILDER_SIDEBAR_PANEL</td>
+	<td>//div[contains(@class,'sidebar')]//*[@*='Builder'][contains(@aria-pressed,'true')]</td>
+    <td></td>
+</tr>
+<tr>
+	<td>BUILDER_SIDEBAR_PANEL</td>
+	<td>//div[contains(@class,'sidebar')]//*[@*='Builder']</td>
+    <td></td>
+</tr>
+<tr>
     <td>SIDEBAR_AUTOCOMPLETE_TAB</td>
     <td>//a[contains(@class,'tab') and .='Autocomplete'] | //a[contains(@aria-controls,'sidebarLightDetails')]//*[contains(text(),'Autocomplete')]</td>
     <td></td>
 </tr>
 <tr>
     <td>SIDEBAR_ADVANCED_TAB</td>
-    <td>//a[contains(@class,'tab') and .='Advanced'] | //a[contains(@aria-controls,'sidebarLightDetails')]//*[contains(text(),'Advanced')]</td>
+    <td>//*[contains(@class,'nav-link') and normalize-space()='Advanced'][not(contains(@id,'ProductMenu'))]</td>
     <td></td>
 </tr>
 <tr>
     <td>SIDEBAR_ADVANCED_TAB_LOCALE</td>
-    <td>//a[contains(@class,'tab') and .='${key_localeAdvanced}'] | //a[contains(@aria-controls,'sidebarLightDetails')]//*[contains(text(),'${key_localeAdvanced}')]</td>
+    <td>//*[contains(@class,'nav-link') and normalize-space()='${key_localeAdvanced}'][not(contains(@id,'ProductMenu'))] | //a[contains(@class,'tab') and .='${key_localeAdvanced}'] | //a[contains(@aria-controls,'sidebarLightDetails')]//*[contains(text(),'${key_localeAdvanced}')]</td>
     <td></td>
 </tr>
 <tr>
@@ -313,12 +338,12 @@
 </tr>
 <tr>
     <td>SIDEBAR_BASIC_TAB</td>
-    <td>//a[contains(@class,'tab') and .='Basic'] | //a[contains(@aria-controls,'sidebarLightDetails')]//*[contains(text(),'Basic')]</td>
+    <td>//*[contains(@class,'nav-link') and normalize-space()='Basic'][not(contains(@id,'ProductMenu'))]</td>
     <td></td>
 </tr>
 <tr>
     <td>SIDEBAR_BASIC_TAB_LOCALE</td>
-    <td>//a[contains(@class,'tab') and .='${key_localeBasic}'] | //a[contains(@aria-controls,'sidebarLightDetails')]//*[contains(text(),'${key_localeBasic}')]</td>
+    <td>//*[contains(@class,'nav-link') and normalize-space()='${key_localeBasic}'][not(contains(@id,'ProductMenu'))] </td>
     <td></td>
 </tr>
 <tr>
@@ -348,17 +373,17 @@
 </tr>
 <tr>
     <td>SIDEBAR_MENUITEM_REMOVE_FIELD</td>
-    <td>//a[@title='Remove Field'] | //button[text()='Remove Field']</td>
+    <td>//div[contains(@class,'dropdown-menu show')]//button[contains(@class,'dropdown-item')][contains(text(),'Delete')]</td>
     <td></td>
 </tr>
 <tr>
     <td>SIDEBAR_MENUITEM_DUPLICATE_FIELD</td>
-    <td>//a[@title='Duplicate Field'] | //button[text()='Duplicate Field']</td>
+    <td>//a[@title='Duplicate'] | //button[text()='Duplicate']</td>
     <td></td>
 </tr>
 <tr>
 	<td>SIDEBAR_DELETE_FIELD_MODAL_DELETE_BUTTON</td>
-	<td>//div[contains(@class,'modal d-block show')]//button[contains(@class,'btn btn-danger')][contains(text(),'Confirm')]</td>
+	<td>//button[contains(@class,'btn btn-danger')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -441,6 +466,11 @@
 <tr>
     <td>DATA_PROVIDER_PERMISSIONS_VIEWABLE_BY_SELECT</td>
     <td>//div[contains(@id,'permissionsContent')]//select[contains(@id,'inputPermissionsViewRole')]</td>
+    <td></td>
+</tr>
+<tr>
+    <td>ANY_DISABLED_BUTTON</td>
+    <td>//button[contains(@class,'disabled') and contains (text(),'${key_value}')]</td>
     <td></td>
 </tr>
 </tbody>

@@ -2150,11 +2150,13 @@ sendPasswordCaptchaEnabled=&quot;false&quot;</echo>
 										<replace
 											file="${app.server.lib.global.dir}/module.xml"
 										>
-											<replacetoken><![CDATA[<resource-root path="com.liferay.petra.url.pattern.mapper.jar" />]]></replacetoken>
+											<replacetoken><![CDATA[<module name="com.liferay.portal" xmlns="urn:jboss:module:1.0">]]></replacetoken>
 											<replacevalue>
 												<![CDATA[
-													<resource-root path="com.liferay.petra.url.pattern.mapper.jar" />
-													<resource-root path="mysql.jar" />
+													<module name="com.liferay.portal" xmlns="urn:jboss:module:1.0">
+														<resources>
+															<resource-root path="mysql.jar" />
+														</resources>
 												]]>
 											</replacevalue>
 										</replace>
@@ -2189,11 +2191,13 @@ sendPasswordCaptchaEnabled=&quot;false&quot;</echo>
 											<replace
 												file="${app.server.lib.global.dir}/module.xml"
 											>
-												<replacetoken><![CDATA[<resource-root path="com.liferay.petra.url.pattern.mapper.jar" />]]></replacetoken>
+												<replacetoken><![CDATA[<module name="com.liferay.portal" xmlns="urn:jboss:module:1.0">]]></replacetoken>
 												<replacevalue>
 													<![CDATA[
-														<resource-root path="com.liferay.petra.url.pattern.mapper.jar" />
-														<resource-root path="mariadb.jar" />
+														<module name="com.liferay.portal" xmlns="urn:jboss:module:1.0">
+															<resources>
+																<resource-root path="mysql.jar" />
+															</resources>
 													]]>
 												</replacevalue>
 											</replace>
@@ -3974,6 +3978,12 @@ go</echo>
 					</then>
 				</elseif>
 				<elseif>
+					<equals arg1="@{liferay.portal.bundle}" arg2="7.0.10.16" />
+					<then>
+						<var name="app.server.tomcat.version" value="8.5.63" />
+					</then>
+				</elseif>
+				<elseif>
 					<contains string="@{liferay.portal.bundle}" substring="7.0" />
 					<then>
 						<var name="app.server.tomcat.version" value="8.0.53" />
@@ -5718,12 +5728,20 @@ war.path=${app.server.portal.dir}/</echo>
 
 					<fail message="${patch.name} was not installed.">
 						<condition>
-							<not>
-								<resourcecontains
-									resource="@{patching.tool.dir}/logs/patching-tool.log"
-									substring="[*I] ${patch.name} :: Installed"
-								/>
-							</not>
+							<and>
+								<not>
+									<resourcecontains
+										resource="@{patching.tool.dir}/logs/patching-tool.log"
+										substring="[*AI] ${patch.name} :: Already installed"
+									/>
+								</not>
+								<not>
+									<resourcecontains
+										resource="@{patching.tool.dir}/logs/patching-tool.log"
+										substring="[*I] ${patch.name} :: Installed"
+									/>
+								</not>
+							</and>
 						</condition>
 					</fail>
 				</sequential>
@@ -8821,6 +8839,8 @@ osb.lcs.portlet.oauth.consumer.secret=${osb.lcs.portlet.oauth.consumer.secret}</
 		<prepare-portal-search-osgi-configuration/>
 
 		<prepare-portal-template-freemarker-osgi-configuration />
+
+		<antcall target="prepare-selenium-login-config" />
 	</target>
 
 	<target name="prepare-patching-tool">
@@ -9499,6 +9519,51 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 		</if>
 
 		<if>
+			<isset property="digital.signature.account.base.uri" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.account.base.uri=${digital.signature.account.base.uri}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="digital.signature.api.accountId" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.api.accountId=${digital.signature.api.accountId}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="digital.signature.api.username" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.api.username=${digital.signature.api.username}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="digital.signature.integration.key" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.integration.key=${digital.signature.integration.key}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="digital.signature.rsa.pivate.key" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.rsa.pivate.key=${digital.signature.rsa.pivate.key}
+				</echo>
+			</then>
+		</if>
+
+		<if>
 			<isset property="print.java.process.on.fail" />
 			<then>
 				<echo append="true" file="${test.ext.properties.file}">
@@ -9704,11 +9769,14 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 			<param name="test.class" value="${test.class}" />
 		</antcall>
 
+		<antcall target="prepare-selenium-login-config" />
+
 		<antcall target="prepare-selenium-analytics-cloud-properties" />
 		<antcall target="prepare-selenium-app-server-properties" />
 		<antcall target="prepare-selenium-browser" />
 		<antcall target="prepare-selenium-click-to-chat-properties" />
 		<antcall target="prepare-selenium-database-properties" />
+		<antcall target="prepare-selenium-digital-signature-properties" />
 		<antcall target="prepare-selenium-email-properties" />
 		<antcall target="prepare-selenium-facebook-properties" />
 		<antcall target="prepare-selenium-google-properties" />
@@ -10198,6 +10266,53 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 		</if>
 	</target>
 
+	<target name="prepare-selenium-digital-signature-properties">
+		<if>
+			<isset property="digital.signature.account.base.uri" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.account.base.uri=${digital.signature.account.base.uri}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="digital.signature.api.accountId" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.api.accountId=${digital.signature.api.accountId}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="digital.signature.api.username" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.api.username=${digital.signature.api.username}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="digital.signature.integration.key" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.integration.key=${digital.signature.integration.key}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="digital.signature.rsa.pivate.key" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					digital.signature.rsa.pivate.key=${digital.signature.rsa.pivate.key}
+				</echo>
+			</then>
+		</if>
+	</target>
+
 	<target name="prepare-selenium-email-properties">
 		<if>
 			<isset property="email.address.1" />
@@ -10582,6 +10697,11 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 		</if>
 	</target>
 
+	<target name="prepare-selenium-login-config">
+		<echo file="${liferay.home}/osgi/configs/com.liferay.portal.security.sso.token.configuration.TokenConfiguration.config" force="true">enabled="true"
+tokenLocation="REQUEST"</echo>
+	</target>
+
 	<target name="prepare-selenium-onedrive-properties">
 		<if>
 			<isset property="onedrive.client.id" />
@@ -10795,6 +10915,17 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 			<then>
 				<echo append="true" file="${test.ext.properties.file}">
 					ignore.errors.delimiter=${ignore.errors.delimiter}
+				</echo>
+			</then>
+		</if>
+
+		<get-testcase-property property.name="proxy.server.enabled" />
+
+		<if>
+			<equals arg1="${proxy.server.enabled}" arg2="true" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					proxy.server.enabled=true
 				</echo>
 			</then>
 		</if>
@@ -11511,13 +11642,6 @@ ANT_OPTS=${env.ANT_OPTS}</echo>
 		</if>
 
 		<if>
-			<equals arg1="${app.server.type}" arg2="tomcat" />
-			<then>
-				<antcall target="prepare-tomcat-ext-environment" />
-			</then>
-		</if>
-
-		<if>
 			<or>
 				<equals arg1="${app.server.type}" arg2="weblogic" />
 				<equals arg1="${app.server.type}" arg2="websphere" />
@@ -11528,66 +11652,6 @@ ANT_OPTS=${env.ANT_OPTS}</echo>
 		</if>
 
 		<lstopwatch action="total" name="prepare.bundles.${app.server.name}" />
-	</target>
-
-	<target name="prepare-tomcat-ext-environment">
-		<if>
-			<and>
-				<matches pattern="https?://" string="${test.build.bundle.zip.url}" />
-				<matches pattern="https?://" string="${test.build.fix.pack.zip.url}" />
-				<not>
-					<resourcecontains
-						resource="${app.server.dir}/conf/Catalina/localhost/ROOT.xml"
-						substring="ExtResourceSet"
-					/>
-				</not>
-			</and>
-			<then>
-				<local name="enable.ext.environment" />
-
-				<get-fixpack-version patch.file.zip.url="${test.build.fix.pack.zip.url}" />
-
-				<beanshell>
-					<![CDATA[
-						String fixpackVersion = project.getProperty("fixpack.version");
-
-						if (fixpackVersion != null) {
-							int fixpackVersionInt = Integer.valueOf(fixpackVersion);
-
-							if (fixpackVersionInt >= 16) {
-								project.setProperty("enable.ext.environment", "true");
-							}
-						}
-					]]>
-				</beanshell>
-
-				<get-testcase-property property.name="test.ignore.tomcat.ext.environment" />
-
-				<if>
-					<and>
-						<equals arg1="${enable.ext.environment}" arg2="true" />
-						<not>
-							<equals arg1="${test.ignore.tomcat.ext.environment}" arg2="true" />
-						</not>
-					</and>
-					<then>
-						<replace
-							file="${app.server.dir}/conf/Catalina/localhost/ROOT.xml"
-						>
-							<replacetoken><![CDATA[</Context>]]></replacetoken>
-							<replacevalue><![CDATA[	<Resources>
-		<PreResources
-			base="${catalina.base}/lib/ext/portal"
-			className="com.liferay.support.tomcat.webresources.ExtResourceSet"
-			webAppMount="/WEB-INF/lib"
-		/>
-	</Resources>
-</Context>]]></replacevalue>
-						</replace>
-					</then>
-				</if>
-			</then>
-		</if>
 	</target>
 
 	<target name="prepare-virtual-host-name-properties">

@@ -174,7 +174,9 @@ public class RESTBuilder {
 			"validator", Validator_IW.getInstance()
 		).build();
 
-		if (_configYAML.isGenerateREST()) {
+		if (_configYAML.isGenerateREST() &&
+			(_configYAML.getApplication() != null)) {
+
 			_createApplicationFile(context);
 		}
 
@@ -239,7 +241,9 @@ public class RESTBuilder {
 				OpenAPIParserUtil.getJavaDataTypeMap(_configYAML, openAPIYAML));
 			context.put("openAPIYAML", openAPIYAML);
 
-			if (_configYAML.isGenerateGraphQL()) {
+			if (_configYAML.isGenerateGraphQL() &&
+				(_configYAML.getApplication() != null)) {
+
 				_createGraphQLMutationFile(context, escapedVersion);
 				_createGraphQLQueryFile(context, escapedVersion);
 				_createGraphQLServletDataFile(context, escapedVersion);
@@ -247,8 +251,10 @@ public class RESTBuilder {
 
 			context.put("schemaName", "openapi");
 
-			_createOpenAPIResourceFile(context, escapedVersion);
-			_createPropertiesFile(context, escapedVersion, "openapi");
+			if (_configYAML.isGenerateOpenAPI()) {
+				_createOpenAPIResourceFile(context, escapedVersion);
+				_createPropertiesFile(context, escapedVersion, "openapi");
+			}
 
 			Map<String, Schema> schemas = freeMarkerTool.getSchemas(
 				openAPIYAML);
@@ -313,8 +319,12 @@ public class RESTBuilder {
 				_createPropertiesFile(
 					context, escapedVersion,
 					String.valueOf(context.get("schemaPath")));
-				_createResourceFactoryImplFile(
-					context, escapedVersion, schemaName);
+
+				if (_configYAML.getApplication() != null) {
+					_createResourceFactoryImplFile(
+						context, escapedVersion, schemaName);
+				}
+
 				_createResourceFile(context, escapedVersion, schemaName);
 				_createResourceImplFile(context, escapedVersion, schemaName);
 

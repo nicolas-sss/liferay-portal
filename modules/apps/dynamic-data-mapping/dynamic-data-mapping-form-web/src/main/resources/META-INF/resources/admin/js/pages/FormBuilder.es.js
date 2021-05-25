@@ -34,7 +34,6 @@ import React, {
 
 import {FormInfo} from '../components/FormInfo.es';
 import {ManagementToolbar} from '../components/ManagementToolbar.es';
-import {MetalSidebarAdapter} from '../components/MetalSidebarAdapter.es';
 import {TranslationManager} from '../components/TranslationManager.es';
 import {ShareFormModalBody} from '../components/share-form/ShareFormModalBody.es';
 import {useAutoSave} from '../hooks/useAutoSave.es';
@@ -46,7 +45,6 @@ import {submitEmailContent} from '../util/submitEmailContent.es';
 export const FormBuilder = () => {
 	const {
 		autocompleteUserURL,
-		dataEngineSidebar,
 		formInstanceId,
 		portletNamespace,
 		publishFormInstanceURL,
@@ -62,9 +60,6 @@ export const FormBuilder = () => {
 
 	const {
 		activePage,
-		defaultLanguageId,
-		editingLanguageId,
-		fieldSets,
 		focusedField,
 		localizedName,
 		pages,
@@ -72,9 +67,9 @@ export const FormBuilder = () => {
 	} = useFormState();
 	const [{onClose}, modalDispatch] = useContext(ModalContext);
 
-	const [{currentPanelId, sidebarOpen}, setSidebarStatus] = useState({
-		currentPanelId: 'fields',
+	const [{sidebarOpen, sidebarPanelId}, setSidebarState] = useState({
 		sidebarOpen: true,
+		sidebarPanelId: 'fields',
 	});
 
 	const dispatch = useForm();
@@ -92,41 +87,50 @@ export const FormBuilder = () => {
 
 	const addToast = useToast();
 
-	const sidebarRef = useRef(null);
-
+	/**
+	 * Opens the sidebar whenever a field is focused
+	 */
 	useEffect(() => {
 		const hasFocusedField = Object.keys(focusedField).length > 0;
 
-		if (!hasFocusedField) {
-			return;
-		}
-
-		if (sidebarRef.current) {
-			sidebarRef.current.current.open();
-		}
-		else {
-
-			// In case of use Data Engine's MultiPanelSidebar
-
-			setSidebarStatus(({currentPanelId}) => ({
-				currentPanelId,
+		if (hasFocusedField) {
+			setSidebarState(({sidebarPanelId}) => ({
 				sidebarOpen: true,
+				sidebarPanelId,
 			}));
 		}
 	}, [focusedField]);
+
+	/**
+	 * Adjusts alert messages size according to sidebarOpen state
+	 */
+	useEffect(() => {
+		const alerts = document.querySelector(
+			'.ddm-form-web__exception-container'
+		);
+
+		if (alerts) {
+			alerts.className = classNames('ddm-form-web__exception-container', {
+				'ddm-form-web__exception-container--sidebar-open': sidebarOpen,
+			});
+		}
+	}, [sidebarOpen]);
 
 	useEffect(() => {
 		const currentPage = pages[activePage];
 		const isEmpty = currentPage.rows[0]?.columns[0].fields.length === 0;
 
-		if (isEmpty && sidebarRef.current) {
-			sidebarRef.current.current.open();
+		if (isEmpty) {
+			setSidebarState(({sidebarPanelId}) => ({
+				sidebarOpen: true,
+				sidebarPanelId,
+			}));
 		}
 
 		// We only want to cause this useEffect to be called again if the
 		// number of pages changes and not the page data.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pages.length, activePage]);
+	}, [activePage, pages.length, setSidebarState]);
 
 	const getFormUrl = useCallback(
 		async (path) => {
@@ -173,12 +177,6 @@ export const FormBuilder = () => {
 			});
 		}
 	}, [addToast, showPublishAlert, published, getFormUrl]);
-
-	const onOpenSidebar = useCallback(() => {
-		if (sidebarRef.current) {
-			sidebarRef.current.current.open();
-		}
-	}, []);
 
 	const onPreviewClick = useCallback(
 		async (event) => {
@@ -297,7 +295,6 @@ export const FormBuilder = () => {
 	return (
 		<>
 			<ManagementToolbar
-				onPlusClick={dataEngineSidebar ? null : onOpenSidebar}
 				onPreviewClick={onPreviewClick}
 				onPublishClick={onPublishClick}
 				onSaveClick={onSaveClick}
@@ -313,8 +310,7 @@ export const FormBuilder = () => {
 							className={classNames(
 								'container ddm-form-builder',
 								{
-									'ddm-form-builder--sidebar-open':
-										dataEngineSidebar && sidebarOpen,
+									'ddm-form-builder--sidebar-open': sidebarOpen,
 								}
 							)}
 						>
@@ -357,39 +353,19 @@ export const FormBuilder = () => {
 					</div>
 				</div>
 
-				{dataEngineSidebar ? (
-					<MultiPanelSidebar
-						createPlugin={({
-							panel,
-							sidebarOpen,
-							sidebarPanelId,
-						}) => ({
-							panel,
-							sidebarOpen,
-							sidebarPanelId,
-						})}
-						currentPanelId={currentPanelId}
-						onChange={({sidebarOpen, sidebarPanelId}) =>
-							setSidebarStatus({
-								currentPanelId: sidebarPanelId,
-								sidebarOpen,
-							})
-						}
-						open={sidebarOpen}
-						panels={[['fields']]}
-						sidebarPanels={sidebarPanels}
-						variant="light"
-					/>
-				) : (
-					<MetalSidebarAdapter
-						defaultLanguageId={defaultLanguageId}
-						editingLanguageId={editingLanguageId}
-						fieldSets={fieldSets}
-						focusedField={focusedField}
-						ref={sidebarRef}
-						rules={rules}
-					/>
-				)}
+				<MultiPanelSidebar
+					createPlugin={({panel, sidebarOpen, sidebarPanelId}) => ({
+						panel,
+						sidebarOpen,
+						sidebarPanelId,
+					})}
+					currentPanelId={sidebarPanelId}
+					onChange={setSidebarState}
+					open={sidebarOpen}
+					panels={[['fields']]}
+					sidebarPanels={sidebarPanels}
+					variant="light"
+				/>
 			</div>
 
 			{view === 'fieldSets' && (

@@ -3,23 +3,90 @@ definition {
 	macro _addCP {
 		Navigator.gotoNavNested(navNested = "${vocabularyName}");
 
-		LexiconEntry.gotoEntryMenuItem(
-			menuItem = "Add Subcategory",
-			rowEntry = "${categoryName}");
+		if (isSet(grandSubcategoryName)) {
+			Click(
+				key_categoryName = "${categoryName}",
+				locator1 = "Categories#CATEGORY_ENTRY_LINK");
 
-		PortletEntry.inputTitle(title = "${subcategoryName}");
+			LexiconEntry.gotoEntryMenuItem(
+				menuItem = "Add Subcategory",
+				rowEntry = "${subcategoryName}");
 
-		if (!(contains("${subcategoryDescription}", "{subcategoryDescription}"))) {
-			PortletEntry.inputDescription(description = "${subcategoryDescription}");
+			PortletEntry.inputTitle(title = "${grandSubcategoryName}");
+
+			if (!(contains("${grandSubcategoryDescription}", "{grandSubcategoryDescription}"))) {
+				PortletEntry.inputDescription(description = "${grandSubcategoryDescription}");
+			}
+		}
+		else {
+			LexiconEntry.gotoEntryMenuItem(
+				menuItem = "Add Subcategory",
+				rowEntry = "${categoryName}");
+
+			PortletEntry.inputTitle(title = "${subcategoryName}");
+
+			if (!(contains("${subcategoryDescription}", "{subcategoryDescription}"))) {
+				PortletEntry.inputDescription(description = "${subcategoryDescription}");
+			}
 		}
 	}
 
 	macro addCP {
 		Subcategory._addCP(
 			categoryName = "${categoryName}",
+			grandSubcategoryDescription = "${grandSubcategoryDescription}",
+			grandSubcategoryName = "${grandSubcategoryName}",
 			subcategoryDescription = "${subcategoryDescription}",
 			subcategoryName = "${subcategoryName}",
 			vocabularyName = "${vocabularyName}");
+
+		if (isSet(displayPageTemplateType)) {
+			Panel.expandPanel(panel = "Display Page");
+
+			if ("${displayPageTemplateType}" == "Inherited") {
+				AssertSelectedLabel(
+					locator1 = "WCEditWebContent#DISPLAY_PAGE_SELECT",
+					value1 = "Inherited");
+			}
+			else {
+				Select(
+					locator1 = "WCEditWebContent#DISPLAY_PAGE_SELECT",
+					value1 = "${displayPageTemplateType}");
+			}
+
+			Pause(locator1 = "3000");
+
+			AssertSelectedLabel(
+				locator1 = "WCEditWebContent#DISPLAY_PAGE_SELECT",
+				value1 = "${displayPageTemplateType}");
+
+			if ("${displayPageTemplateType}" != "None") {
+				if ("${displayPageTemplateType}" == "Default") {
+					AssertTextEquals(
+						locator1 = "WCEditWebContent#DISPLAY_PAGE_DEFAULT_SELECTION",
+						value1 = "${displayPageName}");
+				}
+				if ("${displayPageTemplateType}" == "Specific") {
+					AssertTextEquals(
+						locator1 = "WCEditWebContent#DISPLAY_PAGE_SPECIFIC_SELECTION",
+						value1 = "No Display Page Template Selected");
+
+					WaitForLiferayEvent.initializeLiferayEventLog();
+
+					Click.javaScriptClick(locator1 = "WCEditWebContent#DISPLAY_PAGE_CHOOSE_BUTTON");
+
+					SelectFrame(locator1 = "IFrame#MODAL_BODY");
+
+					LexiconCard.clickCard(card = "${displayPageName}");
+
+					SelectFrameTop();
+
+					AssertTextEquals(
+						locator1 = "WCEditWebContent#DISPLAY_PAGE_SPECIFIC_SELECTION",
+						value1 = "${displayPageName}");
+				}
+			}
+		}
 
 		PortletEntry.save();
 	}

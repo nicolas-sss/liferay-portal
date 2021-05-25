@@ -13,10 +13,9 @@
  */
 
 import ClayModal, {useModal} from '@clayui/modal';
-import {fetch, navigate} from 'frontend-js-web';
+import {navigate} from 'frontend-js-web';
+import {ImageEditor} from 'item-selector-taglib';
 import React, {useEffect, useRef, useState} from 'react';
-
-import ImageEditor from './ImageEditor';
 
 export default ({editImageURL, portletNamespace, redirectURL}) => {
 	const fileEntryIdRef = useRef();
@@ -28,24 +27,10 @@ export default ({editImageURL, portletNamespace, redirectURL}) => {
 		setShowModal(false);
 	};
 
-	const handleSaveButtonClick = (canvas) => {
-		canvas.toBlob((blob) => {
-			const formData = new FormData();
-
-			formData.append('fileEntryId', fileEntryIdRef.current);
-			formData.append('imageBlob', blob, fileEntryIdRef.current);
-
-			fetch(editImageURL, {
-				body: formData,
-				method: 'POST',
-			})
-				.then((response) => response.json())
-				.then((response) => {
-					if (response?.success) {
-						navigate(redirectURL);
-					}
-				});
-		});
+	const handleSave = (response) => {
+		if (response?.success) {
+			navigate(redirectURL);
+		}
 	};
 
 	const {observer, onClose} = useModal({
@@ -83,9 +68,11 @@ export default ({editImageURL, portletNamespace, redirectURL}) => {
 					<ClayModal.Body>
 						{imageURL && (
 							<ImageEditor
+								imageId={fileEntryIdRef.current}
 								imageSrc={imageURL}
 								onCancel={onClose}
-								onSave={handleSaveButtonClick}
+								onSave={handleSave}
+								saveURL={editImageURL}
 							/>
 						)}
 					</ClayModal.Body>

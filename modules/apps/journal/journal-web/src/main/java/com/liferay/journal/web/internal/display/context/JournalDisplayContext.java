@@ -1140,7 +1140,8 @@ public class JournalDisplayContext {
 		SearchContext searchContext = new SearchContext();
 
 		searchContext.setAndSearch(false);
-		searchContext.setAttribute("latest", Boolean.TRUE);
+		searchContext.setAttribute("head", !showVersions);
+		searchContext.setAttribute("latest", !showVersions);
 
 		LinkedHashMap<String, Object> params =
 			LinkedHashMapBuilder.<String, Object>put(
@@ -1150,11 +1151,6 @@ public class JournalDisplayContext {
 			).build();
 
 		searchContext.setAttribute("params", params);
-
-		if (!showVersions) {
-			searchContext.setAttribute("showNonindexable", Boolean.TRUE);
-		}
-
 		searchContext.setAttributes(
 			HashMapBuilder.<String, Serializable>put(
 				Field.ARTICLE_ID, getKeywords()
@@ -1172,8 +1168,6 @@ public class JournalDisplayContext {
 			).put(
 				"ddmStructureKey", getDDMStructureKey()
 			).put(
-				"head", !showVersions
-			).put(
 				"params", params
 			).build());
 
@@ -1183,6 +1177,10 @@ public class JournalDisplayContext {
 		searchContext.setGroupIds(new long[] {_themeDisplay.getScopeGroupId()});
 		searchContext.setIncludeInternalAssetCategories(true);
 		searchContext.setKeywords(getKeywords());
+
+		if (!showVersions) {
+			searchContext.setAttribute("showNonindexable", Boolean.TRUE);
+		}
 
 		QueryConfig queryConfig = searchContext.getQueryConfig();
 

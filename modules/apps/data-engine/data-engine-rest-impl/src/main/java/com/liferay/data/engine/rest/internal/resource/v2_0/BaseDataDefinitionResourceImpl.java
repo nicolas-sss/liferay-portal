@@ -283,11 +283,6 @@ public abstract class BaseDataDefinitionResourceImpl
 				dataDefinition.getDateModified());
 		}
 
-		if (dataDefinition.getDefaultDataLayout() != null) {
-			existingDataDefinition.setDefaultDataLayout(
-				dataDefinition.getDefaultDataLayout());
-		}
-
 		if (dataDefinition.getDefaultLanguageId() != null) {
 			existingDataDefinition.setDefaultLanguageId(
 				dataDefinition.getDefaultLanguageId());
@@ -428,10 +423,12 @@ public abstract class BaseDataDefinitionResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "DataDefinition")})
-	public void putDataDefinitionPermission(
-			@NotNull @Parameter(hidden = true) @PathParam("dataDefinitionId")
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putDataDefinitionPermission(
+				@NotNull @Parameter(hidden = true)
+				@PathParam("dataDefinitionId")
 				Long dataDefinitionId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String resourceName = getPermissionCheckerResourceName(
@@ -443,12 +440,15 @@ public abstract class BaseDataDefinitionResourceImpl
 			getPermissionCheckerGroupId(dataDefinitionId));
 
 		resourcePermissionLocalService.updateResourcePermissions(
-			contextCompany.getCompanyId(), 0, resourceName,
+			contextCompany.getCompanyId(),
+			getPermissionCheckerGroupId(dataDefinitionId), resourceName,
 			String.valueOf(resourceId),
 			ModelPermissionsUtil.toModelPermissions(
 				contextCompany.getCompanyId(), permissions, resourceId,
 				resourceName, resourceActionLocalService,
 				resourcePermissionLocalService, roleLocalService));
+
+		return toPermissionPage(resourceId, resourceName, null);
 	}
 
 	/**
@@ -616,7 +616,7 @@ public abstract class BaseDataDefinitionResourceImpl
 		for (DataDefinition dataDefinition : dataDefinitions) {
 			putDataDefinition(
 				dataDefinition.getId() != null ? dataDefinition.getId() :
-					(Long)parameters.get("dataDefinitionId"),
+					Long.parseLong((String)parameters.get("dataDefinitionId")),
 				dataDefinition);
 		}
 	}

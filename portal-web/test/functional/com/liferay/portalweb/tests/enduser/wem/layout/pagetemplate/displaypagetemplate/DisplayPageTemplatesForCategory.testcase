@@ -28,9 +28,11 @@ definition {
 		}
 	}
 
-	@description = "This is a test for LPS-110247. The user can create a display page template for Category and mark it as default."
+	@description = "This is a test for LPS-110247 and LPS-112578. The user can create a display page template for Category and mark it as default. The new non-subcategory will be associated to the Default."
 	@priority = "5"
 	test AddDisplayPageTemplateAndMarkItAsDefault {
+		property portal.acceptance = "true";
+
 		task ("Navigate to Display Page Template admin") {
 			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 		}
@@ -63,11 +65,42 @@ definition {
 		task ("Mark the display page template as default") {
 			DisplayPageTemplatesAdmin.markDisplayPageAsDefault(displayPageName = "Display Page Name");
 		}
+
+		task ("Add a vocabulary") {
+			JSONCategory.addVocabulary(
+				groupName = "Test Site Name",
+				title = "Vocabulary Name");
+		}
+
+		task ("Add a category in vocabulary") {
+			Category.openCategoriesAdmin(siteURLKey = "test-site-name");
+
+			Category.addCP(
+				categoryName = "Category Name",
+				displayPageName = "Display Page Name",
+				displayPageTemplateType = "Default",
+				vocabularyName = "Vocabulary Name");
+		}
+
+		task ("View the mapped content in display page template") {
+			LexiconEntry.gotoEntryMenuItem(
+				menuItem = "View Display Page",
+				rowEntry = "Category Name");
+
+			ControlMenu.viewHeaderTitle(headerTitle = "Display Page Name");
+
+			AssertTextEquals(
+				key_fragmentName = "heading",
+				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
+				value1 = "Category Name");
+		}
 	}
 
 	@description = "This is a test for LPS-110247. The user can select the specific display page template in category editor."
 	@priority = "5"
 	test SelectSpecificDisplayPageTemplateInCategoryEditor {
+		property portal.acceptance = "true";
+
 		task ("Add the first display page template for Category") {
 			JSONLayoutpagetemplate.addDisplayPageTemplateEntry(
 				contentType = "Category",
@@ -144,6 +177,111 @@ definition {
 				displayPageTemplateType = "Specific",
 				selectedDisplayPageName = "Display Page Name 1",
 				vocabularyName = "Vocabulary Name");
+		}
+	}
+
+	@description = "This is a test for LPS-112578. The user can define associated display page template in subcategory and it will be inherited by its subcategory."
+	@priority = "5"
+	test SelectSpecificDisplayPageTemplateInSubcategoryEditor {
+		property portal.acceptance = "true";
+
+		task ("Add the first display page template for Category") {
+			JSONLayoutpagetemplate.addDisplayPageTemplateEntry(
+				contentType = "Category",
+				displayPageTemplateEntryName = "Display Page Name 1",
+				groupName = "Test Site Name");
+		}
+
+		task ("Add a Button fragment to display Page Template") {
+			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
+
+			DisplayPageTemplatesAdmin.gotoDisplayPage(displayPageName = "Display Page Name 1");
+
+			PageEditor.addFragment(
+				collectionName = "Basic Components",
+				fragmentName = "Button");
+		}
+
+		task ("Mapping the Name field to Button fragment") {
+			PageEditorMapping.mapEditableTextToField(
+				field = "Name",
+				fragmentName = "Button",
+				id = "link");
+
+			PageEditor.clickPublish();
+		}
+
+		task ("Add the second display page template for Category") {
+			JSONLayoutpagetemplate.addDisplayPageTemplateEntry(
+				contentType = "Category",
+				displayPageTemplateEntryName = "Display Page Name 2",
+				groupName = "Test Site Name");
+		}
+
+		task ("Add a Heading fragment to display Page Template") {
+			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
+
+			DisplayPageTemplatesAdmin.gotoDisplayPage(displayPageName = "Display Page Name 2");
+
+			PageEditor.addFragment(
+				collectionName = "Basic Components",
+				fragmentName = "Heading");
+		}
+
+		task ("Mapping the Name field to Heading fragment") {
+			PageEditorMapping.mapEditableTextToField(
+				field = "Name",
+				fragmentName = "Heading",
+				id = "element-text");
+
+			PageEditor.clickPublish();
+		}
+
+		task ("Add a vocabulary") {
+			JSONCategory.addVocabulary(
+				groupName = "Test Site Name",
+				title = "Vocabulary Name");
+		}
+
+		task ("Add a category in vocabulary and select the display page template as Specific") {
+			Category.openCategoriesAdmin(siteURLKey = "test-site-name");
+
+			Category.addCP(
+				categoryName = "Category Name",
+				displayPageName = "Display Page Name 1",
+				displayPageTemplateType = "Specific",
+				vocabularyName = "Vocabulary Name");
+		}
+
+		task ("Add a subcategory in category") {
+			Subcategory.addCP(
+				categoryName = "Category Name",
+				displayPageName = "Display Page Name 2",
+				displayPageTemplateType = "Specific",
+				subcategoryName = "Subcategory Name",
+				vocabularyName = "Vocabulary Name");
+		}
+
+		task ("Add a grand subcategory in subcategory") {
+			Subcategory.addCP(
+				categoryName = "Category Name",
+				displayPageTemplateType = "Inherited",
+				grandSubcategoryName = "Grand Subcategory Name",
+				subcategoryName = "Subcategory Name",
+				vocabularyName = "Vocabulary Name");
+		}
+
+		task ("View the mapped content in display page template") {
+			LexiconEntry.gotoEntryMenuItem(
+				menuItem = "View Display Page",
+				rowEntry = "Grand Subcategory Name");
+
+			ControlMenu.viewHeaderTitle(headerTitle = "Display Page Name 2");
+
+			AssertTextEquals(
+				key_fragmentName = "heading",
+				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
+				value1 = "Grand Subcategory Name");
 		}
 	}
 
@@ -299,9 +437,80 @@ definition {
 		}
 	}
 
+	@description = "This is a test for LPS-112578. The new subcategory will inherit associated display page template from parent category."
+	@priority = "5"
+	test ViewInheritedAssociatedDisplayPageTemplateFromParentCategory {
+		property portal.acceptance = "true";
+
+		task ("Add a display page template for Category") {
+			JSONLayoutpagetemplate.addDisplayPageTemplateEntry(
+				contentType = "Category",
+				displayPageTemplateEntryName = "Display Page Name",
+				groupName = "Test Site Name");
+		}
+
+		task ("Add a Button fragment to display Page Template") {
+			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
+
+			DisplayPageTemplatesAdmin.gotoDisplayPage(displayPageName = "Display Page Name");
+
+			PageEditor.addFragment(
+				collectionName = "Basic Components",
+				fragmentName = "Button");
+		}
+
+		task ("Mapping the Name field to Button fragment") {
+			PageEditorMapping.mapEditableTextToField(
+				field = "Name",
+				fragmentName = "Button",
+				id = "link");
+
+			PageEditor.clickPublish();
+		}
+
+		task ("Add a vocabulary") {
+			JSONCategory.addVocabulary(
+				groupName = "Test Site Name",
+				title = "Vocabulary Name");
+		}
+
+		task ("Add a category in vocabulary and select the display page template as Specific") {
+			Category.openCategoriesAdmin(siteURLKey = "test-site-name");
+
+			Category.addCP(
+				categoryName = "Category Name",
+				displayPageName = "Display Page Name",
+				displayPageTemplateType = "Specific",
+				vocabularyName = "Vocabulary Name");
+		}
+
+		task ("Add a subcategory in category") {
+			Subcategory.addCP(
+				categoryName = "Category Name",
+				displayPageTemplateType = "Inherited",
+				subcategoryName = "Subcategory Name",
+				vocabularyName = "Vocabulary Name");
+		}
+
+		task ("View the mapped content in display page template") {
+			LexiconEntry.gotoEntryMenuItem(
+				menuItem = "View Display Page",
+				rowEntry = "Subcategory Name");
+
+			ControlMenu.viewHeaderTitle(headerTitle = "Display Page Name");
+
+			AssertTextEquals(
+				key_fragmentName = "button",
+				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
+				value1 = "Subcategory Name");
+		}
+	}
+
 	@description = "This is a test for LPS-110247. The user can navigate to associated display page template via View Display Page of category."
 	@priority = "5"
 	test ViewMappedContentInDisplayPageTemplate {
+		property portal.acceptance = "true";
+
 		task ("Add a display page template for Category") {
 			JSONLayoutpagetemplate.addDisplayPageTemplateEntry(
 				contentType = "Category",

@@ -17,6 +17,7 @@ import React from 'react';
 
 import '@testing-library/jest-dom/extend-expect';
 
+import {EDITABLE_FRAGMENT_ENTRY_PROCESSOR} from '../../../../../../../../src/main/resources/META-INF/resources/page_editor/app/config/constants/editableFragmentEntryProcessor';
 import {StoreContextProvider} from '../../../../../../../../src/main/resources/META-INF/resources/page_editor/app/contexts/StoreContext';
 import ContentsSidebar from '../../../../../../../../src/main/resources/META-INF/resources/page_editor/plugins/browser/components/contents/components/ContentsSidebar';
 
@@ -33,10 +34,63 @@ const pageContents = [
 	},
 ];
 
-const renderPageContent = ({pageContents}) =>
+const fragmentEntryLinks = {
+	39682: {
+		editableTypes: {'element-text': 'text'},
+		editableValues: {
+			[EDITABLE_FRAGMENT_ENTRY_PROCESSOR]: {
+				'element-text': {
+					defaultValue: '\n\tHeading Example\n',
+				},
+			},
+		},
+		fragmentEntryLinkId: '39682',
+		name: 'Heading',
+		segmentsExperienceId: '0',
+	},
+	39683: {
+		editableTypes: {'element-text': 'rich-text'},
+		editableValues: {
+			[EDITABLE_FRAGMENT_ENTRY_PROCESSOR]: {
+				'element-text': {
+					defaultValue: '\n\tA paragraph\n',
+				},
+			},
+		},
+		fragmentEntryLinkId: '39683',
+		name: 'Paragraph',
+		segmentsExperienceId: '0',
+	},
+	39684: {
+		editableTypes: {'element-text': 'text'},
+		editableValues: {
+			[EDITABLE_FRAGMENT_ENTRY_PROCESSOR]: {
+				'element-text': {
+					defaultValue:
+						'\n\tHeading Example from another experience\n',
+				},
+			},
+		},
+		fragmentEntryLinkId: '39684',
+		name: 'Heading',
+		segmentsExperienceId: '1',
+	},
+};
+
+const renderPageContent = ({
+	fragmentEntryLinks = {},
+	pageContents = [],
+	languageId = 'en_US',
+	segmentsExperienceId = '0',
+}) =>
 	render(
 		<StoreContextProvider
-			initialState={{fragmentEntryLinks: {}, pageContents}}
+			initialState={{
+				fragmentEntryLinks,
+				languageId,
+				pageContents,
+				segmentsExperienceId,
+			}}
 		>
 			<ContentsSidebar></ContentsSidebar>
 		</StoreContextProvider>
@@ -52,11 +106,59 @@ describe('ContentsSidebar', () => {
 		expect(getByText('WC2')).toBeInTheDocument();
 	});
 
+	it('shows inline text within the content list', () => {
+		const {getByText} = renderPageContent({
+			fragmentEntryLinks,
+			pageContents,
+		});
+
+		expect(getByText('Heading Example')).toBeInTheDocument();
+		expect(getByText('A paragraph')).toBeInTheDocument();
+	});
+
+	it('shows inline text corresponding to an experience', () => {
+		const {queryByText} = renderPageContent({
+			fragmentEntryLinks,
+			segmentsExperienceId: '1',
+		});
+
+		expect(
+			queryByText('Heading Example from another experience')
+		).toBeInTheDocument();
+		expect(queryByText('Heading Example')).not.toBeInTheDocument();
+		expect(queryByText('A paragraph')).not.toBeInTheDocument();
+	});
+
 	it('shows an alert when there is no content', () => {
-		const {getByText} = renderPageContent({pageContents: []});
+		const {getByText} = renderPageContent({});
 
 		expect(
 			getByText('there-is-no-content-on-this-page')
 		).toBeInTheDocument();
+	});
+
+	it('shows only text content for inline text, without html', () => {
+		const {queryByText} = renderPageContent({
+			fragmentEntryLinks: {
+				...fragmentEntryLinks,
+				39685: {
+					editableTypes: {'element-text': 'rich-text'},
+					editableValues: {
+						[EDITABLE_FRAGMENT_ENTRY_PROCESSOR]: {
+							'element-text': {
+								defaultValue: '\n\tA paragraph\n',
+								en_US:
+									'<span style="color: rgb(0, 0, 0);">Lorem ipsum dolor sit amet</span><br>',
+							},
+						},
+					},
+					fragmentEntryLinkId: '39685',
+					name: 'Paragraph',
+					segmentsExperienceId: '0',
+				},
+			},
+		});
+
+		expect(queryByText('Lorem ipsum dolor sit amet')).toBeInTheDocument();
 	});
 });

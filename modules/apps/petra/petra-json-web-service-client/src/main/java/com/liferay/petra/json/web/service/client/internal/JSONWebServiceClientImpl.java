@@ -36,7 +36,10 @@ import org.slf4j.LoggerFactory;
  * @author Ivica Cardic
  * @author Igor Beslic
  */
-@Component(factory = "JSONWebServiceClient", service = {})
+@Component(
+	factory = "com.liferay.petra.json.web.service.client.JSONWebServiceClient",
+	service = {}
+)
 public class JSONWebServiceClientImpl extends BaseJSONWebServiceClientImpl {
 
 	@Override

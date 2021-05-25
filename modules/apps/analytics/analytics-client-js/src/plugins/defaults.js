@@ -21,6 +21,7 @@ import read from './read';
 import resolution from './resolution';
 import scrolling from './scrolling';
 import timing from './timing';
+import visibility from './visibility';
 import webContents from './web-contents';
 
 export {
@@ -48,5 +49,6 @@ export default [
 	read,
 	scrolling,
 	timing,
+	visibility,
 	webContents,
 ];

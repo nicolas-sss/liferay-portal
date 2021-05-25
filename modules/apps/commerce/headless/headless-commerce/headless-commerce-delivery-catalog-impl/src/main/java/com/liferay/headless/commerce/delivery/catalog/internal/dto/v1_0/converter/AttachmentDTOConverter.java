@@ -54,17 +54,21 @@ public class AttachmentDTOConverter
 	public Attachment toDTO(DTOConverterContext dtoConverterContext)
 		throws Exception {
 
+		AttachmentDTOConverterContext attachmentDTOConverterContext =
+			(AttachmentDTOConverterContext)dtoConverterContext;
+
 		CPAttachmentFileEntry cpAttachmentFileEntry =
 			_cpAttachmentFileEntryLocalService.getCPAttachmentFileEntry(
-				(Long)dtoConverterContext.getId());
-
-		String languageId = LanguageUtil.getLanguageId(
-			dtoConverterContext.getLocale());
+				(Long)attachmentDTOConverterContext.getId());
 
 		Company company = _companyLocalService.getCompany(
 			cpAttachmentFileEntry.getCompanyId());
 
 		String portalURL = company.getPortalURL(0);
+
+		String downloadURL = _commerceMediaResolver.getDownloadURL(
+			attachmentDTOConverterContext.getCommerceAccountId(),
+			cpAttachmentFileEntry.getCPAttachmentFileEntryId());
 
 		return new Attachment() {
 			{
@@ -73,13 +77,10 @@ public class AttachmentDTOConverter
 				id = cpAttachmentFileEntry.getCPAttachmentFileEntryId();
 				options = _getAttachmentOptions(cpAttachmentFileEntry);
 				priority = cpAttachmentFileEntry.getPriority();
-
-				String downloadUrl = _commerceMediaResolver.getDownloadUrl(
-					cpAttachmentFileEntry.getCPAttachmentFileEntryId());
-
-				src = portalURL + downloadUrl;
-
-				title = cpAttachmentFileEntry.getTitle(languageId);
+				src = portalURL + downloadURL;
+				title = cpAttachmentFileEntry.getTitle(
+					LanguageUtil.getLanguageId(
+						attachmentDTOConverterContext.getLocale()));
 				type = cpAttachmentFileEntry.getType();
 			}
 		};

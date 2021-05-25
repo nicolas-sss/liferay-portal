@@ -21,8 +21,8 @@ import com.liferay.headless.common.spi.resource.SPIRatingResource;
 import com.liferay.headless.common.spi.service.context.ServiceContextRequestUtil;
 import com.liferay.headless.delivery.dto.v1_0.MessageBoardMessage;
 import com.liferay.headless.delivery.dto.v1_0.Rating;
+import com.liferay.headless.delivery.dto.v1_0.util.CustomFieldsUtil;
 import com.liferay.headless.delivery.internal.dto.v1_0.converter.MessageBoardMessageDTOConverter;
-import com.liferay.headless.delivery.internal.dto.v1_0.util.CustomFieldsUtil;
 import com.liferay.headless.delivery.internal.dto.v1_0.util.EntityFieldsUtil;
 import com.liferay.headless.delivery.internal.dto.v1_0.util.RatingUtil;
 import com.liferay.headless.delivery.internal.odata.entity.v1_0.MessageBoardMessageEntityModel;
@@ -38,6 +38,11 @@ import com.liferay.message.boards.model.MBThread;
 import com.liferay.message.boards.service.MBMessageLocalService;
 import com.liferay.message.boards.service.MBMessageService;
 import com.liferay.message.boards.service.MBThreadLocalService;
+import com.liferay.message.boards.util.comparator.MessageCreateDateComparator;
+import com.liferay.message.boards.util.comparator.MessageModifiedDateComparator;
+import com.liferay.message.boards.util.comparator.MessageSubjectComparator;
+import com.liferay.message.boards.util.comparator.MessageURLSubjectComparator;
+import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
@@ -45,11 +50,15 @@ import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.search.filter.TermFilter;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
@@ -63,13 +72,17 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.SearchUtil;
+import com.liferay.portal.vulcan.util.TransformUtil;
 import com.liferay.portal.vulcan.util.UriInfoUtil;
 import com.liferay.ratings.kernel.service.RatingsEntryLocalService;
 
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.MultivaluedMap;
@@ -146,8 +159,8 @@ public class MessageBoardMessageResourceImpl
 		MBMessage mbMessage = _mbMessageService.getMessage(
 			parentMessageBoardMessageId);
 
-		return _getMessageBoardMessagesPage(
-			HashMapBuilder.put(
+		Map<String, Map<String, String>> actions =
+			HashMapBuilder.<String, Map<String, String>>put(
 				"get-child-messages",
 				addAction(
 					ActionKeys.VIEW, mbMessage.getMessageId(),
@@ -161,9 +174,55 @@ public class MessageBoardMessageResourceImpl
 					"postMessageBoardMessageMessageBoardMessage",
 					mbMessage.getUserId(), MBConstants.RESOURCE_NAME,
 					mbMessage.getGroupId())
-			).build(),
-			parentMessageBoardMessageId, null, flatten, search, aggregation,
-			filter, pagination, sorts);
+			).build();
+
+		if ((search == null) && (filter == null)) {
+			OrderByComparator<MBMessage> orderByComparator =
+				_getMBMessageOrderByComparator(sorts);
+
+			int status = WorkflowConstants.STATUS_APPROVED;
+
+			PermissionChecker permissionChecker =
+				PermissionThreadLocal.getPermissionChecker();
+
+			if (permissionChecker.isContentReviewer(
+					contextCompany.getCompanyId(), mbMessage.getGroupId())) {
+
+				status = WorkflowConstants.STATUS_ANY;
+			}
+
+			return Page.of(
+				actions,
+				TransformUtil.transform(
+					_mbMessageService.getChildMessages(
+						mbMessage.getMessageId(),
+						Optional.ofNullable(
+							flatten
+						).orElse(
+							false
+						),
+						new QueryDefinition<>(
+							status, contextUser.getUserId(), true,
+							pagination.getStartPosition(),
+							pagination.getEndPosition(), orderByComparator)),
+					this::_toMessageBoardMessage),
+				pagination,
+				_mbMessageService.getChildMessagesCount(
+					mbMessage.getMessageId(),
+					Optional.ofNullable(
+						flatten
+					).orElse(
+						false
+					),
+					new QueryDefinition<>(
+						status, contextUser.getUserId(), true,
+						pagination.getStartPosition(),
+						pagination.getEndPosition(), orderByComparator)));
+		}
+
+		return _getMessageBoardMessagesPage(
+			actions, parentMessageBoardMessageId, null, flatten, search,
+			aggregation, filter, pagination, sorts);
 	}
 
 	@Override
@@ -186,8 +245,8 @@ public class MessageBoardMessageResourceImpl
 		MBThread mbThread = _mbThreadLocalService.getMBThread(
 			messageBoardThreadId);
 
-		return _getMessageBoardMessagesPage(
-			HashMapBuilder.put(
+		Map<String, Map<String, String>> actions =
+			HashMapBuilder.<String, Map<String, String>>put(
 				"create",
 				addAction(
 					ActionKeys.ADD_MESSAGE, mbThread.getThreadId(),
@@ -201,9 +260,45 @@ public class MessageBoardMessageResourceImpl
 					"getMessageBoardThreadMessageBoardMessagesPage",
 					mbThread.getUserId(), MBConstants.RESOURCE_NAME,
 					mbThread.getGroupId())
-			).build(),
-			mbThread.getRootMessageId(), null, false, search, aggregation,
-			filter, pagination, sorts);
+			).build();
+
+		if ((search == null) && (filter == null)) {
+			OrderByComparator<MBMessage> orderByComparator =
+				_getMBMessageOrderByComparator(sorts);
+
+			int status = WorkflowConstants.STATUS_APPROVED;
+
+			PermissionChecker permissionChecker =
+				PermissionThreadLocal.getPermissionChecker();
+
+			if (permissionChecker.isContentReviewer(
+					contextCompany.getCompanyId(), mbThread.getGroupId())) {
+
+				status = WorkflowConstants.STATUS_ANY;
+			}
+
+			return Page.of(
+				actions,
+				TransformUtil.transform(
+					_mbMessageService.getChildMessages(
+						mbThread.getRootMessageId(), false,
+						new QueryDefinition<>(
+							status, contextUser.getUserId(), true,
+							pagination.getStartPosition(),
+							pagination.getEndPosition(), orderByComparator)),
+					this::_toMessageBoardMessage),
+				pagination,
+				_mbMessageService.getChildMessagesCount(
+					mbThread.getRootMessageId(), false,
+					new QueryDefinition<>(
+						status, contextUser.getUserId(), true,
+						pagination.getStartPosition(),
+						pagination.getEndPosition(), orderByComparator)));
+		}
+
+		return _getMessageBoardMessagesPage(
+			actions, mbThread.getRootMessageId(), null, false, search,
+			aggregation, filter, pagination, sorts);
 	}
 
 	@Override
@@ -407,6 +502,37 @@ public class MessageBoardMessageResourceImpl
 			MBMessage.class.getName(), contextCompany.getCompanyId(),
 			messageBoardMessage.getCustomFields(),
 			contextAcceptLanguage.getPreferredLocale());
+	}
+
+	private OrderByComparator<MBMessage> _getMBMessageOrderByComparator(
+		Sort[] sorts) {
+
+		OrderByComparator<MBMessage> orderByComparator = null;
+
+		if ((sorts != null) && (sorts.length == 1)) {
+			Sort sort = sorts[0];
+
+			String fieldName = sort.getFieldName();
+
+			if (Objects.equals(fieldName, "createDate_sortable")) {
+				orderByComparator = new MessageCreateDateComparator(
+					!sort.isReverse());
+			}
+			else if (Objects.equals(fieldName, "modified_sortable")) {
+				orderByComparator = new MessageModifiedDateComparator(
+					!sort.isReverse());
+			}
+			else if (fieldName.contains("title")) {
+				orderByComparator = new MessageSubjectComparator(
+					!sort.isReverse());
+			}
+			else if (fieldName.contains("urlSubject")) {
+				orderByComparator = new MessageURLSubjectComparator(
+					!sort.isReverse());
+			}
+		}
+
+		return orderByComparator;
 	}
 
 	private Page<MessageBoardMessage> _getMessageBoardMessagesPage(

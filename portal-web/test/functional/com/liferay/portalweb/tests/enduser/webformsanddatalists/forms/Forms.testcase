@@ -35,10 +35,9 @@ definition {
 		}
 	}
 
+	@ignore = "true"
 	@priority = "5"
 	test AddElementSetsWithTranslation {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#AddElementSetsWithTranslation";
 		property testray.component.names = "Training";
 
@@ -56,7 +55,7 @@ definition {
 
 		Form.editDescription(formDescription = "Element Set Description");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editElementSetFieldLabel(fieldValue = "Text Field Required");
 
@@ -65,7 +64,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Select from List");
 
 		Form.editElementSetFieldLabel(fieldValue = "Select Repeatable");
@@ -125,10 +124,10 @@ definition {
 
 		Form.gotoAddElementSet(
 			elementSetTitle = "Element Set 1",
-			fieldPositionNumber = "1");
+			fieldPositionNumber = "0");
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Date");
 
 		Form.editFieldLabelMetal(fieldValue = "Date Field");
@@ -175,11 +174,11 @@ definition {
 
 		Form.gotoAddElementSet(
 			elementSetTitle = "Element Set 1",
-			fieldPositionNumber = "4");
+			fieldPositionNumber = "3");
 
 		FormsAdminNavigator.gotoEditField(
 			fieldName = "Text Field Required",
-			fieldPositionNumber = "2");
+			fieldPositionNumber = "1");
 
 		Form.gotoAdvancedTab();
 
@@ -189,7 +188,7 @@ definition {
 
 		FormsAdminNavigator.gotoEditField(
 			fieldName = "Select Repeatable",
-			fieldPositionNumber = "2");
+			fieldPositionNumber = "1");
 
 		Form.gotoAdvancedTab();
 
@@ -265,7 +264,7 @@ definition {
 
 		Form.gotoAddElementSet(
 			elementSetTitle = "Element Set 1",
-			fieldPositionNumber = "1");
+			fieldPositionNumber = "0");
 
 		FormsAdminNavigator.gotoEditField(fieldName = "Text Field Required");
 
@@ -305,7 +304,7 @@ definition {
 
 		Form.selectTranslation(localizedLanguage = "English (United States)");
 
-		Form.addTextField(fieldPositionNumber = "3");
+		Form.addTextField(fieldPositionNumber = "2");
 
 		Form.editElementSetFieldLabel(fieldValue = "Text Field New");
 
@@ -339,7 +338,7 @@ definition {
 			formPageName = "Created Form Page Name",
 			formTitleNumber = "1");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Label");
 
@@ -506,7 +505,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
@@ -542,7 +541,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
@@ -569,10 +568,9 @@ definition {
 		Form.save();
 	}
 
+	@ignore = "true"
 	@priority = "5"
 	test AddFormWithSpanishAsDefaultPortalLanguage {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#AddFormWithSpanishAsDefaultPortalLanguage";
 
 		Navigator.openURL();
@@ -596,7 +594,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -668,9 +666,10 @@ definition {
 	}
 
 	@description = "Verify that a Form can be created"
-	@ignore = "true"
+	@ignore = "Test Stub"
 	@priority = "5"
 	test CanBeCreated {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		// TODO LPS-130500 CanBeCreated pending implementation
@@ -678,73 +677,251 @@ definition {
 	}
 
 	@description = "Verify that a Form can be published from an autosaved draft"
-	@ignore = "true"
 	@priority = "5"
 	test CanBeCreatedFromAutosavedDraft {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-130511 CanBeCreatedFromAutosavedDraft pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Test");
+
+		Form.editDescription(formDescription = "Test");
+
+		Form.gotoAddField(
+			fieldPositionNumber = "0",
+			fieldType = "Text");
+
+		Pause(locator1 = "60000");
+
+		Form.viewSaveNotification();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
+
+		AppBuilderAdmin.openItem(itemName = "Test");
+
+		Click(locator1 = "Form#PUBLISH_FORM_BUTTON");
+
+		FormsAdminNavigator.openPublishURL();
+
+		AssertElementPresent(
+			key_formName = "Test",
+			locator1 = "Form#PUBLISH_FORM_NAME_FIELD");
+
+		AssertElementPresent(
+			key_formDescription = "Test",
+			locator1 = "Form#PUBLISH_FORM_DESCRIPTION_FIELD");
+
+		FormFields.viewTextLabel(
+			fieldLabel = "Text",
+			fieldName = "Text");
 	}
 
 	@description = "Verify that a Form can be created with more than one page"
-	@ignore = "true"
+	@ignore = "Test Stub"
 	@priority = "5"
 	test CanBeCreatedWithMultiplePages {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		// TODO LPS-130996 CanBeCreatedWithMultiplePages pending implementation
 	}
 
 	@description = "Verify that a Form can be deleted"
-	@ignore = "true"
 	@priority = "5"
 	test CanBeDeleted {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-130509 CanBeDeleted pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		Form.addTextField(fieldPositionNumber = "0");
+
+		Form.save();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
+
+		AssertElementPresent(
+			key_formName = "Form 1",
+			locator1 = "FormsAdmin#FORMS_TABLE_NAME");
+
+		FormsAdmin.deleteForm(formName = "Form 1");
 	}
 
 	@description = "Verify that a Form can be duplicated"
-	@ignore = "true"
 	@priority = "5"
 	test CanBeDuplicated {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-130508 CanBeDuplicated pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		Form.editDescription(formDescription = "Form Description");
+
+		Form.addTextField(fieldPositionNumber = "0");
+
+		Form.save();
+
+		FormsAdminNavigator.gotoBack();
+
+		Form.duplicate(formName = "Form 1");
+
+		LexiconEntry.viewEntryName(rowEntry = "Copy of Form 1");
+
+		LexiconEntry.viewEntryName(rowEntry = "Form 1");
+
+		FormsAdminNavigator.gotoEditFormByName(formName = "Copy of Form 1");
+
+		Form.viewFormName(formName = "Copy of Form 1");
+
+		Form.viewFormDescription(formDescription = "Form Description");
+
+		AssertElementPresent(
+			key_name = "Text",
+			locator1 = "FormFields#FIELD_TARGET_LABEL");
 	}
 
 	@description = "Verify that a Form can be edited"
-	@ignore = "true"
 	@priority = "5"
 	test CanBeEdited {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-130501 CanBeEdited pending implementation
-	}
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
 
-	@description = "Verify that a Form can be saved"
-	@ignore = "true"
-	@priority = "5"
-	test CanBeSaved {
-		property portal.acceptance = "false";
+		FormsAdminNavigator.gotoAddForm();
 
-		// TODO LPS-130997 CanBeSaved pending implementation
+		Form.editName(formName = "Form 1");
+
+		Form.editDescription(formDescription = "Form Description");
+
+		Form.addTextField(fieldPositionNumber = "0");
+
+		Form.save();
+
+		FormsAdminNavigator.gotoBack();
+
+		FormsAdminNavigator.gotoEditFormByName(formName = "Form 1");
+
+		Form.viewFormName(formName = "Form 1");
+
+		Form.viewFormDescription(formDescription = "Form Description");
+
+		AssertElementPresent(
+			key_name = "Text",
+			locator1 = "FormFields#FIELD_TARGET_LABEL");
+
+		Form.editName(formName = "Form 2");
+
+		Form.editDescription(formDescription = "Form Description 2");
+
+		Form.gotoAddField(
+			fieldPositionNumber = "1",
+			fieldType = "Numeric");
+
+		Form.save();
+
+		FormsAdminNavigator.gotoBack();
+
+		LexiconEntry.viewEntryName(rowEntry = "Form 2");
+
+		LexiconEntry.viewEntryContent(
+			rowAny = "Form 2",
+			rowEntry = "Description 2");
+
+		FormsAdminNavigator.gotoEditFormByName(formName = "Form 2");
+
+		Form.viewFormName(formName = "Form 2");
+
+		Form.viewFormDescription(formDescription = "Form Description 2");
+
+		AssertElementPresent(
+			key_name = "Text",
+			locator1 = "FormFields#FIELD_TARGET_LABEL");
+
+		AssertElementPresent(
+			key_name = "Numeric",
+			locator1 = "FormFields#FIELD_TARGET_LABEL");
 	}
 
 	@description = "Verify that a Form can be unpublished"
-	@ignore = "true"
 	@priority = "5"
 	test CanBeUnpublished {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-130507 CanBeUnpublished pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		Form.addTextField(fieldPositionNumber = "0");
+
+		Form.save();
+
+		Form.publishForm();
+
+		FormsAdminNavigator.gotoPublishCopyURLLink();
+
+		var publishedFormPublicURL = Form.getPublishedFormPublicURL(
+			publishedFormPublicURL = "${publishedFormPublicURL}");
+
+		Form.unpublishForm();
+
+		AssertElementPresent(locator1 = "Form#PUBLISH_FORM_BUTTON");
+
+		AssertElementPresent(
+			key_value = "Share",
+			locator1 = "Form#ANY_DISABLED_BUTTON");
+
+		Navigator.openSpecificURL(url = "${publishedFormPublicURL}");
+
+		AssertElementNotPresent(
+			key_fieldLabe = "Text",
+			locator1 = "FormFields#LABEL");
+
+		AssertElementNotPresent(
+			key_text = "Submit",
+			locator1 = "Button#ANY");
+
+		AssertElementNotPresent(
+			key_fieldName = "Text",
+			locator1 = "FormFields#TEXT_FIELD");
+
+		AssertTextEquals(
+			locator1 = "Message#ERROR_3_ALT",
+			value1 = "This form is not available or it was not published.");
 	}
 
 	@description = "This is a use case for LPS-75116 and LPS-79101."
+	@ignore = "true"
 	@priority = "4"
 	test ChangeFieldType {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#ChangeFieldType";
 
 		Navigator.openURL();
@@ -760,7 +937,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Select from List");
 
 		var fieldSelectFromField = FormFields.getFieldName();
@@ -999,7 +1176,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -1120,7 +1297,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field Should Not Be Saved");
 
@@ -1136,7 +1313,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field Will Be Saved");
 
@@ -1174,7 +1351,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Image");
 
 		Type.clickAtType(
@@ -1219,7 +1396,7 @@ definition {
 
 		FormsAdminNavigator.gotoAddForm();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
@@ -1237,10 +1414,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-60520."
+	@ignore = "true"
 	@priority = "4"
 	test DeleteDateFieldAndViewEntries {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#DeleteDateFieldAndViewEntries";
 
 		Navigator.openURL();
@@ -1255,7 +1431,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -1264,7 +1440,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Date");
 
 		var fieldDateField = FormFields.getFieldName();
@@ -1368,7 +1544,7 @@ definition {
 			formPageName = "Page 1",
 			formTitleNumber = "1");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(formPageNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field Page 1");
 
@@ -1384,7 +1560,7 @@ definition {
 			formPageName = "Page 2",
 			formTitleNumber = "2");
 
-		Form.addTextField(fieldPositionNumber = "3");
+		Form.addTextField(formPageNumber = "1");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field Page 2");
 
@@ -1406,10 +1582,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-74997."
+	@ignore = "true"
 	@priority = "4"
 	test DeleteSelectFromListOptionAndViewEntries {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#DeleteSelectFromListOptionAndViewEntries";
 
 		Navigator.openURL();
@@ -1423,7 +1598,7 @@ definition {
 		Form.editName(formName = "Delete Select Option Test");
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Select from List");
 
 		var fieldName = FormFields.getFieldName();
@@ -1526,7 +1701,7 @@ definition {
 		Form.editName();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Select from List");
 
 		var fieldSelectFromListField = FormFields.getFieldName();
@@ -1590,7 +1765,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Paragraph");
 
 		var fieldParagraphField = FormFields.getFieldName();
@@ -1603,7 +1778,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -1614,7 +1789,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Select from List");
 
 		var fieldSelectFromListField = FormFields.getFieldName();
@@ -1635,7 +1810,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Single Selection");
 
 		var fieldSingleSelectionField = FormFields.getFieldName();
@@ -1656,7 +1831,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "4",
+			fieldPositionNumber = "3",
 			fieldType = "Date");
 
 		var fieldDateField = FormFields.getFieldName();
@@ -1668,7 +1843,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "5",
+			fieldPositionNumber = "4",
 			fieldType = "Multiple Selection");
 
 		var fieldMultipleSelectionField = FormFields.getFieldName();
@@ -1960,7 +2135,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
@@ -2019,10 +2194,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-78697."
+	@ignore = "true"
 	@priority = "4"
 	test EditTranslatedGridField {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#EditTranslatedGridField";
 
 		Navigator.openURL();
@@ -2036,7 +2210,7 @@ definition {
 		Form.editName();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Grid");
 
 		Form.editFieldLabelMetal(fieldValue = "Grid Field Translated");
@@ -2160,6 +2334,16 @@ definition {
 		}
 	}
 
+	@description = "Verify that multiple Forms can be deleted"
+	@ignore = "Test Stub"
+	@priority = "5"
+	test MultipleFormsCanBeDeleted {
+		property forms.functional = "true";
+		property portal.acceptance = "false";
+
+		// TODO LPS-131744 MultipleFormsCanBeDeleted pending implementation
+	}
+
 	@description = "This is a use case for LPS-59331"
 	@priority = "5"
 	test NavigateToCorrectForm {
@@ -2177,7 +2361,7 @@ definition {
 
 		Form.editName(formName = "Text");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text");
 
@@ -2202,7 +2386,7 @@ definition {
 		Form.editName(formName = "Checkbox");
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Multiple Selection");
 
 		Form.editFieldLabelMetal(fieldValue = "Checkbox");
@@ -2252,18 +2436,20 @@ definition {
 	}
 
 	@description = "Verify that Form Pages can be reordered"
-	@ignore = "true"
+	@ignore = "Test Stub"
 	@priority = "5"
 	test PagesCanBeReordered {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		// TODO LPS-130999 PagesCanBeReordered pending implementation
 	}
 
 	@description = "Verify that Form Pages can be reset"
-	@ignore = "true"
+	@ignore = "Test Stub"
 	@priority = "5"
 	test PagesCanBeReset {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		// TODO LPS-131000 PagesCanBeReset pending implementation
@@ -2289,7 +2475,7 @@ definition {
 
 		Form.editDescription(formDescription = "Test Preview and Publish Form Description");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -2380,7 +2566,7 @@ definition {
 		FormsAdminNavigator.gotoAddForm();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Multiple Selection");
 
 		for (var number : list "1,2,3,4") {
@@ -2458,7 +2644,7 @@ definition {
 
 		Form.editDescription(formDescription = "Test Form Description");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -2557,7 +2743,7 @@ definition {
 		Form.editName();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Select from List");
 
 		var fieldSelectFromListField = FormFields.getFieldName();
@@ -2619,18 +2805,29 @@ definition {
 	}
 
 	@description = "Verify that a Form cannot be created without at least 1 field"
-	@ignore = "true"
 	@priority = "5"
 	test ShouldHaveAtLeastOneField {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-130503 ShouldHaveAtLeastOneField pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Click(locator1 = "Button#SAVE");
+
+		Alert.viewErrorMessage(errorMessage = "Error:Please add at least one field.");
+
+		Click(locator1 = "Form#PUBLISH_FORM_BUTTON");
+
+		Alert.viewErrorMessage(errorMessage = "Error:Please add at least one field.");
 	}
 
+	@ignore = "true"
 	@priority = "5"
 	test SubmitFormAfterEditingFields {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#SubmitFormAfterEditingFields";
 		property testray.component.names = "Training";
 
@@ -2647,7 +2844,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Paragraph");
 
 		var fieldParagraphField = FormFields.getFieldName();
@@ -2658,7 +2855,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -2667,7 +2864,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Select from List");
 
 		var fieldSelectFromListField = FormFields.getFieldName();
@@ -2686,7 +2883,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "4",
+			fieldPositionNumber = "3",
 			fieldType = "Single Selection");
 
 		var fieldSingleSelectionField = FormFields.getFieldName();
@@ -2705,7 +2902,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "5",
+			fieldPositionNumber = "4",
 			fieldType = "Date");
 
 		var fieldDateField = FormFields.getFieldName();
@@ -2715,7 +2912,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "6",
+			fieldPositionNumber = "5",
 			fieldType = "Multiple Selection");
 
 		var fieldMultipleSelectionField = FormFields.getFieldName();
@@ -3026,7 +3223,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -3115,7 +3312,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -3194,10 +3391,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-64798."
+	@ignore = "true"
 	@priority = "5"
 	test SubmitFormWithAllFieldTypesAndThreePages {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#SubmitFormWithAllFieldTypesAndThreePages";
 		property testray.component.names = "Training";
 
@@ -3218,8 +3414,9 @@ definition {
 			formTitleNumber = "1");
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
-			fieldType = "Paragraph");
+			fieldPositionNumber = "0",
+			fieldType = "Paragraph",
+			formPageNumber = "0");
 
 		var fieldParagraphField = FormFields.getFieldName();
 
@@ -3227,7 +3424,9 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(
+			fieldPositionNumber = "1",
+			formPageNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -3235,7 +3434,9 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "3");
+		Form.addTextField(
+			fieldPositionNumber = "2",
+			formPageNumber = "0");
 
 		var fieldMultilineTextField = FormFields.getFieldName();
 
@@ -3248,8 +3449,9 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "4",
-			fieldType = "Select from List");
+			fieldPositionNumber = "3",
+			fieldType = "Select from List",
+			formPageNumber = "0");
 
 		var fieldSelectFromListField = FormFields.getFieldName();
 
@@ -3267,8 +3469,9 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "5",
-			fieldType = "Single Selection");
+			fieldPositionNumber = "4",
+			fieldType = "Single Selection",
+			formPageNumber = "0");
 
 		var fieldSingleSelectionField = FormFields.getFieldName();
 
@@ -3288,16 +3491,18 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "6",
-			fieldType = "Date");
+			fieldPositionNumber = "5",
+			fieldType = "Date",
+			formPageNumber = "0");
 
 		var fieldDateField = FormFields.getFieldName();
 
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "7",
-			fieldType = "Multiple Selection");
+			fieldPositionNumber = "6",
+			fieldType = "Multiple Selection",
+			formPageNumber = "0");
 
 		var fieldMultipleSelectionField = FormFields.getFieldName();
 
@@ -3324,8 +3529,9 @@ definition {
 			formTitleNumber = "2");
 
 		Form.gotoAddField(
-			fieldPositionNumber = "9",
-			fieldType = "Grid");
+			fieldPositionNumber = "0",
+			fieldType = "Grid",
+			formPageNumber = "1");
 
 		var fieldGridField = FormFields.getFieldName();
 
@@ -3354,20 +3560,22 @@ definition {
 			formTitleNumber = "3");
 
 		Form.gotoAddField(
-			fieldPositionNumber = "11",
-			fieldType = "Upload");
+			fieldPositionNumber = "0",
+			fieldType = "Upload",
+			formPageNumber = "2");
 
 		var fieldUploadField = FormFields.getFieldName();
 
 		Form.editFieldLabelMetal(
-			fieldPositionNumber = "11",
+			fieldPositionNumber = "0",
 			fieldValue = "Upload Field");
 
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "12",
-			fieldType = "Numeric");
+			fieldPositionNumber = "1",
+			fieldType = "Numeric",
+			formPageNumber = "2");
 
 		var fieldNumericField = FormFields.getFieldName();
 
@@ -3376,8 +3584,9 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "13",
-			fieldType = "Color");
+			fieldPositionNumber = "2",
+			fieldType = "Color",
+			formPageNumber = "2");
 
 		var colorFieldName = FormFields.getFieldName();
 
@@ -3566,7 +3775,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var textFieldName = FormFields.getFieldName();
 
@@ -3611,7 +3820,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -3703,7 +3912,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -3712,7 +3921,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Multiple Selection");
 
 		var fieldMultipleSelectionField = FormFields.getFieldName();
@@ -3727,7 +3936,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Single Selection");
 
 		var fieldSingleSelectionField = FormFields.getFieldName();
@@ -3746,7 +3955,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Select from List");
 
 		var fieldSelectFromListField = FormFields.getFieldName();
@@ -3890,7 +4099,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Multiple Selection");
 
 		var fieldMultipleSelectionField = FormFields.getFieldName();
@@ -3978,7 +4187,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -4072,7 +4281,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Image");
 
 		FormFields.enableSwitcher(fieldName = "Required Field");
@@ -4163,7 +4372,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -4249,7 +4458,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Single Selection");
 
 		var fieldSingleSelectionField = FormFields.getFieldName();
@@ -4341,7 +4550,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -4423,7 +4632,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -4506,7 +4715,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Multiple Selection");
 
 		var fieldMultipleSelectionField = FormFields.getFieldName();
@@ -4601,7 +4810,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Upload");
 
 		var fieldUploadField = FormFields.getFieldName();
@@ -4652,10 +4861,9 @@ definition {
 			uploadFileName = "Document_1.jpg");
 	}
 
+	@ignore = "true"
 	@priority = "4"
 	test SubmitFormWithUploadFieldAsGuestUser {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#SubmitFormWithUploadFieldAsGuestUser";
 
 		Navigator.openURL();
@@ -4671,7 +4879,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Upload");
 
 		var uploadFieldName = FormFields.getFieldName();
@@ -4758,7 +4966,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Upload");
 
 		var uploadFieldName = FormFields.getFieldName();
@@ -4858,7 +5066,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Date");
 
 		var fieldDateField = FormFields.getFieldName();
@@ -4928,10 +5136,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-125499."
+	@ignore = "true"
 	@priority = "2"
 	test UploadFileWithInvalidSizeAsGuestUser {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#UploadFileWithInvalidSizeAsGuestUser";
 
 		Navigator.openURL();
@@ -4947,7 +5154,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Upload");
 
 		var uploadFieldName = FormFields.getFieldName();
@@ -5056,13 +5263,13 @@ definition {
 
 		FormsAdminNavigator.gotoAddForm();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "One");
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		Form.editFieldLabelMetal(fieldValue = "Two");
 
@@ -5072,7 +5279,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		FormFields.viewFieldLabel(
 			fieldName = "label",
@@ -5094,7 +5301,7 @@ definition {
 
 		FormsAdminNavigator.gotoAddForm();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
@@ -5134,7 +5341,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = ",-+!@#$%^*()=.?/;:{}[]\|");
 
@@ -5144,7 +5351,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		Form.editFieldLabelMetal(fieldValue = "Jump, She exclaimed!");
 
@@ -5180,10 +5387,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-70560."
+	@ignore = "true"
 	@priority = "4"
 	test ViewFieldValidationIsNotBypassedWhenNextButtonIsHitTwice {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#ViewFieldValidationIsNotBypassedWhenNextButtonIsHitTwice";
 
 		Navigator.openURL();
@@ -5200,7 +5406,9 @@ definition {
 			formPageName = "Page 1",
 			formTitleNumber = "1");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(
+			fieldPositionNumber = "0",
+			formPageNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -5214,7 +5422,9 @@ definition {
 			formPageName = "Page 2",
 			formTitleNumber = "2");
 
-		Form.addTextField(fieldPositionNumber = "3");
+		Form.addTextField(
+			fieldPositionNumber = "0",
+			formPageNumber = "1");
 
 		var fieldTextField2 = FormFields.getFieldName();
 
@@ -5230,7 +5440,9 @@ definition {
 			formPageName = "Page 3",
 			formTitleNumber = "3");
 
-		Form.addTextField(fieldPositionNumber = "5");
+		Form.addTextField(
+			fieldPositionNumber = "0",
+			formPageNumber = "2");
 
 		var fieldTextField3 = FormFields.getFieldName();
 
@@ -5268,10 +5480,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-66513."
+	@ignore = "true"
 	@priority = "3"
 	test ViewFormWithMultipleSelectionFieldAsASwitcherAndHideLabel {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "Forms#ViewFormWithMultipleSelectionFieldAsASwitcherAndHideLabel";
 
 		Navigator.openURL();
@@ -5287,7 +5498,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Multiple Selection");
 
 		var fieldMultipleSelectionField = FormFields.getFieldName();
@@ -5364,7 +5575,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -5426,7 +5637,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
@@ -5463,7 +5674,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldTextField = FormFields.getFieldName();
 
@@ -5515,9 +5726,10 @@ definition {
 	}
 
 	@description = "Verify that a Form autosaves after 1 minute by default"
-	@ignore = "true"
+	@ignore = "Test Stub"
 	@priority = "5"
 	test WillAutosaveAfterOneMinute {
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		// TODO LPS-130510 WillAutosaveAfterOneMinute pending implementation

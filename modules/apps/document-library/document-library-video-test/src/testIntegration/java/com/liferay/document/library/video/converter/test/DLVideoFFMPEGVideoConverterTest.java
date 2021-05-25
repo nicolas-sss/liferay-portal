@@ -44,7 +44,6 @@ import java.util.Dictionary;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +51,6 @@ import org.junit.runner.RunWith;
 /**
  * @author Alejandro Tardín
  */
-@Ignore
 @RunWith(Arquillian.class)
 public class DLVideoFFMPEGVideoConverterTest {
 
@@ -73,10 +71,14 @@ public class DLVideoFFMPEGVideoConverterTest {
 
 	@Test
 	public void testDoesNotGenerateVideoPreview() throws Exception {
-		FileEntry fileEntry = _createVideoFileEntry("video.mp4");
+		_withDLVideoFFMPEGVideoConverterConfiguration(
+			false,
+			() -> {
+				FileEntry fileEntry = _createVideoFileEntry("video.mp4");
 
-		Assert.assertFalse(
-			VideoProcessorUtil.hasVideo(fileEntry.getFileVersion()));
+				Assert.assertFalse(
+					VideoProcessorUtil.hasVideo(fileEntry.getFileVersion()));
+			});
 	}
 
 	@ExpectedLogs(
@@ -99,7 +101,8 @@ public class DLVideoFFMPEGVideoConverterTest {
 	public void testDoesNotGenerateVideoPreviewIfTheVideoIsCorrupt()
 		throws Exception {
 
-		_withDLVideoFFMPEGVideoConverterEnabled(
+		_withDLVideoFFMPEGVideoConverterConfiguration(
+			true,
 			() -> {
 				FileEntry fileEntry = _createVideoFileEntry(
 					"video_corrupt.mp4");
@@ -111,7 +114,8 @@ public class DLVideoFFMPEGVideoConverterTest {
 
 	@Test
 	public void testGeneratesVideoPreviewForOGVIfEnabled() throws Exception {
-		_withDLVideoFFMPEGVideoConverterEnabled(
+		_withDLVideoFFMPEGVideoConverterConfiguration(
+			true,
 			() -> {
 				FileEntry fileEntry = _createVideoFileEntry("video.ogv");
 
@@ -132,7 +136,8 @@ public class DLVideoFFMPEGVideoConverterTest {
 
 	@Test
 	public void testGeneratesVideoPreviewIfEnabled() throws Exception {
-		_withDLVideoFFMPEGVideoConverterEnabled(
+		_withDLVideoFFMPEGVideoConverterConfiguration(
+			true,
 			() -> {
 				FileEntry fileEntry = _createVideoFileEntry("video.mp4");
 
@@ -171,7 +176,8 @@ public class DLVideoFFMPEGVideoConverterTest {
 	public void testGeneratesVideoPreviewIfTheVideoHasOnlyAudio()
 		throws Exception {
 
-		_withDLVideoFFMPEGVideoConverterEnabled(
+		_withDLVideoFFMPEGVideoConverterConfiguration(
+			true,
 			() -> {
 				FileEntry fileEntry = _createVideoFileEntry(
 					"video_only_audio.mp4");
@@ -193,19 +199,21 @@ public class DLVideoFFMPEGVideoConverterTest {
 
 	private FileEntry _createVideoFileEntry(String fileName) throws Exception {
 		return DLAppServiceUtil.addFileEntry(
-			_group.getGroupId(), DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
-			fileName, MimeTypesUtil.getContentType(fileName), "video",
+			null, _group.getGroupId(),
+			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, fileName,
+			MimeTypesUtil.getContentType(fileName), "video",
 			StringUtil.randomString(), StringUtil.randomString(),
-			FileUtil.getBytes(getClass(), fileName), _serviceContext);
+			FileUtil.getBytes(getClass(), fileName), null, null,
+			_serviceContext);
 	}
 
-	private void _withDLVideoFFMPEGVideoConverterEnabled(
-			UnsafeRunnable<Exception> unsafeRunnable)
+	private void _withDLVideoFFMPEGVideoConverterConfiguration(
+			boolean enabled, UnsafeRunnable<Exception> unsafeRunnable)
 		throws Exception {
 
 		Dictionary<String, Object> dictionary =
 			HashMapDictionaryBuilder.<String, Object>put(
-				"enabled", true
+				"enabled", enabled
 			).build();
 
 		try (ConfigurationTemporarySwapper configurationTemporarySwapper =

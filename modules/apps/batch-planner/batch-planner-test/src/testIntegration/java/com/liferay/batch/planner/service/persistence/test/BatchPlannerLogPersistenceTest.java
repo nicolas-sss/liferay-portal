@@ -26,6 +26,8 @@ import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
@@ -136,6 +138,14 @@ public class BatchPlannerLogPersistenceTest {
 
 		newBatchPlannerLog.setBatchPlannerPlanId(RandomTestUtil.nextLong());
 
+		newBatchPlannerLog.setBatchEngineExportTaskERC(
+			RandomTestUtil.randomString());
+
+		newBatchPlannerLog.setBatchEngineImportTaskERC(
+			RandomTestUtil.randomString());
+
+		newBatchPlannerLog.setDispatchTriggerERC(RandomTestUtil.randomString());
+
 		newBatchPlannerLog.setSize(RandomTestUtil.nextInt());
 
 		newBatchPlannerLog.setTotal(RandomTestUtil.nextInt());
@@ -172,6 +182,15 @@ public class BatchPlannerLogPersistenceTest {
 			existingBatchPlannerLog.getBatchPlannerPlanId(),
 			newBatchPlannerLog.getBatchPlannerPlanId());
 		Assert.assertEquals(
+			existingBatchPlannerLog.getBatchEngineExportTaskERC(),
+			newBatchPlannerLog.getBatchEngineExportTaskERC());
+		Assert.assertEquals(
+			existingBatchPlannerLog.getBatchEngineImportTaskERC(),
+			newBatchPlannerLog.getBatchEngineImportTaskERC());
+		Assert.assertEquals(
+			existingBatchPlannerLog.getDispatchTriggerERC(),
+			newBatchPlannerLog.getDispatchTriggerERC());
+		Assert.assertEquals(
 			existingBatchPlannerLog.getSize(), newBatchPlannerLog.getSize());
 		Assert.assertEquals(
 			existingBatchPlannerLog.getTotal(), newBatchPlannerLog.getTotal());
@@ -185,6 +204,33 @@ public class BatchPlannerLogPersistenceTest {
 		_persistence.countByBatchPlannerPlanId(RandomTestUtil.nextLong());
 
 		_persistence.countByBatchPlannerPlanId(0L);
+	}
+
+	@Test
+	public void testCountByBPPI_BEETERC() throws Exception {
+		_persistence.countByBPPI_BEETERC(RandomTestUtil.nextLong(), "");
+
+		_persistence.countByBPPI_BEETERC(0L, "null");
+
+		_persistence.countByBPPI_BEETERC(0L, (String)null);
+	}
+
+	@Test
+	public void testCountByBPPI_BEITERC() throws Exception {
+		_persistence.countByBPPI_BEITERC(RandomTestUtil.nextLong(), "");
+
+		_persistence.countByBPPI_BEITERC(0L, "null");
+
+		_persistence.countByBPPI_BEITERC(0L, (String)null);
+	}
+
+	@Test
+	public void testCountByBPPI_DTERC() throws Exception {
+		_persistence.countByBPPI_DTERC(RandomTestUtil.nextLong(), "");
+
+		_persistence.countByBPPI_DTERC(0L, "null");
+
+		_persistence.countByBPPI_DTERC(0L, (String)null);
 	}
 
 	@Test
@@ -214,8 +260,10 @@ public class BatchPlannerLogPersistenceTest {
 		return OrderByComparatorFactoryUtil.create(
 			"BatchPlannerLog", "mvccVersion", true, "batchPlannerLogId", true,
 			"companyId", true, "userId", true, "userName", true, "createDate",
-			true, "modifiedDate", true, "batchPlannerPlanId", true, "size",
-			true, "total", true, "status", true);
+			true, "modifiedDate", true, "batchPlannerPlanId", true,
+			"batchEngineExportTaskERC", true, "batchEngineImportTaskERC", true,
+			"dispatchTriggerERC", true, "size", true, "total", true, "status",
+			true);
 	}
 
 	@Test
@@ -433,6 +481,92 @@ public class BatchPlannerLogPersistenceTest {
 		Assert.assertEquals(0, result.size());
 	}
 
+	@Test
+	public void testResetOriginalValues() throws Exception {
+		BatchPlannerLog newBatchPlannerLog = addBatchPlannerLog();
+
+		_persistence.clearCache();
+
+		_assertOriginalValues(
+			_persistence.findByPrimaryKey(newBatchPlannerLog.getPrimaryKey()));
+	}
+
+	@Test
+	public void testResetOriginalValuesWithDynamicQueryLoadFromDatabase()
+		throws Exception {
+
+		_testResetOriginalValuesWithDynamicQuery(true);
+	}
+
+	@Test
+	public void testResetOriginalValuesWithDynamicQueryLoadFromSession()
+		throws Exception {
+
+		_testResetOriginalValuesWithDynamicQuery(false);
+	}
+
+	private void _testResetOriginalValuesWithDynamicQuery(boolean clearSession)
+		throws Exception {
+
+		BatchPlannerLog newBatchPlannerLog = addBatchPlannerLog();
+
+		if (clearSession) {
+			Session session = _persistence.openSession();
+
+			session.flush();
+
+			session.clear();
+		}
+
+		DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
+			BatchPlannerLog.class, _dynamicQueryClassLoader);
+
+		dynamicQuery.add(
+			RestrictionsFactoryUtil.eq(
+				"batchPlannerLogId",
+				newBatchPlannerLog.getBatchPlannerLogId()));
+
+		List<BatchPlannerLog> result = _persistence.findWithDynamicQuery(
+			dynamicQuery);
+
+		_assertOriginalValues(result.get(0));
+	}
+
+	private void _assertOriginalValues(BatchPlannerLog batchPlannerLog) {
+		Assert.assertEquals(
+			Long.valueOf(batchPlannerLog.getBatchPlannerPlanId()),
+			ReflectionTestUtil.<Long>invoke(
+				batchPlannerLog, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "batchPlannerPlanId"));
+		Assert.assertEquals(
+			batchPlannerLog.getBatchEngineExportTaskERC(),
+			ReflectionTestUtil.invoke(
+				batchPlannerLog, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "batchEngineExportTaskERC"));
+
+		Assert.assertEquals(
+			Long.valueOf(batchPlannerLog.getBatchPlannerPlanId()),
+			ReflectionTestUtil.<Long>invoke(
+				batchPlannerLog, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "batchPlannerPlanId"));
+		Assert.assertEquals(
+			batchPlannerLog.getBatchEngineImportTaskERC(),
+			ReflectionTestUtil.invoke(
+				batchPlannerLog, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "batchEngineImportTaskERC"));
+
+		Assert.assertEquals(
+			Long.valueOf(batchPlannerLog.getBatchPlannerPlanId()),
+			ReflectionTestUtil.<Long>invoke(
+				batchPlannerLog, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "batchPlannerPlanId"));
+		Assert.assertEquals(
+			batchPlannerLog.getDispatchTriggerERC(),
+			ReflectionTestUtil.invoke(
+				batchPlannerLog, "getColumnOriginalValue",
+				new Class<?>[] {String.class}, "dispatchTriggerERC"));
+	}
+
 	protected BatchPlannerLog addBatchPlannerLog() throws Exception {
 		long pk = RandomTestUtil.nextLong();
 
@@ -451,6 +585,14 @@ public class BatchPlannerLogPersistenceTest {
 		batchPlannerLog.setModifiedDate(RandomTestUtil.nextDate());
 
 		batchPlannerLog.setBatchPlannerPlanId(RandomTestUtil.nextLong());
+
+		batchPlannerLog.setBatchEngineExportTaskERC(
+			RandomTestUtil.randomString());
+
+		batchPlannerLog.setBatchEngineImportTaskERC(
+			RandomTestUtil.randomString());
+
+		batchPlannerLog.setDispatchTriggerERC(RandomTestUtil.randomString());
 
 		batchPlannerLog.setSize(RandomTestUtil.nextInt());
 

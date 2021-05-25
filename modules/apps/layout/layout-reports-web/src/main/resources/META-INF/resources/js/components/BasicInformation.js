@@ -15,38 +15,30 @@
 import ClayLayout from '@clayui/layout';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React from 'react';
 
 import LanguagesDropdown from './LanguagesDropdown';
 
-export default function BasicInformation({canonicalURLs, defaultLanguageId}) {
-	const [selectedCanonicalURL, setSeletedCanonicalURL] = useState(
-		canonicalURLs.find(({languageId}) => languageId === defaultLanguageId)
+export default function BasicInformation({
+	defaultLanguageId,
+	pageURLs,
+	selectedLanguageId,
+}) {
+	const selectedPageURL = pageURLs.find(
+		({languageId}) =>
+			languageId === (selectedLanguageId || defaultLanguageId)
 	);
 
-	const handleSelectLanguageId = (selectedLanguageId) => {
-		if (selectedCanonicalURL.languageId !== selectedLanguageId) {
-			setSeletedCanonicalURL(
-				canonicalURLs.find(
-					({languageId}) => languageId === selectedLanguageId
-				)
-			);
-		}
-	};
-
 	return (
-		<ClayLayout.ContentRow>
+		<ClayLayout.ContentRow verticalAlign="center">
 			<ClayLayout.ContentCol>
 				<div className="inline-item-before">
 					<ClayLayout.ContentRow>
 						<ClayLayout.ContentCol>
 							<LanguagesDropdown
-								canonicalURLs={canonicalURLs}
 								defaultLanguageId={defaultLanguageId}
-								onSelectedLanguageId={handleSelectLanguageId}
-								selectedLanguageId={
-									selectedCanonicalURL.languageId
-								}
+								pageURLs={pageURLs}
+								selectedLanguageId={selectedPageURL.languageId}
 							/>
 						</ClayLayout.ContentCol>
 					</ClayLayout.ContentRow>
@@ -59,9 +51,9 @@ export default function BasicInformation({canonicalURLs, defaultLanguageId}) {
 							<span
 								className="text-truncate"
 								data-tooltip-align="bottom"
-								title={selectedCanonicalURL.title}
+								title={selectedPageURL.title}
 							>
-								{selectedCanonicalURL.title}
+								{selectedPageURL.title}
 							</span>
 						</span>
 					</ClayTooltipProvider>
@@ -71,10 +63,10 @@ export default function BasicInformation({canonicalURLs, defaultLanguageId}) {
 						<span
 							className="text-truncate text-truncate-reverse"
 							data-tooltip-align="bottom"
-							title={selectedCanonicalURL.canonicalURL}
+							title={selectedPageURL.url}
 						>
 							<bdi className="text-secondary">
-								{selectedCanonicalURL.canonicalURL}
+								{selectedPageURL.url}
 							</bdi>
 						</span>
 					</ClayTooltipProvider>
@@ -85,12 +77,13 @@ export default function BasicInformation({canonicalURLs, defaultLanguageId}) {
 }
 
 BasicInformation.propTypes = {
-	canonicalURLs: PropTypes.arrayOf(
+	defaultLanguageId: PropTypes.string.isRequired,
+	pageURLs: PropTypes.arrayOf(
 		PropTypes.shape({
-			canonicalURL: PropTypes.string.isRequired,
 			languageId: PropTypes.string.isRequired,
 			title: PropTypes.string.isRequired,
+			url: PropTypes.string.isRequired,
 		})
 	),
-	defaultLanguageId: PropTypes.string.isRequired,
+	selectedLanguageId: PropTypes.string,
 };

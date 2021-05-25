@@ -113,12 +113,12 @@ public class SegmentsExperimentDisplayContext {
 
 	protected Map<String, Object> getContext() throws PortalException {
 		return HashMapBuilder.<String, Object>put(
-			"assetsPath", _getAssetsPath()
-		).put(
 			"contentPageEditorNamespace",
 			_getContentPageEditorPortletNamespace()
 		).put(
 			"endpoints", _getEndpoints()
+		).put(
+			"imagesPath", _getImagesPath()
 		).put(
 			"namespace", _getSegmentsExperimentPortletNamespace()
 		).put(
@@ -160,10 +160,6 @@ public class SegmentsExperimentDisplayContext {
 				segmentsExperienceId, _portal.getClassNameId(Layout.class),
 				layout.getPlid(),
 				SegmentsExperimentConstants.Status.getExclusiveStatusValues()));
-	}
-
-	private String _getAssetsPath() {
-		return PortalUtil.getPathContext(_httpServletRequest) + "/assets";
 	}
 
 	private String _getCalculateSegmentsExperimentEstimatedDurationURL() {
@@ -235,7 +231,7 @@ public class SegmentsExperimentDisplayContext {
 			layoutFullURL, "p_l_mode", Constants.EDIT);
 
 		return HttpUtil.setParameter(
-			layoutFullURL, "p_l_back_url", _themeDisplay.getURLCurrent());
+			layoutFullURL, "p_l_back_url", _portal.getLayoutURL(_themeDisplay));
 	}
 
 	private String _getEditSegmentsVariantURL() {
@@ -296,6 +292,10 @@ public class SegmentsExperimentDisplayContext {
 		}
 
 		return segmentsExperimentsJSONArray;
+	}
+
+	private String _getImagesPath() {
+		return PortalUtil.getPathContext(_httpServletRequest) + "/images";
 	}
 
 	private Map<String, Object> _getPage() {

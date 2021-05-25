@@ -14,9 +14,13 @@
 
 package com.liferay.portal.scheduler.quartz.internal.portal.profile;
 
+import com.liferay.portal.kernel.scheduler.SchedulerEngine;
+import com.liferay.portal.kernel.scheduler.TriggerFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.profile.BaseDSModulePortalProfile;
 import com.liferay.portal.profile.PortalProfile;
 import com.liferay.portal.scheduler.quartz.internal.QuartzSchedulerEngine;
@@ -30,9 +34,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -55,6 +62,18 @@ public class ModulePortalProfile extends BaseDSModulePortalProfile {
 		}
 		else {
 			supportedPortalProfileNames = Collections.emptySet();
+
+			BundleContext bundleContext = componentContext.getBundleContext();
+
+			_schedulerEngineServiceRegistration = bundleContext.registerService(
+				SchedulerEngine.class,
+				ProxyFactory.newDummyInstance(SchedulerEngine.class),
+				new HashMapDictionary<>());
+
+			_triggerFactoryServiceRegistration = bundleContext.registerService(
+				TriggerFactory.class,
+				ProxyFactory.newDummyInstance(TriggerFactory.class),
+				new HashMapDictionary<>());
 		}
 
 		init(
@@ -67,11 +86,26 @@ public class ModulePortalProfile extends BaseDSModulePortalProfile {
 			SchedulerLifecycleInitializer.class.getName());
 	}
 
+	@Deactivate
+	protected void deactivate() {
+		if (_triggerFactoryServiceRegistration != null) {
+			_triggerFactoryServiceRegistration.unregister();
+		}
+
+		if (_schedulerEngineServiceRegistration != null) {
+			_schedulerEngineServiceRegistration.unregister();
+		}
+	}
+
 	@Reference(unbind = "-")
 	protected void setProps(Props props) {
 		_props = props;
 	}
 
 	private Props _props;
+	private ServiceRegistration<SchedulerEngine>
+		_schedulerEngineServiceRegistration;
+	private ServiceRegistration<TriggerFactory>
+		_triggerFactoryServiceRegistration;
 
 }

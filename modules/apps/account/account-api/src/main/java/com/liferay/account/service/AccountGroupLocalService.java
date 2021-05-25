@@ -76,8 +76,12 @@ public interface AccountGroupLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public AccountGroup addAccountGroup(AccountGroup accountGroup);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public AccountGroup addAccountGroup(
 			long userId, String description, String name)
+		throws PortalException;
+
+	public AccountGroup checkGuestAccountGroup(long companyId)
 		throws PortalException;
 
 	/**
@@ -132,6 +136,9 @@ public interface AccountGroupLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T dslQuery(DSLQuery dslQuery);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int dslQueryCount(DSLQuery dslQuery);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
@@ -264,6 +271,10 @@ public interface AccountGroupLocalService
 		long companyId, int start, int end,
 		OrderByComparator<AccountGroup> orderByComparator);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AccountGroup> getAccountGroupsByAccountGroupId(
+		long[] accountGroupIds);
+
 	/**
 	 * Returns the number of account groups.
 	 *
@@ -271,6 +282,9 @@ public interface AccountGroupLocalService
 	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getAccountGroupsCount();
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getAccountGroupsCount(long companyId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ActionableDynamicQuery getActionableDynamicQuery();
@@ -317,6 +331,7 @@ public interface AccountGroupLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public AccountGroup updateAccountGroup(AccountGroup accountGroup);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public AccountGroup updateAccountGroup(
 			long accountGroupId, String description, String name)
 		throws PortalException;

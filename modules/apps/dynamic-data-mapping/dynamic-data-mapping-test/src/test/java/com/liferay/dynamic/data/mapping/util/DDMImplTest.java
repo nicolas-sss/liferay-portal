@@ -36,11 +36,13 @@ import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.Field;
 import com.liferay.dynamic.data.mapping.storage.Fields;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.PropsValues;
 
@@ -90,7 +92,6 @@ public class DDMImplTest extends BaseDDMTestCase {
 		setUpDDMFormValuesJSONSerializer();
 		setUpDDMStructureLocalServiceUtil();
 		setUpJSONFactoryUtil();
-		setUpHtmlUtil();
 		setUpLanguageUtil();
 		setUpLocaleUtil();
 		setUpPortalUtil();
@@ -752,6 +753,13 @@ public class DDMImplTest extends BaseDDMTestCase {
 			DDMFormValuesJSONDeserializer.class, "_jsonFactory");
 
 		field.set(_ddmFormValuesDeserializer, new JSONFactoryImpl());
+
+		field = ReflectionUtil.getDeclaredField(
+			DDMFormValuesJSONDeserializer.class, "_serviceTrackerMap");
+
+		field.set(
+			_ddmFormValuesDeserializer,
+			ProxyFactory.newDummyInstance(ServiceTrackerMap.class));
 	}
 
 	protected void setUpDDMFormValuesJSONSerializer() throws Exception {
@@ -759,6 +767,13 @@ public class DDMImplTest extends BaseDDMTestCase {
 			DDMFormValuesJSONSerializer.class, "_jsonFactory");
 
 		field.set(_ddmFormValuesSerializer, new JSONFactoryImpl());
+
+		field = ReflectionUtil.getDeclaredField(
+			DDMFormValuesJSONSerializer.class, "_serviceTrackerMap");
+
+		field.set(
+			_ddmFormValuesSerializer,
+			ProxyFactory.newDummyInstance(ServiceTrackerMap.class));
 	}
 
 	protected void setUpPortalUtil() {

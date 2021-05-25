@@ -36,9 +36,9 @@ import com.liferay.headless.delivery.dto.v1_0.CustomField;
 import com.liferay.headless.delivery.dto.v1_0.Document;
 import com.liferay.headless.delivery.dto.v1_0.DocumentType;
 import com.liferay.headless.delivery.dto.v1_0.Rating;
+import com.liferay.headless.delivery.dto.v1_0.util.CustomFieldsUtil;
+import com.liferay.headless.delivery.dto.v1_0.util.DDMFormValuesUtil;
 import com.liferay.headless.delivery.internal.dto.v1_0.converter.DocumentDTOConverter;
-import com.liferay.headless.delivery.internal.dto.v1_0.util.CustomFieldsUtil;
-import com.liferay.headless.delivery.internal.dto.v1_0.util.DDMFormValuesUtil;
 import com.liferay.headless.delivery.internal.dto.v1_0.util.DisplayPageRendererUtil;
 import com.liferay.headless.delivery.internal.dto.v1_0.util.EntityFieldsUtil;
 import com.liferay.headless.delivery.internal.dto.v1_0.util.RatingUtil;
@@ -288,6 +288,8 @@ public class DocumentResourceImpl
 				),
 				null, DLVersionNumberIncrease.AUTOMATIC,
 				binaryFile.getInputStream(), binaryFile.getSize(),
+				existingFileEntry.getExpirationDate(),
+				existingFileEntry.getReviewDate(),
 				_getServiceContext(
 					() -> ArrayUtil.toArray(
 						_assetCategoryLocalService.getCategoryIds(
@@ -380,6 +382,8 @@ public class DocumentResourceImpl
 				),
 				null, DLVersionNumberIncrease.AUTOMATIC,
 				binaryFile.getInputStream(), binaryFile.getSize(),
+				existingFileEntry.getExpirationDate(),
+				existingFileEntry.getReviewDate(),
 				_getServiceContext(
 					() -> new Long[0], () -> new String[0],
 					existingFileEntry.getFolderId(), documentOptional,
@@ -430,7 +434,7 @@ public class DocumentResourceImpl
 
 		return _toDocument(
 			_dlAppService.addFileEntry(
-				repositoryId, documentFolderId, binaryFile.getFileName(),
+				null, repositoryId, documentFolderId, binaryFile.getFileName(),
 				binaryFile.getContentType(),
 				documentOptional.map(
 					Document::getTitle
@@ -442,7 +446,8 @@ public class DocumentResourceImpl
 				).orElse(
 					null
 				),
-				null, binaryFile.getInputStream(), binaryFile.getSize(),
+				null, binaryFile.getInputStream(), binaryFile.getSize(), null,
+				null,
 				_getServiceContext(
 					() -> new Long[0], () -> new String[0], documentFolderId,
 					documentOptional, groupId)));

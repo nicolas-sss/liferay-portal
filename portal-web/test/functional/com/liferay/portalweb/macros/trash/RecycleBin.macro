@@ -1,11 +1,7 @@
 definition {
 
 	macro bulkRestoreCP {
-		var browserType = PropsUtil.get("browser.type");
-
-		if ("${browserType}" == "chrome") {
-			MetalComponent.waitForManagementBar();
-		}
+		WaitForPageLoad();
 
 		for (var assetName : list "${assetList}") {
 			LexiconTable.viewTableEntryTitle(tableEntry = "${assetName}");
@@ -53,8 +49,8 @@ definition {
 
 	macro disableRecycleBinViaSiteSettings {
 		Click(
-			key_url = "site-configuration-recycle-bin",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Recycle Bin",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		Uncheck.uncheckToggleSwitchNoErrorNoAssert(locator1 = "Checkbox#ENABLE_RECYCLE_BIN");
 

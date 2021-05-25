@@ -44,7 +44,7 @@ public class ProductSpecificationUtil {
 				cpDefinitionId,
 				getCPSpecificationOptionId(
 					cpSpecificationOptionService, productSpecification,
-					serviceContext.getCompanyId()),
+					serviceContext.getCompanyId(), serviceContext),
 				getCPOptionCategoryId(productSpecification),
 				LanguageUtils.getLocalizedMap(productSpecification.getValue()),
 				GetterUtil.get(productSpecification.getPriority(), 0D),
@@ -63,14 +63,29 @@ public class ProductSpecificationUtil {
 
 	public static long getCPSpecificationOptionId(
 			CPSpecificationOptionService cpSpecificationOptionService,
-			ProductSpecification productSpecification, long companyId)
+			ProductSpecification productSpecification, long companyId,
+			ServiceContext serviceContext)
 		throws PortalException {
 
 		CPSpecificationOption cpSpecificationOption =
-			cpSpecificationOptionService.getCPSpecificationOption(
+			cpSpecificationOptionService.fetchCPSpecificationOption(
 				companyId,
 				StringUtil.toLowerCase(
 					productSpecification.getSpecificationKey()));
+
+		if (cpSpecificationOption == null) {
+			cpSpecificationOption =
+				cpSpecificationOptionService.addCPSpecificationOption(
+					getCPOptionCategoryId(productSpecification),
+					LanguageUtils.getLocalizedMap(
+						productSpecification.getValue()),
+					LanguageUtils.getLocalizedMap(
+						productSpecification.getValue()),
+					false,
+					StringUtil.toLowerCase(
+						productSpecification.getSpecificationKey()),
+					serviceContext);
+		}
 
 		return cpSpecificationOption.getCPSpecificationOptionId();
 	}

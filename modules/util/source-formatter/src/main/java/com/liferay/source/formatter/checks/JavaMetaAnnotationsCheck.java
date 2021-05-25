@@ -37,25 +37,51 @@ public class JavaMetaAnnotationsCheck extends JavaAnnotationsCheck {
 			String fileContent)
 		throws IOException {
 
-		return formatAnnotations(fileName, absolutePath, (JavaClass)javaTerm);
+		return formatAnnotations(
+			fileName, absolutePath, (JavaClass)javaTerm, fileContent);
 	}
 
 	@Override
 	protected String formatAnnotation(
 		String fileName, String absolutePath, JavaClass javaClass,
-		String annotation, String indent) {
+		String fileContent, String annotation, String indent) {
 
 		if (!annotation.contains("@Meta.")) {
 			return annotation;
 		}
 
-		_checkDelimeters(fileName, javaClass.getContent(), annotation);
+		_checkDelimeters(fileName, fileContent, annotation);
+
+		if (isAttributeValue(_CHECK_CONFIGURATION_NAME_KEY, absolutePath)) {
+			_checkConfigurationNameValue(fileName, fileContent, annotation);
+		}
 
 		annotation = _fixOCDId(
 			fileName, annotation, javaClass.getPackageName());
 		annotation = _fixTypeProperties(annotation);
 
 		return annotation;
+	}
+
+	private void _checkConfigurationNameValue(
+		String fileName, String content, String annotation) {
+
+		if (!annotation.contains("@Meta.OCD")) {
+			return;
+		}
+
+		Matcher matcher = _annotationNameValueKeyPattern.matcher(annotation);
+
+		if (matcher.find()) {
+			String nameValue = matcher.group(1);
+
+			if (!nameValue.endsWith("-configuration-name")) {
+				addMessage(
+					fileName,
+					"Value for 'name' should end with '-configuration-name'",
+					getLineNumber(content, content.indexOf(matcher.group())));
+			}
+		}
 	}
 
 	private void _checkDelimeter(
@@ -130,9 +156,14 @@ public class JavaMetaAnnotationsCheck extends JavaAnnotationsCheck {
 			annotation, StringPool.PERCENT, StringPool.BLANK, matcher.start());
 	}
 
+	private static final String _CHECK_CONFIGURATION_NAME_KEY =
+		"checkConfigurationName";
+
 	private static final Pattern _annotationMetaTypePattern = Pattern.compile(
 		"[\\s\\(](name|description) = \"%");
 	private static final Pattern _annotationMetaValueKeyPattern =
 		Pattern.compile("\\s(\\w+) = \"([\\w\\.\\-]+?)\"");
+	private static final Pattern _annotationNameValueKeyPattern =
+		Pattern.compile("\\sname = \"([\\w\\.\\-]+?)\"");
 
 }

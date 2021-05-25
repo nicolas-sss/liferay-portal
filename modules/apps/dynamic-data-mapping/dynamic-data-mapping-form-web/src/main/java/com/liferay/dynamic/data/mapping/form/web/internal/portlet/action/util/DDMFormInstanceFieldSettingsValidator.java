@@ -164,25 +164,6 @@ public class DDMFormInstanceFieldSettingsValidator {
 		return fieldSettingsDDMFormValues;
 	}
 
-	protected DDMFormEvaluatorEvaluateResponse doEvaluate(
-		PortletRequest portletRequest, DDMForm ddmForm,
-		DDMFormValues ddmFormValues, Locale locale) {
-
-		DDMFormEvaluatorEvaluateRequest.Builder builder =
-			DDMFormEvaluatorEvaluateRequest.Builder.newBuilder(
-				ddmForm, ddmFormValues, locale);
-
-		builder.withCompanyId(
-			_portal.getCompanyId(portletRequest)
-		).withGroupId(
-			ParamUtil.getLong(portletRequest, "groupId")
-		).withUserId(
-			_portal.getUserId(portletRequest)
-		);
-
-		return _ddmFormEvaluator.evaluate(builder.build());
-	}
-
 	protected Map<String, Set<String>> evaluate(
 			PortletRequest portletRequest, DDMForm ddmForm)
 		throws JSONException {
@@ -205,6 +186,27 @@ public class DDMFormInstanceFieldSettingsValidator {
 		ddmFormContextVisitor.visit();
 
 		return fieldNamePropertiesMap;
+	}
+
+	protected DDMFormEvaluatorEvaluateResponse evaluate(
+		PortletRequest portletRequest, DDMForm ddmForm,
+		DDMFormValues ddmFormValues, Locale locale) {
+
+		DDMFormEvaluatorEvaluateRequest.Builder builder =
+			DDMFormEvaluatorEvaluateRequest.Builder.newBuilder(
+				ddmForm, ddmFormValues, locale);
+
+		builder.withCompanyId(
+			_portal.getCompanyId(portletRequest)
+		).withDDMFormInstanceId(
+			ParamUtil.getLong(portletRequest, "formInstanceId")
+		).withGroupId(
+			ParamUtil.getLong(portletRequest, "groupId")
+		).withUserId(
+			_portal.getUserId(portletRequest)
+		);
+
+		return _ddmFormEvaluator.evaluate(builder.build());
 	}
 
 	protected String getFieldLabel(DDMFormField ddmFormField, Locale locale) {
@@ -320,7 +322,7 @@ public class DDMFormInstanceFieldSettingsValidator {
 
 			for (Locale availableLocale : _ddmForm.getAvailableLocales()) {
 				DDMFormEvaluatorEvaluateResponse
-					ddmFormEvaluatorEvaluateResponse = doEvaluate(
+					ddmFormEvaluatorEvaluateResponse = evaluate(
 						_portletRequest, fieldDDMForm, fieldDDMFormValues,
 						availableLocale);
 

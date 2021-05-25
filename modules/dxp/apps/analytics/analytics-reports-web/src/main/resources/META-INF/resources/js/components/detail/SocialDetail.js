@@ -15,12 +15,10 @@ import PropTypes from 'prop-types';
 import React, {useContext, useMemo, useState} from 'react';
 
 import {
-	useChangeTimeSpanKey,
-	useChartState,
+	ChartDispatchContext,
+	ChartStateContext,
 	useDateTitle,
 	useIsPreviousPeriodButtonDisabled,
-	useNextTimeSpan,
-	usePreviousTimeSpan,
 } from '../../context/ChartStateContext';
 import {StoreStateContext} from '../../context/StoreContext';
 import {generateDateFormatters as dateFormat} from '../../utils/dateFormat';
@@ -59,20 +57,16 @@ export default function SocialDetail({
 
 	const title = dateFormatters.formatChartTitle([firstDate, lastDate]);
 
-	const chartState = useChartState();
+	const dispatch = useContext(ChartDispatchContext);
+
+	const {timeSpanKey, timeSpanOffset} = useContext(ChartStateContext);
 
 	const isPreviousPeriodButtonDisabled = useIsPreviousPeriodButtonDisabled();
-
-	const changeTimeSpanKey = useChangeTimeSpanKey();
-
-	const previousTimeSpan = usePreviousTimeSpan();
-
-	const nextTimeSpan = useNextTimeSpan();
 
 	const handleTimeSpanChange = (event) => {
 		const {value} = event.target;
 
-		changeTimeSpanKey({key: value});
+		dispatch({payload: {key: value}, type: 'CHANGE_TIME_SPAN_KEY'});
 	};
 
 	const keyToHexColor = (name) => {
@@ -106,16 +100,18 @@ export default function SocialDetail({
 				<>
 					<div className="c-mb-3 c-mt-2">
 						<TimeSpanSelector
-							disabledNextTimeSpan={
-								chartState.timeSpanOffset === 0
-							}
+							disabledNextTimeSpan={timeSpanOffset === 0}
 							disabledPreviousPeriodButton={
 								isPreviousPeriodButtonDisabled
 							}
-							onNextTimeSpanClick={nextTimeSpan}
-							onPreviousTimeSpanClick={previousTimeSpan}
+							onNextTimeSpanClick={() =>
+								dispatch({type: 'NEXT_TIME_SPAN'})
+							}
+							onPreviousTimeSpanClick={() =>
+								dispatch({type: 'PREV_TIME_SPAN'})
+							}
 							onTimeSpanChange={handleTimeSpanChange}
-							timeSpanKey={chartState.timeSpanKey}
+							timeSpanKey={timeSpanKey}
 							timeSpanOptions={timeSpanOptions}
 						/>
 					</div>

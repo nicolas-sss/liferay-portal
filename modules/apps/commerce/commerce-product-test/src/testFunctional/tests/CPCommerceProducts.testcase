@@ -11,13 +11,6 @@ definition {
 		User.firstLoginPG();
 
 		CommerceConfiguration.commerceStoreFrontSetUp();
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "Search");
-
-		SearchAdministration.executeSearchActions(actionsDescription = "Reindex all search indexes.");
 	}
 
 	tearDown {
@@ -38,13 +31,41 @@ definition {
 	}
 
 	@description = "This is a test for COMMERCE-6269. AddAnOptionAndVerifyIfIsPresent"
-	@ignore = "true"
 	@priority = "3"
 	test AddAnOptionAndVerifyIfIsPresent {
 		property portal.acceptance = "false";
 
-		// TODO COMMERCE-6269 AddAnOptionAndVerifyIfIsPresent
+		// TODO Review
 
+		CommerceNavigator.gotoPortlet(
+			category = "Product Management",
+			portlet = "Products");
+
+		CPCommerceCatalog.newProductsEntry(
+			productCatalog = "Master",
+			productName = "Simple T-Shirt",
+			productType = "Simple");
+
+		CommerceEntry.gotoMenuTab(menuTab = "Options");
+
+		Type(
+			key_title = "Add Options",
+			locator1 = "CommerceEntry#ADD_RELATION_FIELD",
+			value1 = "Color");
+
+		Button.click(button = "Create New");
+
+		AssertElementPresent(
+			key_entryName = "Color",
+			locator1 = "CommerceEntry#TABLE_LIST_TITLE");
+
+		CommerceNavigator.gotoPortlet(
+			category = "Product Management",
+			portlet = "Options");
+
+		AssertElementPresent(
+			key_entryName = "Color",
+			locator1 = "CommerceEntry#TABLE_LIST_TITLE");
 	}
 
 	@description = "This is a test for COMMERCE-6021. AddASKU"
@@ -54,6 +75,7 @@ definition {
 		property portal.acceptance = "false";
 
 		// TODO COMMERCE-6021 AddASKU
+
 	}
 
 	@description = "This is a test for COMMERCE-6287. AddASpecificationAndVerifyIfIsPresent"
@@ -88,6 +110,8 @@ definition {
 	test AssertProductBundleCanBeCreatedWithPriceTypeStaticAndDynamic {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProducts#AssertProductBundleCanBeCreatedWithPriceTypeStaticAndDynamic";
+
+		// TODO Review
 
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
@@ -352,6 +376,8 @@ definition {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProducts#CreateProductBundleWithPriceTypeStatic";
 
+		// TODO Review
+
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
 		CommerceNavigator.gotoPortlet(
@@ -520,6 +546,8 @@ definition {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProducts#EditAProduct";
 
+		// TODO Review
+
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
 		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
@@ -557,6 +585,8 @@ definition {
 	test EditSkuAndDelete {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProducts#EditSkuAndDelete";
+
+		// TODO Review
 
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
@@ -715,12 +745,44 @@ definition {
 	}
 
 	@description = "This is a test for COMMERCE-6303. UseSchedule"
-	@ignore = "true"
 	@priority = "3"
 	test UseSchedule {
 		property portal.acceptance = "false";
+		property test.name.skip.portal.instance = "CPCommerceProducts#UseSchedule";
 
-		// TODO COMMERCE-6303 UseSchedule
+		// TODO Review
+
+		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
+
+		CommerceNavigator.gotoPortlet(
+			category = "Product Management",
+			portlet = "Products");
+
+		AppBuilderAdmin.searchByItem(itemName = '''"Brake Fluid"''');
+
+		Click(
+			key_entryName = "Brake Fluid",
+			locator1 = "CommerceEntry#TABLE_LIST_TITLE");
+
+		Uncheck.uncheckToggleSwitch(
+			key_toggleSwitchLabel = "Never Expire",
+			locator1 = "ToggleSwitch#ANY_TOGGLE_SWITCH");
+
+		Click(locator1 = "CommerceEntry#EXPIRATION_DATE_FIELD");
+
+		var displayDateDay = DateUtil.getCurrentDate();
+		var displayDateMonth = DateUtil.getCurrentMonth();
+		var displayDateYear = DateUtil.getCurrentYear();
+		var futureYear = ${displayDateYear} + 1;
+		var displayDate = "${displayDateMonth}/${displayDateDay}/${futureYear}";
+
+		Type(
+			locator1 = "CommerceEntry#EXPIRATION_DATE_FIELD",
+			value1 = "${displayDate}");
+
+		Button.clickPublish();
+
+		AssertElementPresent(locator1 = "Message#SUCCESS");
 	}
 
 	@description = "This is a test for COMMERCE-5805. UseSearchBarAndPagination"
@@ -737,6 +799,8 @@ definition {
 	test UseSkuSearchBarAndPagination {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProducts#UseSkuSearchBarAndPagination";
+
+		// TODO Review
 
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
@@ -764,6 +828,8 @@ definition {
 	test UseSortingByNameAndDate {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProducts#UseSortingByNameAndDate";
+
+		// TODO Review
 
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 

@@ -15,32 +15,49 @@
 package com.liferay.layout.reports.web.internal.model;
 
 import com.liferay.petra.lang.HashUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 /**
  * @author Cristina González
  */
 public class LayoutReportsIssue {
 
-	public LayoutReportsIssue(String key, long total) {
+	public LayoutReportsIssue(List<Detail> details, Key key) {
 		if (key == null) {
-			throw new IllegalArgumentException("Key should not be null");
+			throw new IllegalArgumentException("Key is null");
+		}
+
+		if (details == null) {
+			_details = Collections.emptyList();
+		}
+		else {
+			_details = Collections.unmodifiableList(details);
 		}
 
 		_key = key;
-		_total = total;
+
+		Stream<Detail> stream = _details.stream();
+
+		_total = stream.mapToLong(
+			Detail::getTotal
+		).sum();
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		LayoutReportsIssue layoutReportsIssue = (LayoutReportsIssue)object;
 
-		if (Objects.equals(layoutReportsIssue._key, _key) &&
+		if (Objects.equals(layoutReportsIssue._details, _details) &&
+			Objects.equals(layoutReportsIssue._key, _key) &&
 			(layoutReportsIssue._total == _total)) {
 
 			return true;
@@ -49,7 +66,11 @@ public class LayoutReportsIssue {
 		return false;
 	}
 
-	public String getKey() {
+	public List<Detail> getDetails() {
+		return _details;
+	}
+
+	public Key getKey() {
 		return _key;
 	}
 
@@ -65,10 +86,21 @@ public class LayoutReportsIssue {
 	}
 
 	public JSONObject toJSONObject(ResourceBundle resourceBundle) {
+		Stream<Detail> stream = _details.stream();
+
 		return JSONUtil.put(
-			"key", _key
+			"details",
+			JSONUtil.putAll(
+				stream.filter(
+					detail -> detail.getTotal() > 0
+				).map(
+					detail -> detail.toJSONObject(resourceBundle)
+				).toArray())
 		).put(
-			"title", ResourceBundleUtil.getString(resourceBundle, _key)
+			"key", _key.toString()
+		).put(
+			"title",
+			ResourceBundleUtil.getString(resourceBundle, _key.toString())
 		).put(
 			"total", _total
 		);
@@ -76,14 +108,235 @@ public class LayoutReportsIssue {
 
 	@Override
 	public String toString() {
-		return JSONUtil.put(
-			"key", _key
-		).put(
-			"total", _total
-		).toString();
+		StringBundler sb = new StringBundler((7 * _details.size()) + 3);
+
+		sb.append("{details={");
+
+		for (int i = 0; i < _details.size(); i++) {
+			Detail detail = _details.get(i);
+
+			if (detail.getTotal() > 0) {
+				sb.append(detail.getKey());
+				sb.append("=");
+				sb.append(detail.getTotal());
+
+				if (i < (_details.size() - 1)) {
+					sb.append(", ");
+				}
+			}
+		}
+
+		sb.append("}, key=");
+		sb.append(_key);
+		sb.append(", total=");
+		sb.append(_total);
+		sb.append("}");
+
+		return sb.toString();
 	}
 
-	private final String _key;
+	public static class Detail {
+
+		public Detail(Detail.Key key, long total) {
+			if (key == null) {
+				throw new IllegalArgumentException("Key is null");
+			}
+
+			_key = key;
+			_total = total;
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			Detail detail = (Detail)object;
+
+			if ((detail._key == _key) && (detail._total == _total)) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public Key getKey() {
+			return _key;
+		}
+
+		public long getTotal() {
+			return _total;
+		}
+
+		@Override
+		public int hashCode() {
+			int hashCode = HashUtil.hash(0, _key);
+
+			return HashUtil.hash(hashCode, _total);
+		}
+
+		public JSONObject toJSONObject(ResourceBundle resourceBundle) {
+			return JSONUtil.put(
+				"key", _key.toString()
+			).put(
+				"title",
+				ResourceBundleUtil.getString(
+					resourceBundle, "detail-" + _key.toString())
+			).put(
+				"total", _total
+			);
+		}
+
+		@Override
+		public String toString() {
+			JSONObject jsonObject = toJSONObject(
+				ResourceBundleUtil.EMPTY_RESOURCE_BUNDLE);
+
+			return jsonObject.toString();
+		}
+
+		public enum Key {
+
+			ILLEGIBLE_FONT_SIZES {
+
+				@Override
+				public String toString() {
+					return "illegible-font-sizes";
+				}
+
+			},
+			INCORRECT_IMAGE_ASPECT_RATIOS {
+
+				@Override
+				public String toString() {
+					return "incorrect-image-aspect-ratios";
+				}
+
+			},
+			INVALID_CANONICAL_URL {
+
+				@Override
+				public String toString() {
+					return "invalid-canonical-url";
+				}
+
+			},
+			INVALID_HREFLANG {
+
+				@Override
+				public String toString() {
+					return "invalid-hreflang";
+				}
+
+			},
+			LINK_TEXTS {
+
+				@Override
+				public String toString() {
+					return "link-texts";
+				}
+
+			},
+			LOW_CONTRAST_RATIO {
+
+				@Override
+				public String toString() {
+					return "low-contrast-ratio";
+				}
+
+			},
+			MISSING_IMG_ALT_ATTRIBUTES {
+
+				@Override
+				public String toString() {
+					return "missing-img-alt-attributes";
+				}
+
+			},
+			MISSING_INPUT_ALT_ATTRIBUTES {
+
+				@Override
+				public String toString() {
+					return "missing-input-alt-attributes";
+				}
+
+			},
+			MISSING_META_DESCRIPTION {
+
+				@Override
+				public String toString() {
+					return "missing-meta-description";
+				}
+
+			},
+			MISSING_TITLE_ELEMENT {
+
+				@Override
+				public String toString() {
+					return "missing-title-element";
+				}
+
+			},
+			MISSING_VIDEO_CAPTION {
+
+				@Override
+				public String toString() {
+					return "missing-video-caption";
+				}
+
+			},
+			NOT_ALL_LINKS_ARE_CRAWLABLE {
+
+				@Override
+				public String toString() {
+					return "not-all-links-are-crawlable";
+				}
+
+			},
+			PAGE_BLOCKED_FROM_INDEXING {
+
+				@Override
+				public String toString() {
+					return "page-blocked-from-indexing";
+				}
+
+			},
+			SMALL_TAP_TARGETS {
+
+				@Override
+				public String toString() {
+					return "small-tap-targets";
+				}
+
+			},
+
+		}
+
+		private final Detail.Key _key;
+		private final long _total;
+
+	}
+
+	public enum Key {
+
+		ACCESSIBILITY {
+
+			@Override
+			public String toString() {
+				return "accessibility";
+			}
+
+		},
+		SEO {
+
+			@Override
+			public String toString() {
+				return "seo";
+			}
+
+		},
+
+	}
+
+	private final List<Detail> _details;
+	private final Key _key;
 	private final long _total;
 
 }

@@ -79,14 +79,22 @@ definition {
 		if (isSet(displayPageTemplateType)) {
 			Panel.expandPanel(panel = "Display Page");
 
-			Select(
+			if ("${displayPageTemplateType}" != "Default") {
+				Select(
+					locator1 = "WCEditWebContent#DISPLAY_PAGE_SELECT",
+					value1 = "${displayPageTemplateType}");
+			}
+
+			Pause(locator1 = "3000");
+
+			AssertSelectedLabel(
 				locator1 = "WCEditWebContent#DISPLAY_PAGE_SELECT",
 				value1 = "${displayPageTemplateType}");
 
 			if ("${displayPageTemplateType}" != "None") {
 				if ("${displayPageTemplateType}" == "Default") {
 					AssertTextEquals(
-						locator1 = "WCEditWebContent#DISPLAY_PAGE_SPECIFIC_SELECTION",
+						locator1 = "WCEditWebContent#DISPLAY_PAGE_DEFAULT_SELECTION",
 						value1 = "${displayPageName}");
 				}
 				if ("${displayPageTemplateType}" == "Specific") {
@@ -268,10 +276,16 @@ definition {
 				locator1 = "WCEditWebContent#DISPLAY_PAGE_SELECT",
 				value1 = "${displayPageTemplateType}");
 
+			Pause(locator1 = "3000");
+
+			AssertSelectedLabel(
+				locator1 = "WCEditWebContent#DISPLAY_PAGE_SELECT",
+				value1 = "${displayPageTemplateType}");
+
 			if ("${displayPageTemplateType}" != "None") {
 				if ("${displayPageTemplateType}" == "Default") {
 					AssertTextEquals(
-						locator1 = "WCEditWebContent#DISPLAY_PAGE_SPECIFIC_SELECTION",
+						locator1 = "WCEditWebContent#DISPLAY_PAGE_DEFAULT_SELECTION",
 						value1 = "${displayPageName}");
 				}
 				if ("${displayPageTemplateType}" == "Specific") {

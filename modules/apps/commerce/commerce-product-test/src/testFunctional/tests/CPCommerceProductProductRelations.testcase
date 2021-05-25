@@ -11,13 +11,6 @@ definition {
 		User.firstLoginPG();
 
 		CommerceConfiguration.commerceStoreFrontSetUp();
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "Search");
-
-		SearchAdministration.executeSearchActions(actionsDescription = "Reindex all search indexes.");
 	}
 
 	tearDown {
@@ -38,13 +31,55 @@ definition {
 	}
 
 	@description = "This is a test for COMMERCE-6062. AddAProductRelations"
-	@ignore = "true"
 	@priority = "3"
 	test AddAProductRelations {
 		property portal.acceptance = "false";
+		property test.name.skip.portal.instance = "CPCommerceProductProductRelations#AddAProductRelations";
 
-		// TODO COMMERCE-6062 AddAProductRelations
+		// TODO Review
 
+		CommerceNavigator.gotoPortlet(
+			category = "Product Management",
+			portlet = "Products");
+
+		CPCommerceCatalog.newProductsEntry(
+			productCatalog = "Master",
+			productName = "Simple T-Shirt",
+			productType = "Simple");
+
+		Click(locator1 = "Icon#BACK");
+
+		CPCommerceCatalog.newProductsEntry(
+			productCatalog = "Master",
+			productName = "Shoes",
+			productType = "Simple");
+		Click(locator1 = "Icon#BACK");
+
+		AppBuilderAdmin.searchByItem(itemName = "Simple T-Shirt");
+
+		CommerceNavigator.gotoEntry(entryName = "Simple T-Shirt");
+
+		CommerceEntry.gotoMenuTab(menuTab = "Product Relations");
+
+		CommerceRelations.addAnyProductRelation(
+			key_product = "Shoes",
+			key_relation = "Up-Sell Product");
+
+		CommerceRelations.addAnyProductRelation(
+			key_product = "Shoes",
+			key_relation = "Cross-Sell Product");
+
+		CommerceRelations.addAnyProductRelation(
+			key_product = "Shoes",
+			key_relation = "Related Product");
+
+		CommerceRelations.addAnyProductRelation(
+			key_product = "Shoes",
+			key_relation = "Accessories Product");
+
+		CommerceRelations.addAnyProductRelation(
+			key_product = "Shoes",
+			key_relation = "Spare Product");
 	}
 
 	@description = "This is a test for COMMERCE-6064. EditAProductRelations"
@@ -52,6 +87,8 @@ definition {
 	test EditAProductRelations {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductProductRelations#EditAProductRelations";
+
+		// TODO Review
 
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
@@ -99,24 +136,9 @@ definition {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductProductRelations#RemoveAProductRelations";
 
+		// TODO Review
+
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
-
-		CommerceNavigator.gotoPortlet(
-			category = "Product Management",
-			portlet = "Catalogs");
-
-		Click(locator1 = "Button#PLUS");
-
-		CommerceEntry.addNewCatalogsEntry(
-			catalogCurrency = "US Dollar",
-			catalogLanguage = "English (United States)",
-			catalogName = "Master");
-
-		AssertClickNoError(
-			locator1 = "Button#SUBMIT",
-			value1 = "Submit");
-
-		Refresh();
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",

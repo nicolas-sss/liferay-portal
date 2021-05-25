@@ -240,10 +240,11 @@ public abstract class BaseDocumentResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "Document")})
-	public void putAssetLibraryDocumentPermission(
-			@NotNull @Parameter(hidden = true) @PathParam("assetLibraryId") Long
-				assetLibraryId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putAssetLibraryDocumentPermission(
+				@NotNull @Parameter(hidden = true) @PathParam("assetLibraryId")
+					Long assetLibraryId,
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String portletName = getPermissionCheckerPortletName(assetLibraryId);
@@ -259,6 +260,8 @@ public abstract class BaseDocumentResourceImpl
 				contextCompany.getCompanyId(), permissions, assetLibraryId,
 				portletName, resourceActionLocalService,
 				resourcePermissionLocalService, roleLocalService));
+
+		return toPermissionPage(assetLibraryId, portletName, null);
 	}
 
 	/**
@@ -679,10 +682,11 @@ public abstract class BaseDocumentResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "Document")})
-	public void putDocumentPermission(
-			@NotNull @Parameter(hidden = true) @PathParam("documentId") Long
-				documentId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putDocumentPermission(
+				@NotNull @Parameter(hidden = true) @PathParam("documentId") Long
+					documentId,
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String resourceName = getPermissionCheckerResourceName(documentId);
@@ -693,12 +697,15 @@ public abstract class BaseDocumentResourceImpl
 			getPermissionCheckerGroupId(documentId));
 
 		resourcePermissionLocalService.updateResourcePermissions(
-			contextCompany.getCompanyId(), 0, resourceName,
+			contextCompany.getCompanyId(),
+			getPermissionCheckerGroupId(documentId), resourceName,
 			String.valueOf(resourceId),
 			ModelPermissionsUtil.toModelPermissions(
 				contextCompany.getCompanyId(), permissions, resourceId,
 				resourceName, resourceActionLocalService,
 				resourcePermissionLocalService, roleLocalService));
+
+		return toPermissionPage(resourceId, resourceName, null);
 	}
 
 	/**
@@ -875,9 +882,11 @@ public abstract class BaseDocumentResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "Document")})
-	public void putSiteDocumentPermission(
-			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putSiteDocumentPermission(
+				@NotNull @Parameter(hidden = true) @PathParam("siteId") Long
+					siteId,
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String portletName = getPermissionCheckerPortletName(siteId);
@@ -893,6 +902,8 @@ public abstract class BaseDocumentResourceImpl
 				contextCompany.getCompanyId(), permissions, siteId, portletName,
 				resourceActionLocalService, resourcePermissionLocalService,
 				roleLocalService));
+
+		return toPermissionPage(siteId, portletName, null);
 	}
 
 	@Override
@@ -903,7 +914,8 @@ public abstract class BaseDocumentResourceImpl
 		throws Exception {
 
 		for (Document document : documents) {
-			postSiteDocument((Long)parameters.get("siteId"), null);
+			postSiteDocument(
+				Long.parseLong((String)parameters.get("siteId")), null);
 		}
 	}
 
@@ -940,8 +952,9 @@ public abstract class BaseDocumentResourceImpl
 		throws Exception {
 
 		return getSiteDocumentsPage(
-			(Long)parameters.get("siteId"), (Boolean)parameters.get("flatten"),
-			search, null, filter, pagination, sorts);
+			Long.parseLong((String)parameters.get("siteId")),
+			Boolean.parseBoolean((String)parameters.get("flatten")), search,
+			null, filter, pagination, sorts);
 	}
 
 	@Override
@@ -975,7 +988,7 @@ public abstract class BaseDocumentResourceImpl
 		for (Document document : documents) {
 			putDocument(
 				document.getId() != null ? document.getId() :
-					(Long)parameters.get("documentId"),
+					Long.parseLong((String)parameters.get("documentId")),
 				null);
 		}
 	}

@@ -31,13 +31,8 @@ public class MapBuilderCheck extends BaseBuilderCheck {
 	}
 
 	@Override
-	protected String getAssignClassName(DetailAST assignDetailAST) {
-		return getNewInstanceTypeName(assignDetailAST);
-	}
-
-	@Override
 	protected List<BaseBuilderCheck.BuilderInformation>
-		getBuilderInformationList() {
+		doGetBuilderInformationList() {
 
 		return ListUtil.fromArray(
 			new BaseBuilderCheck.BuilderInformation(
@@ -46,9 +41,17 @@ public class MapBuilderCheck extends BaseBuilderCheck {
 			new BaseBuilderCheck.BuilderInformation(
 				"HashMap", "HashMapBuilder", "put", "putAll"),
 			new BaseBuilderCheck.BuilderInformation(
+				"HashMapDictionary", "HashMapDictionaryBuilder", "put",
+				"putAll"),
+			new BaseBuilderCheck.BuilderInformation(
 				"LinkedHashMap", "LinkedHashMapBuilder", "put", "putAll"),
 			new BaseBuilderCheck.BuilderInformation(
 				"TreeMap", "TreeMapBuilder", "put", "putAll"));
+	}
+
+	@Override
+	protected String getAssignClassName(DetailAST assignDetailAST) {
+		return getNewInstanceTypeName(assignDetailAST);
 	}
 
 	@Override

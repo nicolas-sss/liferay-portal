@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -177,19 +179,28 @@ public class TestrayRoutine {
 		}
 	}
 
-	public TestrayBuild getTestrayBuildByName(String buildName) {
+	public TestrayBuild getTestrayBuildByName(
+		String buildName, String... names) {
+
 		if (_testrayBuildsByName.containsKey(buildName)) {
 			return _testrayBuildsByName.get(buildName);
 		}
 
 		int current = 1;
 
+		StringBuilder sb = new StringBuilder();
+
+		for (String name : names) {
+			sb.append("&name=");
+			sb.append(JenkinsResultsParserUtil.fixURL(name));
+		}
+
 		while (true) {
 			try {
 				String buildAPIURL = JenkinsResultsParserUtil.combine(
 					String.valueOf(_testrayServer.getURL()),
 					"/home/-/testray/builds.json?cur=", String.valueOf(current),
-					"&delta=", String.valueOf(_DELTA),
+					"&delta=", String.valueOf(_DELTA), sb.toString(),
 					"&orderByCol=testrayBuildId&testrayRoutineId=",
 					String.valueOf(getID()));
 
@@ -226,18 +237,37 @@ public class TestrayRoutine {
 	}
 
 	public List<TestrayBuild> getTestrayBuilds() {
-		return getTestrayBuilds(_DELTA);
+		return getTestrayBuilds(_DELTA, null, null);
 	}
 
 	public List<TestrayBuild> getTestrayBuilds(int maxSize) {
+		return getTestrayBuilds(maxSize, null, null);
+	}
+
+	public List<TestrayBuild> getTestrayBuilds(
+		int maxSize, LocalDate localDate, String name) {
+
 		int current = 1;
+
+		StringBuilder sb = new StringBuilder();
+
+		if (localDate != null) {
+			sb.append("&name=%22");
+			sb.append(localDate);
+			sb.append("%22");
+		}
+
+		if (!JenkinsResultsParserUtil.isNullOrEmpty(name)) {
+			sb.append("&name=");
+			sb.append(name);
+		}
 
 		while ((current * _DELTA) <= maxSize) {
 			try {
 				String buildAPIURL = JenkinsResultsParserUtil.combine(
 					String.valueOf(_testrayServer.getURL()),
 					"/home/-/testray/builds.json?cur=", String.valueOf(current),
-					"&delta=", String.valueOf(_DELTA),
+					"&delta=", String.valueOf(_DELTA), sb.toString(),
 					"&orderByCol=testrayBuildId&testrayRoutineId=",
 					String.valueOf(getID()));
 
@@ -271,7 +301,27 @@ public class TestrayRoutine {
 			}
 		}
 
-		return new ArrayList<>(_testrayBuildsByName.values());
+		List<TestrayBuild> testrayBuilds = new ArrayList<>();
+
+		for (TestrayBuild testrayBuild : _testrayBuildsByID.values()) {
+			String testrayBuildName = testrayBuild.getName();
+
+			if (!JenkinsResultsParserUtil.isNullOrEmpty(name) &&
+				!testrayBuildName.contains(name)) {
+
+				continue;
+			}
+
+			if ((localDate != null) &&
+				!testrayBuildName.contains(localDate.toString())) {
+
+				continue;
+			}
+
+			testrayBuilds.add(testrayBuild);
+		}
+
+		return testrayBuilds;
 	}
 
 	public TestrayProject getTestrayProject() {
@@ -291,7 +341,7 @@ public class TestrayRoutine {
 		_testrayBuildsByName.put(testrayBuild.getName(), testrayBuild);
 	}
 
-	private static final int _DELTA = 25;
+	private static final int _DELTA = 200;
 
 	private static final Log _log = LogFactory.getLog(TestrayRoutine.class);
 

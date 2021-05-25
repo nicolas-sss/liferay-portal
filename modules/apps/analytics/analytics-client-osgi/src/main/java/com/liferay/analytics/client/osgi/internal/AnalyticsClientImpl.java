@@ -181,7 +181,9 @@ public class AnalyticsClientImpl implements AnalyticsClient {
 
 	private volatile AnalyticsClientConfiguration _analyticsClientConfiguration;
 
-	@Reference(target = "(component.factory=JSONWebServiceClient)")
+	@Reference(
+		target = "(component.factory=com.liferay.petra.json.web.service.client.JSONWebServiceClient)"
+	)
 	private ComponentFactory _componentFactory;
 
 	@Reference

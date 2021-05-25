@@ -124,6 +124,64 @@ public class SamlSpSessionUtil {
 	}
 
 	/**
+	 * Returns the saml sp session where jSessionId = &#63; or throws a <code>NoSuchSpSessionException</code> if it could not be found.
+	 *
+	 * @param jSessionId the j session ID
+	 * @return the matching saml sp session
+	 * @throws NoSuchSpSessionException if a matching saml sp session could not be found
+	 */
+	public static SamlSpSession findByJSessionId(String jSessionId)
+		throws com.liferay.saml.persistence.exception.NoSuchSpSessionException {
+
+		return getPersistence().findByJSessionId(jSessionId);
+	}
+
+	/**
+	 * Returns the saml sp session where jSessionId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param jSessionId the j session ID
+	 * @return the matching saml sp session, or <code>null</code> if a matching saml sp session could not be found
+	 */
+	public static SamlSpSession fetchByJSessionId(String jSessionId) {
+		return getPersistence().fetchByJSessionId(jSessionId);
+	}
+
+	/**
+	 * Returns the saml sp session where jSessionId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param jSessionId the j session ID
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching saml sp session, or <code>null</code> if a matching saml sp session could not be found
+	 */
+	public static SamlSpSession fetchByJSessionId(
+		String jSessionId, boolean useFinderCache) {
+
+		return getPersistence().fetchByJSessionId(jSessionId, useFinderCache);
+	}
+
+	/**
+	 * Removes the saml sp session where jSessionId = &#63; from the database.
+	 *
+	 * @param jSessionId the j session ID
+	 * @return the saml sp session that was removed
+	 */
+	public static SamlSpSession removeByJSessionId(String jSessionId)
+		throws com.liferay.saml.persistence.exception.NoSuchSpSessionException {
+
+		return getPersistence().removeByJSessionId(jSessionId);
+	}
+
+	/**
+	 * Returns the number of saml sp sessions where jSessionId = &#63;.
+	 *
+	 * @param jSessionId the j session ID
+	 * @return the number of matching saml sp sessions
+	 */
+	public static int countByJSessionId(String jSessionId) {
+		return getPersistence().countByJSessionId(jSessionId);
+	}
+
+	/**
 	 * Returns the saml sp session where samlSpSessionKey = &#63; or throws a <code>NoSuchSpSessionException</code> if it could not be found.
 	 *
 	 * @param samlSpSessionKey the saml sp session key
@@ -183,237 +241,6 @@ public class SamlSpSessionUtil {
 	 */
 	public static int countBySamlSpSessionKey(String samlSpSessionKey) {
 		return getPersistence().countBySamlSpSessionKey(samlSpSessionKey);
-	}
-
-	/**
-	 * Returns the saml sp session where jSessionId = &#63; or throws a <code>NoSuchSpSessionException</code> if it could not be found.
-	 *
-	 * @param jSessionId the j session ID
-	 * @return the matching saml sp session
-	 * @throws NoSuchSpSessionException if a matching saml sp session could not be found
-	 */
-	public static SamlSpSession findByJSessionId(String jSessionId)
-		throws com.liferay.saml.persistence.exception.NoSuchSpSessionException {
-
-		return getPersistence().findByJSessionId(jSessionId);
-	}
-
-	/**
-	 * Returns the saml sp session where jSessionId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
-	 *
-	 * @param jSessionId the j session ID
-	 * @return the matching saml sp session, or <code>null</code> if a matching saml sp session could not be found
-	 */
-	public static SamlSpSession fetchByJSessionId(String jSessionId) {
-		return getPersistence().fetchByJSessionId(jSessionId);
-	}
-
-	/**
-	 * Returns the saml sp session where jSessionId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
-	 *
-	 * @param jSessionId the j session ID
-	 * @param useFinderCache whether to use the finder cache
-	 * @return the matching saml sp session, or <code>null</code> if a matching saml sp session could not be found
-	 */
-	public static SamlSpSession fetchByJSessionId(
-		String jSessionId, boolean useFinderCache) {
-
-		return getPersistence().fetchByJSessionId(jSessionId, useFinderCache);
-	}
-
-	/**
-	 * Removes the saml sp session where jSessionId = &#63; from the database.
-	 *
-	 * @param jSessionId the j session ID
-	 * @return the saml sp session that was removed
-	 */
-	public static SamlSpSession removeByJSessionId(String jSessionId)
-		throws com.liferay.saml.persistence.exception.NoSuchSpSessionException {
-
-		return getPersistence().removeByJSessionId(jSessionId);
-	}
-
-	/**
-	 * Returns the number of saml sp sessions where jSessionId = &#63;.
-	 *
-	 * @param jSessionId the j session ID
-	 * @return the number of matching saml sp sessions
-	 */
-	public static int countByJSessionId(String jSessionId) {
-		return getPersistence().countByJSessionId(jSessionId);
-	}
-
-	/**
-	 * Returns all the saml sp sessions where nameIdValue = &#63;.
-	 *
-	 * @param nameIdValue the name ID value
-	 * @return the matching saml sp sessions
-	 */
-	public static List<SamlSpSession> findByNameIdValue(String nameIdValue) {
-		return getPersistence().findByNameIdValue(nameIdValue);
-	}
-
-	/**
-	 * Returns a range of all the saml sp sessions where nameIdValue = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SamlSpSessionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param nameIdValue the name ID value
-	 * @param start the lower bound of the range of saml sp sessions
-	 * @param end the upper bound of the range of saml sp sessions (not inclusive)
-	 * @return the range of matching saml sp sessions
-	 */
-	public static List<SamlSpSession> findByNameIdValue(
-		String nameIdValue, int start, int end) {
-
-		return getPersistence().findByNameIdValue(nameIdValue, start, end);
-	}
-
-	/**
-	 * Returns an ordered range of all the saml sp sessions where nameIdValue = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SamlSpSessionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param nameIdValue the name ID value
-	 * @param start the lower bound of the range of saml sp sessions
-	 * @param end the upper bound of the range of saml sp sessions (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the ordered range of matching saml sp sessions
-	 */
-	public static List<SamlSpSession> findByNameIdValue(
-		String nameIdValue, int start, int end,
-		OrderByComparator<SamlSpSession> orderByComparator) {
-
-		return getPersistence().findByNameIdValue(
-			nameIdValue, start, end, orderByComparator);
-	}
-
-	/**
-	 * Returns an ordered range of all the saml sp sessions where nameIdValue = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SamlSpSessionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param nameIdValue the name ID value
-	 * @param start the lower bound of the range of saml sp sessions
-	 * @param end the upper bound of the range of saml sp sessions (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param useFinderCache whether to use the finder cache
-	 * @return the ordered range of matching saml sp sessions
-	 */
-	public static List<SamlSpSession> findByNameIdValue(
-		String nameIdValue, int start, int end,
-		OrderByComparator<SamlSpSession> orderByComparator,
-		boolean useFinderCache) {
-
-		return getPersistence().findByNameIdValue(
-			nameIdValue, start, end, orderByComparator, useFinderCache);
-	}
-
-	/**
-	 * Returns the first saml sp session in the ordered set where nameIdValue = &#63;.
-	 *
-	 * @param nameIdValue the name ID value
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching saml sp session
-	 * @throws NoSuchSpSessionException if a matching saml sp session could not be found
-	 */
-	public static SamlSpSession findByNameIdValue_First(
-			String nameIdValue,
-			OrderByComparator<SamlSpSession> orderByComparator)
-		throws com.liferay.saml.persistence.exception.NoSuchSpSessionException {
-
-		return getPersistence().findByNameIdValue_First(
-			nameIdValue, orderByComparator);
-	}
-
-	/**
-	 * Returns the first saml sp session in the ordered set where nameIdValue = &#63;.
-	 *
-	 * @param nameIdValue the name ID value
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching saml sp session, or <code>null</code> if a matching saml sp session could not be found
-	 */
-	public static SamlSpSession fetchByNameIdValue_First(
-		String nameIdValue,
-		OrderByComparator<SamlSpSession> orderByComparator) {
-
-		return getPersistence().fetchByNameIdValue_First(
-			nameIdValue, orderByComparator);
-	}
-
-	/**
-	 * Returns the last saml sp session in the ordered set where nameIdValue = &#63;.
-	 *
-	 * @param nameIdValue the name ID value
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching saml sp session
-	 * @throws NoSuchSpSessionException if a matching saml sp session could not be found
-	 */
-	public static SamlSpSession findByNameIdValue_Last(
-			String nameIdValue,
-			OrderByComparator<SamlSpSession> orderByComparator)
-		throws com.liferay.saml.persistence.exception.NoSuchSpSessionException {
-
-		return getPersistence().findByNameIdValue_Last(
-			nameIdValue, orderByComparator);
-	}
-
-	/**
-	 * Returns the last saml sp session in the ordered set where nameIdValue = &#63;.
-	 *
-	 * @param nameIdValue the name ID value
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching saml sp session, or <code>null</code> if a matching saml sp session could not be found
-	 */
-	public static SamlSpSession fetchByNameIdValue_Last(
-		String nameIdValue,
-		OrderByComparator<SamlSpSession> orderByComparator) {
-
-		return getPersistence().fetchByNameIdValue_Last(
-			nameIdValue, orderByComparator);
-	}
-
-	/**
-	 * Returns the saml sp sessions before and after the current saml sp session in the ordered set where nameIdValue = &#63;.
-	 *
-	 * @param samlSpSessionId the primary key of the current saml sp session
-	 * @param nameIdValue the name ID value
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the previous, current, and next saml sp session
-	 * @throws NoSuchSpSessionException if a saml sp session with the primary key could not be found
-	 */
-	public static SamlSpSession[] findByNameIdValue_PrevAndNext(
-			long samlSpSessionId, String nameIdValue,
-			OrderByComparator<SamlSpSession> orderByComparator)
-		throws com.liferay.saml.persistence.exception.NoSuchSpSessionException {
-
-		return getPersistence().findByNameIdValue_PrevAndNext(
-			samlSpSessionId, nameIdValue, orderByComparator);
-	}
-
-	/**
-	 * Removes all the saml sp sessions where nameIdValue = &#63; from the database.
-	 *
-	 * @param nameIdValue the name ID value
-	 */
-	public static void removeByNameIdValue(String nameIdValue) {
-		getPersistence().removeByNameIdValue(nameIdValue);
-	}
-
-	/**
-	 * Returns the number of saml sp sessions where nameIdValue = &#63;.
-	 *
-	 * @param nameIdValue the name ID value
-	 * @return the number of matching saml sp sessions
-	 */
-	public static int countByNameIdValue(String nameIdValue) {
-		return getPersistence().countByNameIdValue(nameIdValue);
 	}
 
 	/**

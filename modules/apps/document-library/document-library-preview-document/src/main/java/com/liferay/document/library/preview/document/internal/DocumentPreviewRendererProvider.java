@@ -103,9 +103,10 @@ public class DocumentPreviewRendererProvider
 			ContentTypes.APPLICATION_TEXT,
 			ContentTypes.APPLICATION_VND_MS_EXCEL,
 			ContentTypes.APPLICATION_VND_MS_POWERPOINT,
-			ContentTypes.APPLICATION_X_PDF, ContentTypes.TEXT_HTML,
-			ContentTypes.TEXT_PLAIN, "application/rtf",
-			"application/vnd.oasis.opendocument.graphics",
+			ContentTypes.APPLICATION_X_PDF, ContentTypes.TEXT_CSS,
+			ContentTypes.TEXT_HTML, ContentTypes.TEXT_PLAIN,
+			ContentTypes.TEXT_X_JSP, "application/javascript",
+			"application/rtf", "application/vnd.oasis.opendocument.graphics",
 			"application/vnd.oasis.opendocument.presentation",
 			"application/vnd.oasis.opendocument.spreadsheet",
 			"application/vnd.oasis.opendocument.text",
@@ -115,7 +116,8 @@ public class DocumentPreviewRendererProvider
 			"application/vnd.openxmlformats-officedocument.wordprocessingml." +
 				"document",
 			"application/vnd.sun.xml.calc", "application/vnd.sun.xml.writer",
-			"application/wordperfect", "text/rtf"));
+			"application/wordperfect", "application/x-sh", "text/jsp",
+			"text/jspf", "text/rtf", "text/x-java-source"));
 
 	@Reference
 	private DLFileVersionPreviewLocalService _dlFileVersionPreviewLocalService;

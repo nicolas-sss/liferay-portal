@@ -34,13 +34,13 @@ definition {
 		task ("Add 2 widget page and 1 content page in the same level") {
 			for (var n : list "1,2") {
 				JSONLayout.addPublicLayout(
-					groupName = "Test Site Name-staging",
+					groupName = "Test Site Name (Staging)",
 					layoutName = "Test Page Name ${n}",
 					site = "false");
 			}
 
 			JSONLayout.addPublicLayout(
-				groupName = "Test Site Name-staging",
+				groupName = "Test Site Name (Staging)",
 				layoutName = "Test Page Name 3",
 				site = "false",
 				type = "content");
@@ -61,7 +61,7 @@ definition {
 		task ("Assert pages order in Staging site") {
 			SitePages.openPagesAdmin(siteURLKey = "test-site-name-staging");
 
-			MetalComponent.waitForManagementBar();
+			WaitForPageLoad();
 
 			Page.viewPagesOrder(
 				depth = "2",
@@ -91,7 +91,7 @@ definition {
 		task ("Assert pages order in Live site") {
 			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
 
-			MetalComponent.waitForManagementBar();
+			WaitForPageLoad();
 
 			Page.viewPagesOrder(
 				depth = "2",
@@ -124,8 +124,6 @@ definition {
 	@description = "This is a test for LPS-110183. Can view information about collection items of collection page when enable Live."
 	@priority = "3"
 	test ViewCollectionItemInformationInStaging {
-		property osgi.app.includes = "bookmarks,document-library-google-docs";
-
 		JSONWebcontent.addWebContent(
 			content = "Web Content Content",
 			groupName = "Test Site Name (Staging)",

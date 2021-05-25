@@ -78,7 +78,7 @@ public class BatchPlannerPlanCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(21);
+		StringBundler sb = new StringBundler(27);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -96,6 +96,12 @@ public class BatchPlannerPlanCacheModel
 		sb.append(modifiedDate);
 		sb.append(", active=");
 		sb.append(active);
+		sb.append(", externalType=");
+		sb.append(externalType);
+		sb.append(", externalURL=");
+		sb.append(externalURL);
+		sb.append(", internalClassName=");
+		sb.append(internalClassName);
 		sb.append(", name=");
 		sb.append(name);
 		sb.append(", export=");
@@ -137,6 +143,27 @@ public class BatchPlannerPlanCacheModel
 
 		batchPlannerPlanImpl.setActive(active);
 
+		if (externalType == null) {
+			batchPlannerPlanImpl.setExternalType("");
+		}
+		else {
+			batchPlannerPlanImpl.setExternalType(externalType);
+		}
+
+		if (externalURL == null) {
+			batchPlannerPlanImpl.setExternalURL("");
+		}
+		else {
+			batchPlannerPlanImpl.setExternalURL(externalURL);
+		}
+
+		if (internalClassName == null) {
+			batchPlannerPlanImpl.setInternalClassName("");
+		}
+		else {
+			batchPlannerPlanImpl.setInternalClassName(internalClassName);
+		}
+
 		if (name == null) {
 			batchPlannerPlanImpl.setName("");
 		}
@@ -165,6 +192,9 @@ public class BatchPlannerPlanCacheModel
 		modifiedDate = objectInput.readLong();
 
 		active = objectInput.readBoolean();
+		externalType = objectInput.readUTF();
+		externalURL = objectInput.readUTF();
+		internalClassName = objectInput.readUTF();
 		name = objectInput.readUTF();
 
 		export = objectInput.readBoolean();
@@ -192,6 +222,27 @@ public class BatchPlannerPlanCacheModel
 
 		objectOutput.writeBoolean(active);
 
+		if (externalType == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(externalType);
+		}
+
+		if (externalURL == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(externalURL);
+		}
+
+		if (internalClassName == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(internalClassName);
+		}
+
 		if (name == null) {
 			objectOutput.writeUTF("");
 		}
@@ -210,6 +261,9 @@ public class BatchPlannerPlanCacheModel
 	public long createDate;
 	public long modifiedDate;
 	public boolean active;
+	public String externalType;
+	public String externalURL;
+	public String internalClassName;
 	public String name;
 	public boolean export;
 

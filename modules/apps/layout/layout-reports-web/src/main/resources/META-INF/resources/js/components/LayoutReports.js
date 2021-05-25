@@ -13,58 +13,34 @@
  */
 
 import ClayAlert from '@clayui/alert';
-import ClayLoadingIndicator from '@clayui/loading-indicator';
+import ClayButton from '@clayui/button';
+import ClayProgressBar from '@clayui/progress-bar';
 import {useIsMounted} from '@liferay/frontend-js-react-web';
 import {fetch} from 'frontend-js-web';
 import PropTypes from 'prop-types';
-import React, {useCallback, useEffect, useReducer} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 
+import {LOAD_DATA, SET_DATA, SET_ERROR} from '../constants/actionTypes';
+import {ConstantsContext} from '../context/ConstantsContext';
+import {StoreDispatchContext, StoreStateContext} from '../context/StoreContext';
+import getPageSpeedProgress from '../utils/getPageSpeedProgress';
+import loadIssues from '../utils/loadIssues';
 import BasicInformation from './BasicInformation';
 import EmptyLayoutReports from './EmptyLayoutReports';
+import LayoutReportsIssuesList from './LayoutReportsIssuesList';
 
-const initialState = {
-	data: null,
-	error: null,
-	loading: false,
-};
-
-const dataReducer = (state, action) => {
-	switch (action.type) {
-		case 'LOAD_DATA':
-			return {
-				...state,
-				loading: true,
-			};
-
-		case 'SET_ERROR':
-			return {
-				...state,
-				error: action.error,
-				loading: false,
-			};
-
-		case 'SET_DATA':
-			return {
-				data: {
-					...action.data,
-				},
-				error: action.data?.error,
-				loading: false,
-			};
-
-		default:
-			return initialState;
-	}
-};
-
-export default function LayoutReports({
-	eventTriggered,
-	isPanelStateOpen,
-	layoutReportsDataURL,
-}) {
+export default function LayoutReports({eventTriggered}) {
 	const isMounted = useIsMounted();
 
-	const [state, dispatch] = useReducer(dataReducer, initialState);
+	const {data, error, languageId, loading} = useContext(StoreStateContext);
+
+	const {
+		isPanelStateOpen,
+		layoutReportsDataURL,
+		portletNamespace,
+	} = useContext(ConstantsContext);
+
+	const dispatch = useContext(StoreDispatchContext);
 
 	const safeDispatch = useCallback(
 		(action) => {
@@ -72,77 +48,153 @@ export default function LayoutReports({
 				dispatch(action);
 			}
 		},
-		[isMounted]
+		[dispatch, isMounted]
 	);
+
+	const [percentage, setPercentage] = useState(0);
+
+	useEffect(() => {
+		if (loading && !error) {
+			const initial = Date.now();
+			const interval = setInterval(() => {
+				const elapsedTimeInSeconds = (Date.now() - initial) / 1000;
+				const progress = getPageSpeedProgress(elapsedTimeInSeconds);
+
+				setPercentage(progress.toFixed(0));
+			}, 500);
+
+			return () => {
+				clearInterval(interval);
+				setPercentage(0);
+			};
+		}
+	}, [error, loading]);
 
 	const getData = useCallback(
 		(fetchURL) => {
-			safeDispatch({type: 'LOAD_DATA'});
+			safeDispatch({type: LOAD_DATA});
 
-			fetch(fetchURL, {
-				method: 'GET',
-			})
+			fetch(fetchURL, {method: 'GET'})
 				.then((response) =>
-					response.json().then((data) =>
+					response.json().then((data) => {
 						safeDispatch({
 							data,
-							type: 'SET_DATA',
-						})
-					)
+							loading: data.validConnection,
+							type: SET_DATA,
+						});
+
+						if (data.validConnection) {
+							const url = data.pageURLs.find(
+								(pageURL) =>
+									pageURL.languageId ===
+									(languageId || data.defaultLanguageId)
+							);
+
+							loadIssues({
+								dispatch: safeDispatch,
+								portletNamespace,
+								url,
+							});
+						}
+					})
 				)
 				.catch(() => {
 					safeDispatch({
 						error: Liferay.Language.get(
 							'an-unexpected-error-occurred'
 						),
-						type: 'SET_ERROR',
+						type: SET_ERROR,
 					});
 				});
 		},
-		[safeDispatch]
+		[languageId, portletNamespace, safeDispatch]
 	);
 
 	useEffect(() => {
-		if (isPanelStateOpen) {
+		if (isPanelStateOpen && !data && !loading) {
 			getData(layoutReportsDataURL);
 		}
-	}, [isPanelStateOpen, layoutReportsDataURL, getData]);
+	}, [data, isPanelStateOpen, layoutReportsDataURL, loading, getData]);
 
 	useEffect(() => {
-		if (eventTriggered) {
+		if (eventTriggered && !data) {
 			getData(layoutReportsDataURL);
 		}
-	}, [eventTriggered, layoutReportsDataURL, getData]);
+	}, [eventTriggered, data, layoutReportsDataURL, getData]);
 
-	return state.loading ? (
-		<ClayLoadingIndicator small />
-	) : state.error ? (
-		<ClayAlert displayType="danger" variant="stripe">
-			{state.error}
-		</ClayAlert>
-	) : (
-		state.data && (
-			<>
-				<BasicInformation
-					canonicalURLs={state.data.canonicalURLs}
-					defaultLanguageId={state.data.defaultLanguageId}
-				/>
+	const onRelaunchButtonClick = () => {
+		const url = data.pageURLs.find(
+			(pageURL) =>
+				pageURL.languageId === (languageId || data.defaultLanguageId)
+		);
 
-				{state.data.validConnection || (
-					<EmptyLayoutReports
-						assetsPath={state.data.assetsPath}
-						configureGooglePageSpeedURL={
-							state.data.configureGooglePageSpeedURL
-						}
+		loadIssues({
+			dispatch: safeDispatch,
+			portletNamespace,
+			url,
+		});
+	};
+
+	return (
+		<>
+			{data?.validConnection && error && (
+				<ErrorAlert error={error} onRelaunch={onRelaunchButtonClick} />
+			)}
+
+			<div className="c-p-3">
+				{data && !error && (
+					<BasicInformation
+						defaultLanguageId={data.defaultLanguageId}
+						pageURLs={data.pageURLs}
+						selectedLanguageId={languageId}
 					/>
 				)}
-			</>
-		)
+
+				{loading ? (
+					<div className="c-my-4 text-secondary">
+						{Liferay.Language.get(
+							'connecting-with-google-pagespeed'
+						)}
+						<ClayProgressBar value={percentage} />
+					</div>
+				) : (
+					data &&
+					!error &&
+					(data.validConnection && data?.layoutReportsIssues ? (
+						<LayoutReportsIssuesList />
+					) : (
+						<EmptyLayoutReports />
+					))
+				)}
+			</div>
+		</>
 	);
 }
 
 LayoutReports.propTypes = {
 	eventTriggered: PropTypes.bool.isRequired,
-	isPanelStateOpen: PropTypes.bool.isRequired,
-	layoutReportsDataURL: PropTypes.string.isRequired,
+};
+
+const ErrorAlert = ({error, onRelaunch}) =>
+	error?.message ? (
+		<ClayAlert displayType="danger" variant="stripe">
+			{error.message}
+
+			<ClayAlert.Footer>
+				<ClayButton.Group>
+					<ClayButton alert onClick={onRelaunch}>
+						{error.buttonTitle}
+					</ClayButton>
+				</ClayButton.Group>
+			</ClayAlert.Footer>
+		</ClayAlert>
+	) : (
+		<ClayAlert displayType="danger" variant="stripe">
+			{error}
+		</ClayAlert>
+	);
+
+ErrorAlert.propTypes = {
+	error: PropTypes.object.isRequired,
+	onRelaunch: PropTypes.func.isRequired,
 };

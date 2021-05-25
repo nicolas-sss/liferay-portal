@@ -12,8 +12,10 @@
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 
+import {ChartDispatchContext} from '../context/ChartStateContext';
+import {StoreDispatchContext} from '../context/StoreContext';
 import KeywordsDetail from './detail/KeywordsDetail';
 import ReferralDetail from './detail/ReferralDetail';
 import SocialDetail from './detail/SocialDetail';
@@ -34,6 +36,10 @@ export default function Detail({
 	trafficShareDataProvider,
 	trafficVolumeDataProvider,
 }) {
+	const chartDispatch = useContext(ChartDispatchContext);
+
+	const storeDispatch = useContext(StoreDispatchContext);
+
 	return (
 		<>
 			<div className="c-pt-3 c-px-3 d-flex">
@@ -42,6 +48,11 @@ export default function Detail({
 					onClick={() => {
 						onCurrentPageChange({view: 'main'});
 						onTrafficSourceNameChange('');
+						chartDispatch({type: 'SET_LOADING'});
+						storeDispatch({
+							selectedTrafficSourceName: '',
+							type: 'SET_SELECTED_TRAFFIC_SOURCE_NAME',
+						});
 					}}
 					small={true}
 				>

@@ -12,10 +12,10 @@
  * details.
  */
 
-import {useMutation} from '@apollo/client';
 import ClayButton from '@clayui/button';
 import ClayForm, {ClayInput, ClaySelect} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
+import {useManualQuery, useMutation} from 'graphql-hooks';
 import React, {useContext, useEffect, useState} from 'react';
 import {withRouter} from 'react-router-dom';
 
@@ -26,13 +26,13 @@ import QuestionsEditor from '../../components/QuestionsEditor';
 import TagSelector from '../../components/TagSelector.es';
 import TextLengthValidation from '../../components/TextLengthValidation.es';
 import {
-	client,
 	createQuestionInASectionQuery,
 	createQuestionInRootQuery,
-	getSectionBySectionTitle,
+	getSectionBySectionTitleQuery,
 } from '../../utils/client.es';
 import lang from '../../utils/lang.es';
 import {
+	deleteCache,
 	getContextLink,
 	historyPushWithSlug,
 	slugToText,
@@ -64,29 +64,25 @@ export default withRouter(
 		);
 
 		const [createQuestionInASection] = useMutation(
-			createQuestionInASectionQuery,
+			createQuestionInASectionQuery
+		);
+
+		const [createQuestionInRoot] = useMutation(createQuestionInRootQuery);
+		const [getSectionBySectionTitle] = useManualQuery(
+			getSectionBySectionTitleQuery,
 			{
-				context: getContextLink(sectionTitle),
-				onCompleted() {
-					client.resetStore();
-					debounceCallback();
+				variables: {
+					filter: `title eq '${slugToText(
+						sectionTitle
+					)}' or id eq '${slugToText(sectionTitle)}'`,
+					siteKey: context.siteKey,
 				},
 			}
 		);
 
-		const [createQuestionInRoot] = useMutation(createQuestionInRootQuery, {
-			context: getContextLink(sectionTitle),
-			onCompleted() {
-				client.resetStore();
-				debounceCallback();
-			},
-		});
-
 		useEffect(() => {
-			getSectionBySectionTitle(
-				context.siteKey,
-				slugToText(sectionTitle)
-			).then((section) => {
+			getSectionBySectionTitle().then(({data}) => {
+				const section = data.messageBoardSections.items[0];
 				setSectionId((section && section.id) || +context.rootTopicId);
 				if (section.parentMessageBoardSection) {
 					setSections([
@@ -109,7 +105,12 @@ export default withRouter(
 					]);
 				}
 			});
-		}, [context.rootTopicId, context.siteKey, sectionTitle]);
+		}, [
+			context.rootTopicId,
+			context.siteKey,
+			sectionTitle,
+			getSectionBySectionTitle,
+		]);
 
 		const processError = (error) => {
 			if (error.message && error.message.includes('AssetTagException')) {
@@ -128,28 +129,35 @@ export default withRouter(
 		};
 
 		const createQuestion = () => {
+			deleteCache();
 			if (
 				sectionTitle === context.rootTopicId &&
 				+context.rootTopicId === 0
 			) {
 				createQuestionInRoot({
+					fetchOptionsOverrides: getContextLink(sectionTitle),
 					variables: {
 						articleBody,
 						headline,
 						keywords: tags.map((tag) => tag.label),
 						siteKey: context.siteKey,
 					},
-				}).catch(processError);
+				})
+					.then(debounceCallback)
+					.catch(processError);
 			}
 			else {
 				createQuestionInASection({
+					fetchOptionsOverrides: getContextLink(sectionTitle),
 					variables: {
 						articleBody,
 						headline,
 						keywords: tags.map((tag) => tag.label),
 						messageBoardSectionId: sectionId,
 					},
-				}).catch(processError);
+				})
+					.then(debounceCallback)
+					.catch(processError);
 			}
 		};
 

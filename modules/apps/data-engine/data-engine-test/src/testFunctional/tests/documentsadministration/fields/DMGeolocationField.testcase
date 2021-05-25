@@ -112,7 +112,7 @@ definition {
 	test RepeatableGeolocationOnRenderer {
 		property portal.acceptance = "false";
 
-		DataEngine.editFieldRepeatable(fieldFieldLabel = "Geolocation");
+		DataEngine.toggleFieldRepeatable(fieldFieldLabel = "Geolocation");
 
 		DDLDataDefinition.save();
 
@@ -122,7 +122,7 @@ definition {
 
 		PortletEntry.inputTitle(title = "Documents and Media Title");
 
-		DataEngine.addRepeatableField(fieldName = "Geolocation");
+		DataEngine.addRepeatableField(fieldLabel = "Geolocation");
 
 		PortletEntry.publish();
 

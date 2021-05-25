@@ -68,7 +68,7 @@ definition {
 	@description = "This is a test for LRQA-66584. This test validates the fields creation into a field group up to 3 levels, field groups edition, and field groups deletion"
 	@priority = "5"
 	test CreateEditAndDeleteFieldGroups {
-		property portal.acceptance = "true";
+		property portal.acceptance = "quarantine";
 
 		DataEngine.addField(
 			fieldFieldLabel = "Text",
@@ -479,7 +479,7 @@ definition {
 			fieldsGroupLabel = "Fields Group",
 			fieldsGroupLabelEdit = "Fields Group 2");
 
-		DataEngine.editFieldsGroupRepeatable(fieldsGroupLabel = "Fields Group 2");
+		DataEngine.toggleFieldRepeatable(fieldsGroupLabel = "Fields Group 2");
 
 		WebContentStructures.saveCP();
 
@@ -487,7 +487,7 @@ definition {
 
 		WebContentNavigator.gotoAddWithStructureCP(structureName = "WC Structure Name");
 
-		DataEngine.addRepeatableFieldsGroup(fieldsGroupLabel = "Fields Group 2");
+		DataEngine.addRepeatableField(fieldLabel = "Fields Group 2");
 
 		WebContent.addWithStructureCP(
 			webContentText = "This is a Text field - 1",
@@ -565,7 +565,7 @@ definition {
 
 		WebContentNavigator.gotoEditStructure(structureName = "WC Structure Name");
 
-		DataEngine.editFieldsGroupRepeatable(fieldsGroupLabel = "Fields Group 1");
+		DataEngine.toggleFieldRepeatable(fieldsGroupLabel = "Fields Group 1");
 
 		WebContentStructures.saveCP();
 
@@ -573,7 +573,7 @@ definition {
 
 		WebContentNavigator.gotoEditCP(webContentTitle = "Web Content Title");
 
-		DataEngine.addRepeatableFieldsGroup(fieldsGroupLabel = "Fields Group 1");
+		DataEngine.addRepeatableField(fieldLabel = "Fields Group 1");
 
 		for (var labelCount : list "1,2,3") {
 			WebContent.editFieldValue(
@@ -800,7 +800,7 @@ definition {
 			fieldName = "Numeric",
 			targetFieldLabel = "Text");
 
-		DataEngine.editFieldsGroupRepeatable();
+		DataEngine.toggleFieldRepeatable(fieldsGroupLabel = "Fields Group");
 
 		WebContentStructures.saveCP();
 
@@ -810,7 +810,7 @@ definition {
 
 		WebContent.addWithStructureCP(webContentTitle = "WC WebContent Title");
 
-		DataEngine.addRepeatableFieldsGroup(fieldsGroupLabel = "Fields Group");
+		DataEngine.addRepeatableField(fieldLabel = "Fields Group");
 
 		PortletEntry.publish();
 

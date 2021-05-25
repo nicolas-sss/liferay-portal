@@ -21,6 +21,9 @@
 		<!-- Other fields -->
 
 		<column name="batchPlannerPlanId" type="long" />
+		<column name="batchEngineExportTaskERC" type="String" />
+		<column name="batchEngineImportTaskERC" type="String" />
+		<column name="dispatchTriggerERC" type="String" />
 		<column name="size" type="int" />
 		<column name="total" type="int" />
 		<column name="status" type="int" />
@@ -35,6 +38,18 @@
 
 		<finder name="BatchPlannerPlanId" return-type="Collection">
 			<finder-column name="batchPlannerPlanId" />
+		</finder>
+		<finder name="BPPI_BEETERC" return-type="BatchPlannerLog" unique="true">
+			<finder-column name="batchPlannerPlanId" />
+			<finder-column name="batchEngineExportTaskERC" />
+		</finder>
+		<finder name="BPPI_BEITERC" return-type="BatchPlannerLog" unique="true">
+			<finder-column name="batchPlannerPlanId" />
+			<finder-column name="batchEngineImportTaskERC" />
+		</finder>
+		<finder name="BPPI_DTERC" return-type="BatchPlannerLog" unique="true">
+			<finder-column name="batchPlannerPlanId" />
+			<finder-column name="dispatchTriggerERC" />
 		</finder>
 	</entity>
 	<entity local-service="true" name="BatchPlannerMapping" remote-service="true">
@@ -54,6 +69,11 @@
 		<!-- Other fields -->
 
 		<column name="batchPlannerPlanId" type="long" />
+		<column name="externalFieldName" type="String" />
+		<column name="externalFieldType" type="String" />
+		<column name="internalFieldName" type="String" />
+		<column name="internalFieldType" type="String" />
+		<column name="script" type="String" />
 
 		<!-- Order -->
 
@@ -65,6 +85,11 @@
 
 		<finder name="BatchPlannerPlanId" return-type="Collection">
 			<finder-column name="batchPlannerPlanId" />
+		</finder>
+		<finder name="BPPI_EFN_IFN" return-type="BatchPlannerMapping" unique="true">
+			<finder-column name="batchPlannerPlanId" />
+			<finder-column name="externalFieldName" />
+			<finder-column name="internalFieldName" />
 		</finder>
 	</entity>
 	<entity local-service="true" name="BatchPlannerPlan" remote-service="true">
@@ -84,6 +109,9 @@
 		<!-- Other fields -->
 
 		<column name="active" type="boolean" />
+		<column name="externalType" type="String" />
+		<column name="externalURL" type="String" />
+		<column name="internalClassName" type="String" />
 		<column name="name" type="String" />
 		<column name="export" type="boolean" />
 
@@ -143,4 +171,9 @@
 			<finder-column name="name" />
 		</finder>
 	</entity>
+	<exceptions>
+		<exception>BatchPlannerPlanExternalType</exception>
+		<exception>BatchPlannerPlanName</exception>
+		<exception>DuplicateBatchPlannerPlan</exception>
+	</exceptions>
 </service-builder>

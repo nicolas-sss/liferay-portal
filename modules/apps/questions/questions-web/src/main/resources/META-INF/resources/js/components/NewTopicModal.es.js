@@ -12,16 +12,16 @@
  * details.
  */
 
-import {useMutation} from '@apollo/client';
 import ClayButton from '@clayui/button';
 import ClayForm, {ClayInput} from '@clayui/form';
 import ClayModal, {useModal} from '@clayui/modal';
+import {useMutation} from 'graphql-hooks';
 import React, {useContext, useRef} from 'react';
 
 import {AppContext} from '../AppContext.es';
 import {createSubTopicQuery, createTopicQuery} from '../utils/client.es';
 import lang from '../utils/lang.es';
-import {deleteCacheVariables} from '../utils/utils.es';
+import {deleteCache} from '../utils/utils.es';
 
 export default ({
 	currentSectionId,
@@ -34,34 +34,9 @@ export default ({
 	const topicName = useRef(null);
 	const topicDescription = useRef(null);
 
-	const [createNewSubTopic] = useMutation(createSubTopicQuery, {
-		onCompleted(data) {
-			onCreateNavigateTo(
-				context.useTopicNamesInURL
-					? data.createMessageBoardSectionMessageBoardSection.title
-					: data.createMessageBoardSectionMessageBoardSection.id
-			);
-		},
-		update(proxy) {
-			deleteCacheVariables(proxy, 'MessageBoardSection');
-			proxy.gc();
-		},
-	});
+	const [createNewSubTopic] = useMutation(createSubTopicQuery);
 
-	const [createNewTopic] = useMutation(createTopicQuery, {
-		onCompleted(data) {
-			onCreateNavigateTo(
-				context.useTopicNamesInURL
-					? data.createSiteMessageBoardSection.title
-					: data.createSiteMessageBoardSection.id
-			);
-		},
-		update(proxy) {
-			deleteCacheVariables(proxy, 'MessageBoardSection');
-			deleteCacheVariables(proxy, 'ROOT_QUERY');
-			proxy.gc();
-		},
-	});
+	const [createNewTopic] = useMutation(createTopicQuery);
 
 	const isValidTopic = (topic) => {
 		const hyphens = /-+/g;
@@ -87,6 +62,7 @@ export default ({
 
 	const createTopic = () => {
 		if (isValidTopic(topicName.current.value)) {
+			deleteCache();
 			if (currentSectionId) {
 				createNewSubTopic({
 					variables: {
@@ -94,7 +70,18 @@ export default ({
 						parentMessageBoardSectionId: currentSectionId,
 						title: topicName.current.value,
 					},
-				});
+				}).then(
+					({
+						data: {
+							createMessageBoardSectionMessageBoardSection: section,
+						},
+					}) =>
+						onCreateNavigateTo(
+							context.useTopicNamesInURL
+								? section.title
+								: section.id
+						)
+				);
 			}
 			else {
 				createNewTopic({
@@ -103,7 +90,11 @@ export default ({
 						siteKey: context.siteKey,
 						title: topicName.current.value,
 					},
-				});
+				}).then(({data: {createSiteMessageBoardSection: section}}) =>
+					onCreateNavigateTo(
+						context.useTopicNamesInURL ? section.title : section.id
+					)
+				);
 			}
 		}
 	};

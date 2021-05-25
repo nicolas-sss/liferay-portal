@@ -66,6 +66,7 @@ import com.liferay.portal.security.ldap.ContactConverterKeys;
 import com.liferay.portal.security.ldap.SafeLdapContext;
 import com.liferay.portal.security.ldap.SafeLdapFilter;
 import com.liferay.portal.security.ldap.SafeLdapFilterConstraints;
+import com.liferay.portal.security.ldap.SafeLdapFilterFactory;
 import com.liferay.portal.security.ldap.SafeLdapFilterTemplate;
 import com.liferay.portal.security.ldap.SafeLdapName;
 import com.liferay.portal.security.ldap.SafeLdapNameFactory;
@@ -81,6 +82,7 @@ import com.liferay.portal.security.ldap.exportimport.configuration.LDAPImportCon
 import com.liferay.portal.security.ldap.internal.UserImportTransactionThreadLocal;
 import com.liferay.portal.security.ldap.internal.validator.SafeLdapContextImpl;
 import com.liferay.portal.security.ldap.util.LDAPUtil;
+import com.liferay.portal.security.ldap.validator.LDAPFilterException;
 import com.liferay.portal.security.ldap.validator.LDAPFilterValidator;
 
 import java.io.Serializable;
@@ -219,7 +221,7 @@ public class LDAPUserImporterImpl implements LDAPUserImporter, UserImporter {
 				if (_log.isDebugEnabled()) {
 					_log.debug(
 						StringBundler.concat(
-							"LDAP server id ", ldapServerId,
+							"LDAP server ID ", ldapServerId,
 							" is no longer valid, company ", companyId,
 							" now uses ",
 							ldapServerConfiguration.ldapServerId()));
@@ -316,9 +318,7 @@ public class LDAPUserImporterImpl implements LDAPUserImporter, UserImporter {
 		for (LDAPServerConfiguration ldapServerConfiguration :
 				ldapServerConfigurations) {
 
-			String providerUrl = ldapServerConfiguration.baseProviderURL();
-
-			if (Validator.isNull(providerUrl)) {
+			if (Validator.isNull(ldapServerConfiguration.baseProviderURL())) {
 				if (_log.isWarnEnabled()) {
 					_log.warn(
 						"No provider URL defined in " +
@@ -386,6 +386,65 @@ public class LDAPUserImporterImpl implements LDAPUserImporter, UserImporter {
 		safeLdapContext.close();
 
 		return user;
+	}
+
+	@Override
+	public User importUserByUuid(long ldapServerId, long companyId, String uuid)
+		throws Exception {
+
+		Properties userExpandoMappings = _ldapSettings.getUserExpandoMappings(
+			ldapServerId, companyId);
+
+		String attributeName = GetterUtil.getString(
+			userExpandoMappings.getProperty("uuid"));
+
+		if (Validator.isBlank(attributeName)) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					"User field UUID is not mapped for LDAP server " +
+						ldapServerId);
+			}
+
+			return null;
+		}
+
+		return importUserByLdapAttribute(
+			ldapServerId, companyId, attributeName, uuid);
+	}
+
+	@Override
+	public User importUserByUuid(long companyId, String uuid) throws Exception {
+		Collection<LDAPServerConfiguration> ldapServerConfigurations =
+			_ldapServerConfigurationProvider.getConfigurations(companyId);
+
+		for (LDAPServerConfiguration ldapServerConfiguration :
+				ldapServerConfigurations) {
+
+			if (Validator.isNull(ldapServerConfiguration.baseProviderURL())) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"No provider URL defined in " +
+							ldapServerConfiguration);
+				}
+
+				continue;
+			}
+
+			User user = importUserByUuid(
+				ldapServerConfiguration.ldapServerId(), companyId, uuid);
+
+			if (user != null) {
+				return user;
+			}
+		}
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				"User with UUID " + uuid +
+					" was not found in any LDAP servers");
+		}
+
+		return null;
 	}
 
 	@Override
@@ -490,7 +549,7 @@ public class LDAPUserImporterImpl implements LDAPUserImporter, UserImporter {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					StringBundler.concat(
-						"LDAP server id ", ldapServerId,
+						"LDAP server ID ", ldapServerId,
 						" is no longer valid, company ", companyId,
 						" now uses ", ldapServerConfiguration.ldapServerId()));
 			}
@@ -1002,7 +1061,7 @@ public class LDAPUserImporterImpl implements LDAPUserImporter, UserImporter {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					StringBundler.concat(
-						"LDAP server id ", ldapImportContext.getLdapServerId(),
+						"LDAP server ID ", ldapImportContext.getLdapServerId(),
 						" is no longer valid, company ",
 						ldapImportContext.getCompanyId(), " now uses ",
 						ldapServerConfiguration.ldapServerId()));
@@ -1193,6 +1252,115 @@ public class LDAPUserImporterImpl implements LDAPUserImporter, UserImporter {
 		}
 		finally {
 			UserImportTransactionThreadLocal.setOriginatesFromImport(false);
+		}
+	}
+
+	protected User importUserByLdapAttribute(
+			long ldapServerId, long companyId, String attributeName,
+			String attributeValue)
+		throws Exception {
+
+		SafeLdapContext safeLdapContext = null;
+
+		NamingEnumeration<SearchResult> enumeration = null;
+
+		try {
+			LDAPServerConfiguration ldapServerConfiguration =
+				_ldapServerConfigurationProvider.getConfiguration(
+					companyId, ldapServerId);
+
+			safeLdapContext = _safePortalLDAP.getSafeLdapContext(
+				ldapServerId, companyId);
+
+			if (safeLdapContext == null) {
+				_log.error("Unable to bind to the LDAP server");
+
+				return null;
+			}
+
+			if (ldapServerConfiguration.ldapServerId() != ldapServerId) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(
+						StringBundler.concat(
+							"LDAP server ID ", ldapServerId,
+							" is no longer valid, company ", companyId,
+							" now uses ",
+							ldapServerConfiguration.ldapServerId()));
+				}
+
+				return null;
+			}
+
+			SafeLdapFilter safeLdapFilter = null;
+
+			try {
+				safeLdapFilter = SafeLdapFilterFactory.fromUnsafeFilter(
+					ldapServerConfiguration.userSearchFilter(),
+					_ldapFilterValidator);
+			}
+			catch (LDAPFilterException ldapFilterException) {
+				throw new LDAPFilterException(
+					"Invalid user search filter: ", ldapFilterException);
+			}
+
+			safeLdapFilter = safeLdapFilter.and(
+				SafeLdapFilterConstraints.eq(attributeName, attributeValue));
+
+			Properties userMappings = _ldapSettings.getUserMappings(
+				ldapServerId, companyId);
+
+			String userMappingsScreenName = GetterUtil.getString(
+				userMappings.getProperty("screenName"));
+
+			userMappingsScreenName = StringUtil.toLowerCase(
+				userMappingsScreenName);
+
+			SearchControls searchControls = new SearchControls(
+				SearchControls.SUBTREE_SCOPE, 1, 0,
+				new String[] {userMappingsScreenName}, false, false);
+
+			enumeration = safeLdapContext.search(
+				LDAPUtil.getBaseDNSafeLdapName(ldapServerConfiguration),
+				safeLdapFilter, searchControls);
+
+			if (enumeration.hasMoreElements()) {
+				if (_log.isDebugEnabled()) {
+					_log.debug("Search filter returned at least one result");
+				}
+
+				Binding binding = enumeration.nextElement();
+
+				Attributes attributes = _safePortalLDAP.getUserAttributes(
+					ldapServerId, companyId, safeLdapContext,
+					SafeLdapNameFactory.from(binding));
+
+				return importUser(
+					ldapServerId, companyId, safeLdapContext, attributes, null);
+			}
+
+			return null;
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Problem accessing LDAP server " + exception.getMessage());
+			}
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception, exception);
+			}
+
+			throw new SystemException(
+				"Problem accessing LDAP server " + exception.getMessage());
+		}
+		finally {
+			if (enumeration != null) {
+				enumeration.close();
+			}
+
+			if (safeLdapContext != null) {
+				safeLdapContext.close();
+			}
 		}
 	}
 
@@ -1669,7 +1837,7 @@ public class LDAPUserImporterImpl implements LDAPUserImporter, UserImporter {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					StringBundler.concat(
-						"LDAP server id ", ldapServerId,
+						"LDAP server ID ", ldapServerId,
 						" is no longer valid, company ", companyId,
 						" now uses ", ldapServerConfiguration.ldapServerId()));
 			}

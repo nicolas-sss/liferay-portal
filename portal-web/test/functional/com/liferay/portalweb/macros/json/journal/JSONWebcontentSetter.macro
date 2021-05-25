@@ -82,6 +82,24 @@ definition {
 		return "${serviceContext}";
 	}
 
+	macro setStatus {
+		Variables.assertDefined(parameterList = "${statusKey}");
+
+		if ("${statusKey}" == "APPROVE") {
+			var status = "0";
+		}
+
+		if ("${statusKey}" == "DRAFT") {
+			var status = "2";
+		}
+
+		if ("${statusKey}" == "EXPIRE") {
+			var status = "3";
+		}
+
+		return "${status}";
+	}
+
 	macro setTitleMap {
 		JSONUtil2._exclusiveOrCheck(
 			A = "${title}",

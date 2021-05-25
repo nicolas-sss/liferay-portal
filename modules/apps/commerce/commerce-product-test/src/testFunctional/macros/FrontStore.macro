@@ -1,9 +1,9 @@
 definition {
 
 	macro addInitializerProductToCart {
-		Select(
+		Type(
 			key_productName = "${productName}",
-			locator1 = "CommerceAccelerators#PRODUCT_CARD_QUANTITY_SELECTOR_SELECT_FIELD",
+			locator1 = "CommerceAccelerators#PRODUCT_CARD_QUANTITY_SELECTOR_INPUT_FIELD",
 			value1 = "${productQuantity}");
 
 		Click(
@@ -22,6 +22,7 @@ definition {
 	macro viewMiniCart {
 		FrontStore.viewMiniCartItems(
 			cartItemNames = "${cartItemNames}",
+			cartItemOption = "${cartItemOptions}",
 			cartItemPriceValues = "${cartItemPriceValues}",
 			cartItemQuantities = "${cartItemQuantities}",
 			cartItemSKUs = "${cartItemSKUs}");
@@ -74,6 +75,17 @@ definition {
 			key_cartItemSKU = "${cartItemSKU}",
 			locator1 = "CommerceAccelerators#MINI_CART_ITEM_PRICE_VALUE",
 			value1 = "$ ${cartItemPriceValue}");
+
+		AssertElementPresent(
+			key_cartItemSKU = "${cartItemSKU}",
+			locator1 = "CommerceAccelerators#MINI_CART_ITEM_THUMBNAIL");
+
+		if (isSet(cartItemOption)) {
+			AssertTextEquals(
+				key_cartItemSKU = "${cartItemSKU}",
+				locator1 = "CommerceAccelerators#MINI_CART_ITEM_INFO_EXTRA",
+				value1 = "${cartItemOption}");
+		}
 	}
 
 	macro viewMiniCartItems {

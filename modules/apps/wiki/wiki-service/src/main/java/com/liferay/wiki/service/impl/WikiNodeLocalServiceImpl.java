@@ -52,6 +52,7 @@ import com.liferay.trash.model.TrashEntry;
 import com.liferay.trash.service.TrashEntryLocalService;
 import com.liferay.wiki.configuration.WikiGroupServiceConfiguration;
 import com.liferay.wiki.constants.WikiConstants;
+import com.liferay.wiki.exception.DuplicateNodeExternalReferenceCodeException;
 import com.liferay.wiki.exception.DuplicateNodeNameException;
 import com.liferay.wiki.exception.NodeNameException;
 import com.liferay.wiki.importer.WikiImporter;
@@ -96,11 +97,26 @@ public class WikiNodeLocalServiceImpl extends WikiNodeLocalServiceBaseImpl {
 			StringPool.BLANK, serviceContext);
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 * #addNode(String, long, String, String, ServiceContext)}
+	 */
+	@Deprecated
 	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public WikiNode addNode(
 			long userId, String name, String description,
 			ServiceContext serviceContext)
+		throws PortalException {
+
+		return addNode(null, userId, name, description, serviceContext);
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
+	public WikiNode addNode(
+			String externalReferenceCode, long userId, String name,
+			String description, ServiceContext serviceContext)
 		throws PortalException {
 
 		// Node
@@ -113,9 +129,16 @@ public class WikiNodeLocalServiceImpl extends WikiNodeLocalServiceBaseImpl {
 
 		long nodeId = counterLocalService.increment();
 
+		if (externalReferenceCode == null) {
+			externalReferenceCode = String.valueOf(nodeId);
+		}
+
+		_validateExternalReferenceCode(externalReferenceCode, groupId);
+
 		WikiNode node = wikiNodePersistence.create(nodeId);
 
 		node.setUuid(serviceContext.getUuid());
+		node.setExternalReferenceCode(externalReferenceCode);
 		node.setGroupId(groupId);
 		node.setCompanyId(user.getCompanyId());
 		node.setUserId(user.getUserId());
@@ -628,6 +651,21 @@ public class WikiNodeLocalServiceImpl extends WikiNodeLocalServiceBaseImpl {
 
 	protected void validate(long groupId, String name) throws PortalException {
 		validate(0, groupId, name);
+	}
+
+	private void _validateExternalReferenceCode(
+			String externalReferenceCode, long groupId)
+		throws PortalException {
+
+		WikiNode wikiNode = wikiNodePersistence.fetchByG_ERC(
+			groupId, externalReferenceCode);
+
+		if (wikiNode != null) {
+			throw new DuplicateNodeExternalReferenceCodeException(
+				StringBundler.concat(
+					"Duplicate node external reference code ",
+					externalReferenceCode, "in group ", groupId));
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

@@ -35,158 +35,6 @@ definition {
 		}
 	}
 
-	@description = "This is a test for LPS-121281. The data-lfr-priority can order the elements information of fragment with drop zone in Selection panel."
-	@priority = "4"
-	test CanOrderElementInfoOfFragmentWithDropZoneInSelectionPanel {
-		task ("Add a fragment collection") {
-			JSONFragment.addFragmentCollection(
-				groupName = "Test Site Name",
-				name = "Collection Name");
-		}
-
-		task ("Add a fragment with drop zone and data-lfr-priority attribute") {
-			FragmentsAdminNavigator.openFragmentsAdmin(siteURLKey = "test-site-name");
-
-			FragmentsAdminNavigator.gotoCollection(collectionName = "Collection Name");
-
-			FragmentsAdmin.addFragment(fragmentName = "Fragment Name");
-
-			var htmlSnippet = '''
-<div class="fragment-example">
-	<div class="section">
-		<p data-lfr-editable-id="01-title" data-lfr-editable-type="text" data-lfr-priority="1">
-			Title
-		</p>
-		<lfr-drop-zone data-lfr-drop-zone-id="1" data-lfr-priority="2"></lfr-drop-zone>
-	</div>
-	<div class="section">
-		<p data-lfr-editable-id="02-title" data-lfr-editable-type="text" data-lfr-priority="3">
-			Title
-		</p>
-		<lfr-drop-zone data-lfr-drop-zone-id="2" data-lfr-priority="4"></lfr-drop-zone>
-	</div>
-</div>
-		''';
-
-			var cssSnippet = '''
-.fragment-example {
-}
-		''';
-
-			FragmentsEditor.typeHtmlEditor(content = "${htmlSnippet}");
-
-			FragmentsEditor.typeCssEditor(content = "${cssSnippet}");
-
-			FragmentsEditor.waitForAutoSave();
-
-			FragmentsEditor.publish();
-		}
-
-		task ("Add a new fragment to page") {
-			ContentPagesNavigator.openEditContentPage(
-				pageName = "Test Page Name",
-				siteName = "Test Site Name");
-
-			PageEditor.addFragment(
-				collectionName = "Collection Name",
-				fragmentName = "Fragment Name");
-		}
-
-		task ("Assert elements information is organized in Selection panel") {
-			PageEditor.clickConfigurableField(fragmentName = "Fragment Name");
-
-			Pause(locator1 = "3000");
-
-			var n = "1";
-
-			for (var nodeName : list "Fragment Name,01-title,Drop Zone 1,02-title,Drop Zone 2") {
-				AssertElementPresent(
-					key_nodeName = "${nodeName}",
-					key_position = "${n}",
-					locator1 = "Treeview#PAGE_STRUCTURE_TREE_NODE_POSITION");
-
-				var n = ${n} + 1;
-			}
-		}
-	}
-
-	@description = "This is a test for LPS-121626. The data-lfr-priority can order the elements information of fragment with editable fields in Selection panel."
-	@priority = "4"
-	test CanOrderElementInfoOfFragmentWithEditableFieldInSelectionPanel {
-		task ("Add a fragment collection") {
-			JSONFragment.addFragmentCollection(
-				groupName = "Test Site Name",
-				name = "Collection Name");
-		}
-
-		task ("Add a fragment with editable fields and data-lfr-priority attribute") {
-			FragmentsAdminNavigator.openFragmentsAdmin(siteURLKey = "test-site-name");
-
-			FragmentsAdminNavigator.gotoCollection(collectionName = "Collection Name");
-
-			FragmentsAdmin.addFragment(fragmentName = "Fragment Name");
-
-			var htmlSnippet = '''
-<div class="fragment-example">
-	<div class="item">
-		<h2 data-lfr-editable-type="text" data-lfr-priority="3" data-lfr-editable-id="01-title">
-		Title
-		</h2>
-		<a data-lfr-editable-type="link" data-lfr-priority="1" data-lfr-editable-id="01-link">Go Somewhere</a>
-		<p data-lfr-editable-type="rich-text" data-lfr-priority="2" data-lfr-editable-id="01-subtitle">Subtitle</p>
-	</div>
-	<div class="item">
-		<h2 data-lfr-editable-type="text" data-lfr-priority="6" data-lfr-editable-id="02-title">
-		Title
-		</h2>
-		<a data-lfr-editable-type="link" data-lfr-priority="4" data-lfr-editable-id="02-link">Go Somewhere</a>
-		<p data-lfr-editable-type="rich-text" data-lfr-priority="5" data-lfr-editable-id="02-subtitle">Subtitle</p>
-	</div>
-</div>
-		''';
-
-			var cssSnippet = '''
-.fragment-example {
-}
-		''';
-
-			FragmentsEditor.typeHtmlEditor(content = "${htmlSnippet}");
-
-			FragmentsEditor.typeCssEditor(content = "${cssSnippet}");
-
-			FragmentsEditor.waitForAutoSave();
-
-			FragmentsEditor.publish();
-		}
-
-		task ("Add a new fragment to page") {
-			ContentPagesNavigator.openEditContentPage(
-				pageName = "Test Page Name",
-				siteName = "Test Site Name");
-
-			PageEditor.addFragment(
-				collectionName = "Collection Name",
-				fragmentName = "Fragment Name");
-		}
-
-		task ("Assert elements information is organized in Selection panel") {
-			PageEditor.clickConfigurableField(fragmentName = "Fragment Name");
-
-			Pause(locator1 = "3000");
-
-			var n = "1";
-
-			for (var nodeName : list "Fragment Name,01-link,01-subtitle,01-title,02-link,02-subtitle,02-title") {
-				AssertElementPresent(
-					key_nodeName = "${nodeName}",
-					key_position = "${n}",
-					locator1 = "Treeview#PAGE_STRUCTURE_TREE_NODE_POSITION");
-
-				var n = ${n} + 1;
-			}
-		}
-	}
-
 	@description = "This is a test for LPS-118271. Can change the order of the elements in page editor via Selection panel."
 	@priority = "5"
 	test ChangeOrderOfElementsViaSelectionPanel {
@@ -451,6 +299,188 @@ definition {
 		}
 	}
 
+	@description = "This is a test for LPS-121281. The data-lfr-priority can order the elements information of fragment with drop zone in Selection panel."
+	@priority = "4"
+	test OrderElementInfoOfFragmentWithDropZoneInSelectionPanel {
+		task ("Add a fragment collection") {
+			JSONFragment.addFragmentCollection(
+				groupName = "Test Site Name",
+				name = "Collection Name");
+		}
+
+		task ("Add a fragment with drop zone and data-lfr-priority attribute") {
+			FragmentsAdminNavigator.openFragmentsAdmin(siteURLKey = "test-site-name");
+
+			FragmentsAdminNavigator.gotoCollection(collectionName = "Collection Name");
+
+			FragmentsAdmin.addFragment(fragmentName = "Fragment Name");
+
+			var htmlSnippet = '''
+<div class="fragment-example">
+	<div class="section">
+		<p data-lfr-editable-id="01-title" data-lfr-editable-type="text" data-lfr-priority="1">
+			Title
+		</p>
+		<lfr-drop-zone data-lfr-drop-zone-id="1" data-lfr-priority="2"></lfr-drop-zone>
+	</div>
+	<div class="section">
+		<p data-lfr-editable-id="02-title" data-lfr-editable-type="text" data-lfr-priority="3">
+			Title
+		</p>
+		<lfr-drop-zone data-lfr-drop-zone-id="2" data-lfr-priority="4"></lfr-drop-zone>
+	</div>
+</div>
+		''';
+
+			var cssSnippet = '''
+.fragment-example {
+}
+		''';
+
+			FragmentsEditor.typeHtmlEditor(content = "${htmlSnippet}");
+
+			FragmentsEditor.typeCssEditor(content = "${cssSnippet}");
+
+			FragmentsEditor.waitForAutoSave();
+
+			FragmentsEditor.publish();
+		}
+
+		task ("Add a new fragment to page") {
+			ContentPagesNavigator.openEditContentPage(
+				pageName = "Test Page Name",
+				siteName = "Test Site Name");
+
+			PageEditor.addFragment(
+				collectionName = "Collection Name",
+				fragmentName = "Fragment Name");
+		}
+
+		task ("Assert elements information is organized in Selection panel") {
+			PageEditor.clickConfigurableField(fragmentName = "Fragment Name");
+
+			Pause(locator1 = "3000");
+
+			var n = "1";
+
+			for (var nodeName : list "Fragment Name,01-title,Drop Zone 1,02-title,Drop Zone 2") {
+				AssertElementPresent(
+					key_nodeName = "${nodeName}",
+					key_position = "${n}",
+					locator1 = "Treeview#PAGE_STRUCTURE_TREE_NODE_POSITION");
+
+				var n = ${n} + 1;
+			}
+		}
+	}
+
+	@description = "This is a test for LPS-121626. The data-lfr-priority can order the elements information of fragment with editable fields in Selection panel."
+	@priority = "4"
+	test OrderElementInfoOfFragmentWithEditableFieldInSelectionPanel {
+		task ("Add a fragment collection") {
+			JSONFragment.addFragmentCollection(
+				groupName = "Test Site Name",
+				name = "Collection Name");
+		}
+
+		task ("Add a fragment with editable fields and data-lfr-priority attribute") {
+			FragmentsAdminNavigator.openFragmentsAdmin(siteURLKey = "test-site-name");
+
+			FragmentsAdminNavigator.gotoCollection(collectionName = "Collection Name");
+
+			FragmentsAdmin.addFragment(fragmentName = "Fragment Name");
+
+			var htmlSnippet = '''
+<div class="fragment-example">
+	<div class="item">
+		<h2 data-lfr-editable-type="text" data-lfr-priority="3" data-lfr-editable-id="01-title">
+		Title
+		</h2>
+		<a data-lfr-editable-type="link" data-lfr-priority="1" data-lfr-editable-id="01-link">Go Somewhere</a>
+		<p data-lfr-editable-type="rich-text" data-lfr-priority="2" data-lfr-editable-id="01-subtitle">Subtitle</p>
+	</div>
+	<div class="item">
+		<h2 data-lfr-editable-type="text" data-lfr-priority="6" data-lfr-editable-id="02-title">
+		Title
+		</h2>
+		<a data-lfr-editable-type="link" data-lfr-priority="4" data-lfr-editable-id="02-link">Go Somewhere</a>
+		<p data-lfr-editable-type="rich-text" data-lfr-priority="5" data-lfr-editable-id="02-subtitle">Subtitle</p>
+	</div>
+</div>
+		''';
+
+			var cssSnippet = '''
+.fragment-example {
+}
+		''';
+
+			FragmentsEditor.typeHtmlEditor(content = "${htmlSnippet}");
+
+			FragmentsEditor.typeCssEditor(content = "${cssSnippet}");
+
+			FragmentsEditor.waitForAutoSave();
+
+			FragmentsEditor.publish();
+		}
+
+		task ("Add a new fragment to page") {
+			ContentPagesNavigator.openEditContentPage(
+				pageName = "Test Page Name",
+				siteName = "Test Site Name");
+
+			PageEditor.addFragment(
+				collectionName = "Collection Name",
+				fragmentName = "Fragment Name");
+		}
+
+		task ("Assert elements information is organized in Selection panel") {
+			PageEditor.clickConfigurableField(fragmentName = "Fragment Name");
+
+			Pause(locator1 = "3000");
+
+			var n = "1";
+
+			for (var nodeName : list "Fragment Name,01-link,01-subtitle,01-title,02-link,02-subtitle,02-title") {
+				AssertElementPresent(
+					key_nodeName = "${nodeName}",
+					key_position = "${n}",
+					locator1 = "Treeview#PAGE_STRUCTURE_TREE_NODE_POSITION");
+
+				var n = ${n} + 1;
+			}
+		}
+	}
+
+	@description = "This is a use case for LPS-116989. Resize the configuration panel."
+	@priority = "4"
+	test ResizeConfigurationPanel {
+		task ("Add a Button fragment to page") {
+			ContentPagesNavigator.openEditContentPage(
+				pageName = "Test Page Name",
+				siteName = "Test Site Name");
+
+			PageEditor.addFragment(
+				collectionName = "Basic Components",
+				fragmentName = "Button");
+		}
+
+		task ("Resize the configuration panel") {
+			PageEditor.resizeConfigurationPanel(
+				fragmentName = "Button",
+				position = "0,-100");
+		}
+
+		task ("View the configuration panel is restored when access to it second time") {
+			PageEditor.gotoTab(tabName = "Fragments and Widgets");
+
+			PageEditor.gotoTab(tabName = "Selection");
+
+			AssertElementPresent(locator1 = "PageEditor#CONFIGURATION_PANEL_HANDLE");
+
+			AssertElementNotPresent(locator1 = "PageEditor#CONFIGURATION_PANEL_RESIZE");
+		}
+	}
+
 	@description = "This is a test for LPS-109407. View the background color of nodes in the Page Structure when hover on them or they are selected."
 	@priority = "3"
 	test ViewBackgroundColorOfNodesInSelectionPanel {
@@ -610,7 +640,7 @@ definition {
 
 			var n = "1";
 
-			for (var nodeName : list "Slider,01-01-title,01-02-subtitle,01-03-image,02-01-title,02-02-subtitle,02-03-image,03-01-title,03-02-subtitle,03-03-image") {
+			for (var nodeName : list "Slider,01-01-image,01-02-title,01-03-subtitle,02-01-image,02-02-title,02-03-subtitle,03-01-image,03-02-title,03-03-subtitle") {
 				AssertElementPresent(
 					key_nodeName = "${nodeName}",
 					key_position = "${n}",
@@ -697,6 +727,93 @@ definition {
 
 				var n = ${n} + 1;
 			}
+		}
+	}
+
+	@description = "This is a test for LPS-122142. View the visual style of mapped editable field items in Selection panel of content page."
+	@priority = "4"
+	test ViewVisualStyleOfMappedEditableFieldItems {
+		task ("Add a web content with basic web content") {
+			JSONWebcontent.addWebContent(
+				content = "Web Content Content",
+				groupName = "Test Site Name",
+				title = "Web Content Title");
+		}
+
+		task ("Add a Button fragment to page") {
+			ContentPagesNavigator.openEditContentPage(
+				pageName = "Test Page Name",
+				siteName = "Test Site Name");
+
+			PageEditor.addFragment(
+				collectionName = "Basic Components",
+				fragmentName = "Button");
+		}
+
+		task ("Map the Content field of web content to editable field") {
+			PageEditorMapping.gotoEditableFieldMapping(
+				fragmentName = "Button",
+				id = "link");
+
+			PageEditorMapping.mapEditableFieldToAsset(
+				entryTitle = "Web Content Title",
+				navItem = "Web Content");
+
+			Pause(locator1 = "3000");
+
+			Select(
+				key_fieldLabel = "Field",
+				locator1 = "Select#GENERIC_SELECT_FIELD",
+				value1 = "Content");
+		}
+
+		task ("View the visual style of Content item in Selection panel") {
+			AssertCssValue(
+				key_nodeName = "Content",
+				locator1 = "Treeview#PAGE_STRUCTURE_TREE_NODE_NAME",
+				locator2 = "color",
+				value1 = "rgba(149, 76, 255, 1)");
+		}
+
+		task ("Add a Collection Display fragment to page") {
+			PageEditor.addFragment(
+				collectionName = "Content Display",
+				fragmentName = "Collection Display",
+				targetFragmentName = "Button");
+		}
+
+		task ("Select the Highest Rated Assets in Collection Display") {
+			PageEditor.editCollectionDisplay(
+				fragmentName = "Collection Display",
+				infoListProviderName = "Highest Rated Assets");
+		}
+
+		task ("Add a Heading fragment into Collection Display") {
+			PageEditor.addFragmentToCollectionDisplay(
+				collectionName = "Basic Components",
+				entryTitle = "Web Content Title",
+				fragmentName = "Heading");
+		}
+
+		task ("Map the Title field to editable field") {
+			PageEditorMapping.gotoEditableFieldMapping(
+				fragmentName = "Heading",
+				id = "element-text");
+
+			Pause(locator1 = "3000");
+
+			Select(
+				key_fieldLabel = "Field",
+				locator1 = "Select#GENERIC_SELECT_FIELD",
+				value1 = "Title");
+		}
+
+		task ("View the visual style of Title item in Selection panel") {
+			AssertCssValue(
+				key_nodeName = "Title",
+				locator1 = "Treeview#PAGE_STRUCTURE_TREE_NODE_NAME",
+				locator2 = "color",
+				value1 = "rgba(149, 76, 255, 1)");
 		}
 	}
 

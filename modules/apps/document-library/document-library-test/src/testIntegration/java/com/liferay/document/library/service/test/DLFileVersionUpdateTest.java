@@ -28,6 +28,8 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
+import java.util.Date;
+
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -86,14 +88,18 @@ public class DLFileVersionUpdateTest extends BaseDLAppTestCase {
 			ServiceContextTestUtil.getServiceContext(group.getGroupId());
 
 		FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
-			group.getGroupId(), parentFolder.getFolderId(), addFileName,
-			addMimeType, addFileName, description, changeLog, addBytes,
-			serviceContext);
+			null, group.getGroupId(), parentFolder.getFolderId(), addFileName,
+			addMimeType, addFileName, description, changeLog, addBytes, null,
+			null, serviceContext);
+
+		Date expirationDate = new Date();
+		Date reviewDate = new Date();
 
 		fileEntry = DLAppServiceUtil.updateFileEntry(
 			fileEntry.getFileEntryId(), updateFileName, updateMimeType,
 			updateFileName, description, changeLog,
-			DLVersionNumberIncrease.MINOR, updateBytes, serviceContext);
+			DLVersionNumberIncrease.MINOR, updateBytes, expirationDate,
+			reviewDate, serviceContext);
 
 		FileVersion fileVersion = fileEntry.getFileVersion();
 
@@ -104,6 +110,10 @@ public class DLFileVersionUpdateTest extends BaseDLAppTestCase {
 			fileVersion.getExtension(), fileEntry.getExtension());
 		Assert.assertEquals(fileVersion.getMimeType(), fileEntry.getMimeType());
 		Assert.assertEquals(fileVersion.getSize(), fileEntry.getSize());
+		Assert.assertEquals(
+			fileVersion.getExpirationDate(), fileEntry.getExpirationDate());
+		Assert.assertEquals(
+			fileVersion.getReviewDate(), fileEntry.getReviewDate());
 	}
 
 	private static final String _BASE_FILE_NAME = "Test";

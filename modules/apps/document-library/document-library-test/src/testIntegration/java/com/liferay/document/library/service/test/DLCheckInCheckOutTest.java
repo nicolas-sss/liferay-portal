@@ -518,9 +518,9 @@ public class DLCheckInCheckOutTest {
 			_TEST_CONTENT.getBytes());
 
 		FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
-			repositoryId, _folder.getFolderId(), fileName,
+			null, repositoryId, _folder.getFolderId(), fileName,
 			ContentTypes.TEXT_PLAIN, fileName, null, null, inputStream,
-			_TEST_CONTENT.length(), _serviceContext);
+			_TEST_CONTENT.length(), null, null, _serviceContext);
 
 		Assert.assertNotNull(fileEntry);
 
@@ -578,7 +578,7 @@ public class DLCheckInCheckOutTest {
 		return DLAppServiceUtil.updateFileEntry(
 			fileEntryId, fileName, ContentTypes.TEXT_PLAIN, fileName, null,
 			null, DLVersionNumberIncrease.MINOR, inputStream, content.length(),
-			_serviceContext);
+			null, null, _serviceContext);
 	}
 
 	private static final String _FILE_NAME = "test1.txt";

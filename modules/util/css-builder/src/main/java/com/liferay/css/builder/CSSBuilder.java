@@ -19,6 +19,7 @@ import com.beust.jcommander.ParameterException;
 
 import com.liferay.css.builder.internal.util.CSSBuilderUtil;
 import com.liferay.css.builder.internal.util.FileUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.rtl.css.RTLCSSConverter;
 import com.liferay.sass.compiler.SassCompiler;
 import com.liferay.sass.compiler.jni.internal.JniSassCompiler;
@@ -101,7 +102,7 @@ public class CSSBuilder implements AutoCloseable {
 		_importPath = Files.createTempDirectory("portalCssImportPath");
 
 		if ((importPaths != null) && !importPaths.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
+			StringBundler sb = new StringBundler();
 
 			for (File importPath : importPaths) {
 				if (importPath.isFile()) {
@@ -165,9 +166,9 @@ public class CSSBuilder implements AutoCloseable {
 			_parseSassFile(fileName);
 
 			System.out.println(
-				"Parsed " + fileName + " in " +
-					String.valueOf(System.currentTimeMillis() - startTime) +
-						"ms");
+				StringBundler.concat(
+					"Parsed ", fileName, " in ",
+					System.currentTimeMillis() - startTime, "ms"));
 		}
 	}
 
@@ -261,8 +262,9 @@ public class CSSBuilder implements AutoCloseable {
 		}
 		catch (Exception exception) {
 			System.out.println(
-				"Unable to generate RTL version for " + fileName + ", " +
-					exception.getMessage());
+				StringBundler.concat(
+					"Unable to generate RTL version for ", fileName, ", ",
+					exception.getMessage()));
 		}
 
 		return rtlCss;

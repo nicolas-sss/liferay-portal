@@ -60,6 +60,34 @@ public class SLAResult implements Serializable {
 	}
 
 	@Schema
+	public Date getDateModified() {
+		return dateModified;
+	}
+
+	public void setDateModified(Date dateModified) {
+		this.dateModified = dateModified;
+	}
+
+	@JsonIgnore
+	public void setDateModified(
+		UnsafeSupplier<Date, Exception> dateModifiedUnsafeSupplier) {
+
+		try {
+			dateModified = dateModifiedUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Date dateModified;
+
+	@Schema
 	public Date getDateOverdue() {
 		return dateOverdue;
 	}
@@ -263,6 +291,20 @@ public class SLAResult implements Serializable {
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd'T'HH:mm:ss'Z'");
 
+		if (dateModified != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"dateModified\": ");
+
+			sb.append("\"");
+
+			sb.append(liferayToJSONDateFormat.format(dateModified));
+
+			sb.append("\"");
+		}
+
 		if (dateOverdue != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -350,7 +392,7 @@ public class SLAResult implements Serializable {
 	@GraphQLName("Status")
 	public static enum Status {
 
-		PAUSED("PAUSED"), RUNNING("RUNNING"), STOPPED("STOPPED");
+		NEW("NEW"), PAUSED("PAUSED"), RUNNING("RUNNING"), STOPPED("STOPPED");
 
 		@JsonCreator
 		public static Status create(String value) {

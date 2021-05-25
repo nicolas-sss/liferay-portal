@@ -71,9 +71,7 @@ definition {
 			structureDescription = "Structure Description",
 			structureName = "Structure Name");
 
-		JSONStaging.enableLocalStaging(
-			globalSite = "true",
-			groupName = "Global");
+		JSONStaging.enableLocalStaging(groupName = "Global");
 
 		WebContentNavigator.openWebContentAdmin(siteURLKey = "global");
 
@@ -571,6 +569,7 @@ definition {
 
 		Staging.remoteStagingSetUpViaJson(
 			groupName = "Child SiteName",
+			parentGroupName = "Site Name",
 			remotePort = "9080");
 
 		WebContentNavigator.openWebContentAdmin(siteURLKey = "site-name");
@@ -934,11 +933,9 @@ definition {
 			Staging.submitForPublicationPageRevision();
 		}
 
-		User.logoutPG(
-			password = "test",
-			userEmailAddress = "userea1@liferay.com");
+		User.logoutPG();
 
-		User.loginPG(
+		User.loginUserPG(
 			password = "test",
 			userEmailAddress = "userea2@liferay.com");
 
@@ -972,11 +969,9 @@ definition {
 
 		AssertElementPresent(locator1 = "Portlet#SPECIFIC_TITLE");
 
-		User.logoutPG(
-			password = "test",
-			userEmailAddress = "userea2@liferay.com");
+		User.logoutPG();
 
-		User.loginPG(
+		User.loginUserPG(
 			password = "test",
 			userEmailAddress = "userea1@liferay.com");
 
@@ -990,11 +985,9 @@ definition {
 			Staging.submitForPublicationPageRevision();
 		}
 
-		User.logoutPG(
-			password = "test",
-			userEmailAddress = "userea1@liferay.com");
+		User.logoutPG();
 
-		User.loginPG(
+		User.loginUserPG(
 			password = "test",
 			userEmailAddress = "userea2@liferay.com");
 
@@ -1087,9 +1080,9 @@ definition {
 
 		User.logoutPG();
 
-		User.loginPG(
-			nodePort = "9080",
+		User.firstLoginUI(
 			password = "test",
+			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
 		Category.openCategoriesAdmin(
@@ -1098,10 +1091,7 @@ definition {
 
 		Vocabulary.viewCP(vocabularyName = "Vocabulary Name");
 
-		User.logoutPG(
-			nodePort = "9080",
-			password = "test",
-			userEmailAddress = "test@liferay.com");
+		User.logoutPG(specificURL = "http://localhost:9080");
 
 		User.loginPG(
 			password = "test",
@@ -1115,9 +1105,9 @@ definition {
 
 		User.logoutPG();
 
-		User.loginPG(
-			nodePort = "9080",
+		User.firstLoginUI(
 			password = "test",
+			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
 		Category.openCategoriesAdmin(
@@ -1695,13 +1685,11 @@ definition {
 
 		Staging.publishToRemoteUncheckContentViaCustomPublication(contentName = "Blogs");
 
-		User.logoutPG(
-			password = "test",
-			userEmailAddress = "test@liferay.com");
+		User.logoutPG();
 
-		User.loginPG(
-			nodePort = "9080",
+		User.firstLoginUI(
 			password = "test",
+			specificURL = "http://localhost:9080",
 			userEmailAddress = "test@liferay.com");
 
 		Navigator.gotoSitePage(
@@ -1751,6 +1739,8 @@ definition {
 			siteName = "Site Name");
 
 		Portlet.addPG(portletName = "Documents and Media");
+
+		DMDocument.enableActionsMenuOnPortlet();
 
 		DMDocument.addPG(
 			dmDocumentDescription = "DM Document Description",

@@ -69,6 +69,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>ANY_N</td>
+	<td>xpath=(//*[contains(@class,'btn')][normalize-space(text())='${key_text}'])[${key_indexNumber}]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>ANY_WITH_COLOR</td>
 	<td>//*[contains(@class,'btn-${key_color}')][normalize-space(text())='${key_text}']</td>
 	<td></td>
@@ -251,6 +256,11 @@
 <tr>
 	<td>DELETE_ROW_N</td>
 	<td>xpath=(//button[contains(@class,'delete-row')])[${key_rowIndexNumber}]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SECONDARY_BY_TITLE</td>
+	<td>//button[contains(@class,'btn-secondary') and contains (@title,'${key_value}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -500,7 +510,7 @@
 </tr>
 <tr>
 	<td>PLUS</td>
-	<td>//*[@data-qa-id='addButton'] | //a[contains(@class,'btn') and @aria-label='add'] | //a[contains(@class,'nav-btn') and *[contains(@class,'icon-plus')]] | //button[*[contains(@class,'icon-plus')]]</td>
+	<td>//a[contains(@class,'btn')][contains(@href,'new') or contains(@href,'redirect') or contains(@href,'mvc') or contains(@href,'javascript')][.//*[name()='svg'][contains(@class,'icon-plus')]][not(contains(@class,'borderless'))] | //button[*[contains(@class,'icon-plus')]]</td>
 	<td></td>
 </tr>
 <tr>
@@ -541,6 +551,11 @@
 <tr>
 	<td>REMOVE_IMAGE</td>
 	<td>//button[*[name()='svg'][contains(@class,'lexicon-icon-trash')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>REMOVE_IMAGE_LAST</td>
+	<td>xpath=(//button[*[name()='svg'][contains(@class,'lexicon-icon-trash')]])[last()]</td>
 	<td></td>
 </tr>
 <tr>
@@ -644,6 +659,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>CREATE_NEW</td>
+	<td>//button[contains(@class,'btn-sm btn-primary') and text()='Create New']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>SEARCH</td>
 	<td>//*[@data-qa-id='searchButton'] | //button[contains(.,'Search')]</td>
 	<td></td>
@@ -651,6 +671,11 @@
 <tr>
 	<td>SEARCH_DISABLED</td>
 	<td>//button[contains(.,'Search')][@disabled='']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SEARCH_CLOSE</td>
+	<td>//button[contains(@class,'commerce-search__button ')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -769,6 +794,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>ARROW_SUBMIT_BTN</td>
+	<td>//button[@type='submit'][contains(@class,'btn-primary')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>TWITCH_PLAY</td>
 	<td>//button[contains(@data-test-selector,'player-overlay-play-button') and contains(@aria-label,'Play')]</td>
 	<td></td>
@@ -857,6 +887,11 @@
 	<td>YOUTUBE_PLAY</td>
 	<td>//button[contains(@class,'ytp-large-play-button')]</td>
 	<td></td>
+</tr>
+<tr>
+    <td>BUTTON_PLUS_PRODUCT_VISIBILITY</td>
+    <td>//li[contains(@class,'nav-item')]//button[contains(@title,'${key_webContentTitle}')]</td>
+    <td></td>
 </tr>
 </tbody>
 </table>

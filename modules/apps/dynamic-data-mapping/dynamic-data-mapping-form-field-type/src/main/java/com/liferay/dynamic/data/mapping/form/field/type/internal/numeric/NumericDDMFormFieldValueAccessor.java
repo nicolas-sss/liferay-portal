@@ -18,12 +18,13 @@ import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueAccesso
 import com.liferay.dynamic.data.mapping.form.field.type.constants.DDMFormFieldTypeConstants;
 import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
+import com.liferay.dynamic.data.mapping.util.NumericDDMFormFieldUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 
 import java.math.BigDecimal;
 
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 
 import java.util.Locale;
@@ -56,10 +57,10 @@ public class NumericDDMFormFieldValueAccessor
 		Value value = ddmFormFieldValue.getValue();
 
 		try {
-			NumberFormat formatter = NumericDDMFormFieldUtil.getNumberFormat(
-				locale);
+			DecimalFormat decimalFormat =
+				NumericDDMFormFieldUtil.getDecimalFormat(locale);
 
-			return (BigDecimal)formatter.parse(value.getString(locale));
+			return (BigDecimal)decimalFormat.parse(value.getString(locale));
 		}
 		catch (ParseException parseException) {
 			if (_log.isDebugEnabled()) {

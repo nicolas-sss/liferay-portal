@@ -16,31 +16,33 @@ import React, {useMemo} from 'react';
 
 import {EDITABLE_FRAGMENT_ENTRY_PROCESSOR} from '../../../../../app/config/constants/editableFragmentEntryProcessor';
 import {EDITABLE_TYPES} from '../../../../../app/config/constants/editableTypes';
+import {config} from '../../../../../app/config/index';
 import {useSelector} from '../../../../../app/contexts/StoreContext';
 import selectLanguageId from '../../../../../app/selectors/selectLanguageId';
+import isMapped from '../../../../../app/utils/editable-value/isMapped';
 import SidebarPanelContent from '../../../../../common/components/SidebarPanelContent';
 import NoPageContents from './NoPageContents';
 import PageContents from './PageContents';
 
 const getEditableTitle = (editable, languageId) => {
-	if (editable.type === EDITABLE_TYPES.text) {
-		return editable[languageId];
-	}
-
 	const div = document.createElement('div');
 
-	div.innerHTML = editable[languageId];
+	div.innerHTML =
+		editable[languageId] ||
+		editable[config.defaultLanguageId] ||
+		editable.defaultValue;
 
 	return div.textContent;
 };
 
-const getEditableValues = (fragmentEntryLinks, languageId) =>
+const getEditableValues = (fragmentEntryLinks, segmentsExperienceId) =>
 	Object.values(fragmentEntryLinks)
 		.filter(
 			(fragmentEntryLink) =>
 				!fragmentEntryLink.masterLayout &&
 				fragmentEntryLink.editableValues &&
-				!fragmentEntryLink.removed
+				!fragmentEntryLink.removed &&
+				fragmentEntryLink.segmentsExperienceId === segmentsExperienceId
 		)
 		.map((fragmentEntryLink) => {
 			const editableValues = Object.entries(
@@ -51,11 +53,12 @@ const getEditableValues = (fragmentEntryLinks, languageId) =>
 
 			return editableValues
 				.filter(
-					([key]) =>
-						fragmentEntryLink.editableTypes[key] ===
+					([key, value]) =>
+						(fragmentEntryLink.editableTypes[key] ===
 							EDITABLE_TYPES.text ||
-						fragmentEntryLink.editableTypes[key] ===
-							EDITABLE_TYPES['rich-text']
+							fragmentEntryLink.editableTypes[key] ===
+								EDITABLE_TYPES['rich-text']) &&
+						!isMapped(value)
 				)
 				.map(([key, value]) => ({
 					...value,
@@ -68,8 +71,7 @@ const getEditableValues = (fragmentEntryLinks, languageId) =>
 				...editableValuesB,
 			],
 			[]
-		)
-		.filter((editable) => editable[languageId]);
+		);
 
 const normalizeEditableValues = (editable, languageId) => {
 	return {
@@ -92,13 +94,17 @@ export default function ContentsSidebar() {
 	const fragmentEntryLinks = useSelector((state) => state.fragmentEntryLinks);
 	const languageId = useSelector(selectLanguageId);
 	const pageContents = useSelector((state) => state.pageContents);
+	const segmentsExperienceId = useSelector(
+		(state) => state.segmentsExperienceId
+	);
 
 	const inlineTextContents = useMemo(
 		() =>
-			getEditableValues(fragmentEntryLinks, languageId).map((editable) =>
-				normalizeEditableValues(editable, languageId)
-			),
-		[fragmentEntryLinks, languageId]
+			getEditableValues(
+				fragmentEntryLinks,
+				segmentsExperienceId
+			).map((editable) => normalizeEditableValues(editable, languageId)),
+		[fragmentEntryLinks, languageId, segmentsExperienceId]
 	);
 
 	const contents = normalizePageContents(pageContents);

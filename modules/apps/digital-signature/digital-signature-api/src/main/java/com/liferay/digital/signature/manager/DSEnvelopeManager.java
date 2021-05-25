@@ -14,6 +14,10 @@
 
 package com.liferay.digital.signature.manager;
 
+import com.liferay.digital.signature.model.DSEnvelope;
+
+import java.util.List;
+
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -22,6 +26,15 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface DSEnvelopeManager {
 
-	public void addDSEnvelope();
+	public DSEnvelope addDSEnvelope(long groupId, DSEnvelope dsEnvelope);
+
+	public void deleteDSEnvelopes(long groupId, String... dsEnvelopeIds);
+
+	public DSEnvelope getDSEnvelope(long groupId, String dsEnvelopeId);
+
+	public List<DSEnvelope> getDSEnvelopes(long groupId, String fromDateString);
+
+	public List<DSEnvelope> getDSEnvelopes(
+		long groupId, String... dsEnvelopeIds);
 
 }

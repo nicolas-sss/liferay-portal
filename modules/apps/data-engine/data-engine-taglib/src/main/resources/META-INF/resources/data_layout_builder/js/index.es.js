@@ -12,6 +12,8 @@
  * details.
  */
 
+import {EVENT_TYPES} from '../new-js/eventTypes';
+import {FieldsSidebar} from '../new-js/plugins/fields-sidebar/components/FieldsSidebar';
 import App from './App.es';
 import DataLayoutBuilderContext from './AppContext.es';
 import DataLayoutBuilderContextProvider from './AppContextProvider.es';
@@ -20,6 +22,7 @@ import EmptyState from './components/empty-state/EmptyState.es';
 import FieldType from './components/field-types/FieldType.es';
 import FieldTypeList from './components/field-types/FieldTypeList.es';
 import {Editor as RuleEditor} from './components/rules/editor/Editor.es';
+import {OPERATOR_OPTIONS_TYPES} from './components/rules/editor/config.es';
 import SearchInput, {
 	SearchInputWithForm,
 } from './components/search-input/SearchInput.es';
@@ -31,7 +34,6 @@ import DragLayer from './drag-and-drop/DragLayer.es';
 import * as DragTypes from './drag-and-drop/dragTypes.es';
 import withDragAndDropContext from './drag-and-drop/withDragAndDropContext.es';
 import {Component as PluginComponent} from './plugins/PluginContext.es';
-import {FieldsSidebar} from './plugins/fields-sidebar/components/FieldsSidebar.es';
 import * as DataConverter from './utils/dataConverter.es';
 import * as DataDefinitionUtils from './utils/dataDefinition.es';
 import * as DataLayoutVisitor from './utils/dataLayoutVisitor.es';
@@ -49,11 +51,13 @@ export {
 	DragLayer,
 	DragTypes,
 	EmptyState,
+	EVENT_TYPES,
 	FieldsSidebar,
 	FieldType,
 	FieldTypeList,
 	LangUtil,
 	MultiPanelSidebar,
+	OPERATOR_OPTIONS_TYPES,
 	PluginComponent,
 	RuleEditor,
 	SearchInput,

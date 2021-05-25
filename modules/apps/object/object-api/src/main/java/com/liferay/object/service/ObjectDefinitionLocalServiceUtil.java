@@ -146,6 +146,10 @@ public class ObjectDefinitionLocalServiceUtil {
 		return getService().dslQuery(dslQuery);
 	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
 	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
@@ -345,10 +349,6 @@ public class ObjectDefinitionLocalServiceUtil {
 
 	public static void undeployObjectDefinition(long objectDefinitionId) {
 		getService().undeployObjectDefinition(objectDefinitionId);
-	}
-
-	public static void undeployObjectDefinitions() {
-		getService().undeployObjectDefinitions();
 	}
 
 	/**

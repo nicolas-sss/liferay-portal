@@ -123,12 +123,9 @@ public class BlogImagesDisplayContext {
 				long fileEntryId = GetterUtil.getLong(
 					doc.get(Field.ENTRY_CLASS_PK));
 
-				FileEntry fileEntry = null;
-
 				try {
-					fileEntry = DLAppLocalServiceUtil.getFileEntry(fileEntryId);
-
-					results.add(fileEntry);
+					results.add(
+						DLAppLocalServiceUtil.getFileEntry(fileEntryId));
 				}
 				catch (Exception exception) {
 					if (_log.isWarnEnabled()) {

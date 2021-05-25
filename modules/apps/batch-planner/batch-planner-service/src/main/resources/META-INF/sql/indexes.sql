@@ -1,6 +1,8 @@
-create index IX_4E2BAD82 on BatchPlannerLog (batchPlannerPlanId);
+create unique index IX_D7841C37 on BatchPlannerLog (batchPlannerPlanId, batchEngineExportTaskERC[$COLUMN_LENGTH:75$]);
+create unique index IX_8A6A1B66 on BatchPlannerLog (batchPlannerPlanId, batchEngineImportTaskERC[$COLUMN_LENGTH:75$]);
+create unique index IX_8806EF8E on BatchPlannerLog (batchPlannerPlanId, dispatchTriggerERC[$COLUMN_LENGTH:75$]);
 
-create index IX_F08FB8C on BatchPlannerMapping (batchPlannerPlanId);
+create unique index IX_E025DC1A on BatchPlannerMapping (batchPlannerPlanId, externalFieldName[$COLUMN_LENGTH:75$], internalFieldName[$COLUMN_LENGTH:75$]);
 
 create unique index IX_221A54A0 on BatchPlannerPlan (companyId, name[$COLUMN_LENGTH:75$]);
 create index IX_874FA8DB on BatchPlannerPlan (companyId, userId);

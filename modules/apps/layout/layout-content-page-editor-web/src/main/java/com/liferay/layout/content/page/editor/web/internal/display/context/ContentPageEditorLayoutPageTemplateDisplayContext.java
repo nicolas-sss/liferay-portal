@@ -14,6 +14,10 @@
 
 package com.liferay.layout.content.page.editor.web.internal.display.context;
 
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
+import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.fragment.contributor.FragmentCollectionContributorTracker;
@@ -27,7 +31,10 @@ import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.item.provider.InfoItemDetailsProvider;
 import com.liferay.info.item.provider.InfoItemFormProvider;
 import com.liferay.info.item.provider.InfoItemFormVariationsProvider;
+import com.liferay.info.list.provider.item.selector.criterion.InfoItemRelatedListProviderItemSelectorCriterion;
+import com.liferay.info.list.provider.item.selector.criterion.InfoItemRelatedListProviderItemSelectorReturnType;
 import com.liferay.item.selector.ItemSelector;
+import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.criteria.InfoItemItemSelectorReturnType;
 import com.liferay.item.selector.criteria.info.item.criterion.InfoItemItemSelectorCriterion;
 import com.liferay.layout.content.page.editor.sidebar.panel.ContentPageEditorSidebarPanel;
@@ -42,13 +49,17 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -89,6 +100,8 @@ public class ContentPageEditorLayoutPageTemplateDisplayContext
 			httpServletRequest, infoItemServiceTracker, itemSelector,
 			pageEditorConfiguration, portletRequest, renderResponse);
 
+		_ffLayoutContentPageEditorConfiguration =
+			ffLayoutContentPageEditorConfiguration;
 		_itemSelector = itemSelector;
 		_pageIsDisplayPage = pageIsDisplayPage;
 		_renderResponse = renderResponse;
@@ -133,6 +146,61 @@ public class ContentPageEditorLayoutPageTemplateDisplayContext
 	@Override
 	public boolean isWorkflowEnabled() {
 		return false;
+	}
+
+	@Override
+	protected List<ItemSelectorCriterion>
+		getCollectionItemSelectorCriterions() {
+
+		List<ItemSelectorCriterion> collectionItemSelectorCriterions =
+			super.getCollectionItemSelectorCriterions();
+
+		if (!_pageIsDisplayPage ||
+			!_ffLayoutContentPageEditorConfiguration.
+				relatedItemCollectionProvidersEnabled()) {
+
+			return collectionItemSelectorCriterions;
+		}
+
+		InfoItemRelatedListProviderItemSelectorCriterion
+			infoItemRelatedListProviderItemSelectorCriterion =
+				new InfoItemRelatedListProviderItemSelectorCriterion();
+
+		infoItemRelatedListProviderItemSelectorCriterion.
+			setDesiredItemSelectorReturnTypes(
+				new InfoItemRelatedListProviderItemSelectorReturnType());
+
+		List<String> sourceItemTypes = new ArrayList<>();
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_getLayoutPageTemplateEntry();
+
+		String className = layoutPageTemplateEntry.getClassName();
+
+		sourceItemTypes.add(className);
+
+		if (Objects.equals(className, FileEntry.class.getName())) {
+
+			// LPS-111037
+
+			className = DLFileEntry.class.getName();
+		}
+
+		AssetRendererFactory<?> assetRendererFactory =
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(
+				className);
+
+		if (assetRendererFactory != null) {
+			sourceItemTypes.add(AssetEntry.class.getName());
+		}
+
+		infoItemRelatedListProviderItemSelectorCriterion.setSourceItemTypes(
+			sourceItemTypes);
+
+		return ListUtil.concat(
+			collectionItemSelectorCriterions,
+			Collections.singletonList(
+				infoItemRelatedListProviderItemSelectorCriterion));
 	}
 
 	private JSONObject _addDisplayPageMappingFields(
@@ -326,6 +394,8 @@ public class ContentPageEditorLayoutPageTemplateDisplayContext
 		).build();
 	}
 
+	private final FFLayoutContentPageEditorConfiguration
+		_ffLayoutContentPageEditorConfiguration;
 	private final ItemSelector _itemSelector;
 	private LayoutPageTemplateEntry _layoutPageTemplateEntry;
 	private final boolean _pageIsDisplayPage;

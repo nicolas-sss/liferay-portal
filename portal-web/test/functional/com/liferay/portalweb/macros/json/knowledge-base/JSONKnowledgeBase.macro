@@ -34,8 +34,6 @@ definition {
 		''';
 
 		var resourcePrimKey = JSONCurlUtil.post("${curl}", "$.[?(@['title'] == '${kbChildArticleTitle}')]['resourcePrimKey']");
-		var resourcePrimKey = StringUtil.replace("${resourcePrimKey}", "[&quot;", "");
-		var resourcePrimKey = StringUtil.replace("${resourcePrimKey}", "&quot;]", "");
 
 		if ("${resourcePrimKey}" == "[]") {
 			fail("FAIL. Cannot find resourcePrimKey.");
@@ -76,8 +74,6 @@ definition {
 		''';
 
 		var resourcePrimKey = JSONCurlUtil.post("${curl}", "$.[?(@['title'] == '${kbArticleTitle}')]['resourcePrimKey']");
-		var resourcePrimKey = StringUtil.replace("${resourcePrimKey}", "[&quot;", "");
-		var resourcePrimKey = StringUtil.replace("${resourcePrimKey}", "&quot;]", "");
 
 		if ("${resourcePrimKey}" == "[]") {
 			fail("FAIL. Cannot find resourcePrimKey.");
@@ -102,6 +98,13 @@ definition {
 			var folderId = "0";
 		}
 
+		if (isSet(groupName)) {
+			var serviceContext = JSONServiceContextUtil.setServiceContext(
+				assetCategoryIds = "${assetCategoryIds}",
+				assetTagNames = "${assetTagNames}",
+				groupName = "${groupName}");
+		}
+
 		var parentResourceClassNameId = JSONClassname._getClassNameId(value = "com.liferay.knowledge.base.model.KBFolder");
 
 		var curl = '''
@@ -116,7 +119,8 @@ definition {
 				-d description= \
 				-d sourceURL= \
 				-d sections= \
-				-d selectedFileNames=
+				-d selectedFileNames= \
+				-d serviceContext=${serviceContext}
 		''';
 
 		echo("## Adding a 'KBArticle' with the following info using JSONWS:");
@@ -301,8 +305,6 @@ definition {
 		''';
 
 		var kbFolderId = JSONCurlUtil.post("${curl}", "$.[?(@['name'] == '${folderName}')]['kbFolderId']");
-		var kbFolderId = StringUtil.replace("${kbFolderId}", "[&quot;", "");
-		var kbFolderId = StringUtil.replace("${kbFolderId}", "&quot;]", "");
 
 		if ("${kbFolderId}" == "[]") {
 			fail("FAIL. Cannot find folder.");

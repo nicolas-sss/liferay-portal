@@ -30,6 +30,28 @@ const ACTION_TYPES = {
 	UPDATE_FIELDS_BULK: 'UPDATE_FIELDS_BULK',
 };
 
+const getInfoFields = (infoFieldSetEntries = []) => {
+	const sourceFields = {};
+	const targetFields = {};
+
+	infoFieldSetEntries.forEach(({fields}) => {
+		fields.forEach(({id, sourceContent, targetContent}) => {
+			sourceFields[id] = sourceContent;
+
+			targetFields[id] = {
+				content: targetContent,
+				message: '',
+				status: '',
+			};
+		});
+	});
+
+	return {
+		sourceFields,
+		targetFields,
+	};
+};
+
 const reducer = (state, action) => {
 	switch (action.type) {
 		case ACTION_TYPES.UPDATE_FIELD:
@@ -37,7 +59,10 @@ const reducer = (state, action) => {
 				...state,
 				fields: {
 					...state.fields,
-					...action.payload,
+					[action.payload.id]: {
+						...state.fields[action.payload.id],
+						...action.payload.field,
+					},
 				},
 				formHasChanges: true,
 			};
@@ -54,26 +79,9 @@ const reducer = (state, action) => {
 	}
 };
 
-const getInfoFields = (infoFieldSetEntries = []) => {
-	const sourceFields = [];
-	const targetFields = {};
-
-	infoFieldSetEntries.forEach(({fields}) => {
-		fields.forEach(({id, sourceContent, targetContent}) => {
-			sourceFields.push({[id]: sourceContent});
-			targetFields[id] = targetContent;
-		});
-	});
-
-	return {
-		sourceFields,
-		targetFields,
-	};
-};
-
 const Translate = ({
 	aditionalFields,
-	autoTranslateButtonVisible = false,
+	autoTranslateEnabled = false,
 	getAutoTranslateURL,
 	infoFieldSetEntries,
 	portletNamespace,
@@ -117,12 +125,22 @@ const Translate = ({
 
 	const handleOnChangeField = ({content, id}) => {
 		dispatch({
-			payload: {[id]: content},
+			payload: {field: {content}, id},
 			type: ACTION_TYPES.UPDATE_FIELD,
 		});
 	};
 
-	const fetchAutoTranslateFields = () => {
+	const fetchAutoTranslation = ({fields}) =>
+		fetch(getAutoTranslateURL, {
+			body: JSON.stringify({
+				fields,
+				sourceLanguageId,
+				targetLanguageId,
+			}),
+			method: 'POST',
+		}).then((response) => response.json());
+
+	const fetchAutoTranslateFieldsBulk = () => {
 		dispatch({
 			payload: {
 				status: FETCH_STATUS.LOADING,
@@ -130,15 +148,7 @@ const Translate = ({
 			type: ACTION_TYPES.UPDATE_FETCH_STATUS,
 		});
 
-		fetch(getAutoTranslateURL, {
-			body: JSON.stringify({
-				fields: sourceFields,
-				sourceLanguageId,
-				targetLanguageId,
-			}),
-			method: 'POST',
-		})
-			.then((response) => response.json())
+		fetchAutoTranslation({fields: sourceFields})
 			.then(({error, fields}) => {
 				if (error) {
 					throw error;
@@ -146,11 +156,14 @@ const Translate = ({
 
 				if (isMounted()) {
 					dispatch({
-						payload: fields.reduce((acc, field) => {
-							const [id, content] = Object.entries(field)[0];
+						payload: Object.entries(fields).reduce(
+							(acc, [id, content]) => {
+								acc[id] = {content};
 
-							return {...acc, [id]: content};
-						}, {}),
+								return acc;
+							},
+							{}
+						),
 						type: ACTION_TYPES.UPDATE_FIELDS_BULK,
 					});
 
@@ -184,6 +197,58 @@ const Translate = ({
 			);
 	};
 
+	const fetchAutoTranslateField = (fieldId) => {
+		dispatch({
+			payload: {field: {status: FETCH_STATUS.LOADING}, id: fieldId},
+			type: ACTION_TYPES.UPDATE_FIELD,
+		});
+
+		fetchAutoTranslation({
+			fields: {[fieldId]: sourceFields[fieldId]},
+		})
+			.then(({error, fields}) => {
+				if (error) {
+					throw error;
+				}
+
+				if (isMounted()) {
+					dispatch({
+						payload: {
+							field: {
+								content: fields[fieldId],
+								message: Liferay.Language.get(
+									'field-translated'
+								),
+								status: FETCH_STATUS.SUCCESS,
+							},
+							id: fieldId,
+						},
+						type: ACTION_TYPES.UPDATE_FIELD,
+					});
+				}
+			})
+			.catch(
+				({
+					message = Liferay.Language.get(
+						'an-unexpected-error-occurred'
+					),
+				}) => {
+					if (isMounted()) {
+						dispatch({
+							payload: {
+								field: {
+									message,
+									status: FETCH_STATUS.ERROR,
+								},
+								id: fieldId,
+							},
+							type: ACTION_TYPES.UPDATE_FIELD,
+						});
+					}
+				}
+			);
+	};
+
 	return (
 		<form
 			action={updateTranslationPortletURL}
@@ -206,8 +271,8 @@ const Translate = ({
 			))}
 
 			<TranslateActionBar
-				autoTranslateButtonVisible={autoTranslateButtonVisible}
-				fetchAutoTranslateFields={fetchAutoTranslateFields}
+				autoTranslateEnabled={autoTranslateEnabled}
+				fetchAutoTranslateFields={fetchAutoTranslateFieldsBulk}
 				fetchAutoTranslateStatus={state.fetchAutoTranslateStatus}
 				formHasChanges={state.formHasChanges}
 				onSaveButtonClick={handleOnSaveDraft}
@@ -236,6 +301,10 @@ const Translate = ({
 							/>
 
 							<TranslateFieldSetEntries
+								autoTranslateEnabled={autoTranslateEnabled}
+								fetchAutoTranslateField={
+									fetchAutoTranslateField
+								}
 								infoFieldSetEntries={infoFieldSetEntries}
 								onChange={handleOnChangeField}
 								portletNamespace={portletNamespace}
@@ -250,7 +319,7 @@ const Translate = ({
 };
 
 Translate.propTypes = {
-	autoTranslateButtonVisible: PropTypes.bool,
+	autoTranslateEnabled: PropTypes.bool,
 	getAutoTranslateURL: PropTypes.string.isRequired,
 	infoFieldSetEntries: PropTypes.arrayOf(
 		PropTypes.shape({

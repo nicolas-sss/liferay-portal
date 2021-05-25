@@ -516,11 +516,12 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "KnowledgeBaseArticle")})
-	public void putKnowledgeBaseArticlePermission(
-			@NotNull @Parameter(hidden = true)
-			@PathParam("knowledgeBaseArticleId")
-			Long knowledgeBaseArticleId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putKnowledgeBaseArticlePermission(
+				@NotNull @Parameter(hidden = true)
+				@PathParam("knowledgeBaseArticleId")
+				Long knowledgeBaseArticleId,
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String resourceName = getPermissionCheckerResourceName(
@@ -533,12 +534,15 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 			getPermissionCheckerGroupId(knowledgeBaseArticleId));
 
 		resourcePermissionLocalService.updateResourcePermissions(
-			contextCompany.getCompanyId(), 0, resourceName,
+			contextCompany.getCompanyId(),
+			getPermissionCheckerGroupId(knowledgeBaseArticleId), resourceName,
 			String.valueOf(resourceId),
 			ModelPermissionsUtil.toModelPermissions(
 				contextCompany.getCompanyId(), permissions, resourceId,
 				resourceName, resourceActionLocalService,
 				resourcePermissionLocalService, roleLocalService));
+
+		return toPermissionPage(resourceId, resourceName, null);
 	}
 
 	/**
@@ -923,9 +927,11 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "KnowledgeBaseArticle")})
-	public void putSiteKnowledgeBaseArticlePermission(
-			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putSiteKnowledgeBaseArticlePermission(
+				@NotNull @Parameter(hidden = true) @PathParam("siteId") Long
+					siteId,
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String portletName = getPermissionCheckerPortletName(siteId);
@@ -941,6 +947,8 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 				contextCompany.getCompanyId(), permissions, siteId, portletName,
 				resourceActionLocalService, resourcePermissionLocalService,
 				roleLocalService));
+
+		return toPermissionPage(siteId, portletName, null);
 	}
 
 	/**
@@ -986,7 +994,8 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 				knowledgeBaseArticles) {
 
 			postSiteKnowledgeBaseArticle(
-				(Long)parameters.get("siteId"), knowledgeBaseArticle);
+				Long.parseLong((String)parameters.get("siteId")),
+				knowledgeBaseArticle);
 		}
 	}
 
@@ -1025,8 +1034,9 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 		throws Exception {
 
 		return getSiteKnowledgeBaseArticlesPage(
-			(Long)parameters.get("siteId"), (Boolean)parameters.get("flatten"),
-			search, null, filter, pagination, sorts);
+			Long.parseLong((String)parameters.get("siteId")),
+			Boolean.parseBoolean((String)parameters.get("flatten")), search,
+			null, filter, pagination, sorts);
 	}
 
 	@Override
@@ -1063,7 +1073,8 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 			putKnowledgeBaseArticle(
 				knowledgeBaseArticle.getId() != null ?
 					knowledgeBaseArticle.getId() :
-						(Long)parameters.get("knowledgeBaseArticleId"),
+						Long.parseLong(
+							(String)parameters.get("knowledgeBaseArticleId")),
 				knowledgeBaseArticle);
 		}
 	}

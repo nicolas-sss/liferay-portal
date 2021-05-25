@@ -143,6 +143,9 @@ public interface ObjectDefinitionLocalService
 	public <T> T dslQuery(DSLQuery dslQuery);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int dslQueryCount(DSLQuery dslQuery);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -298,8 +301,6 @@ public interface ObjectDefinitionLocalService
 
 	@Clusterable
 	public void undeployObjectDefinition(long objectDefinitionId);
-
-	public void undeployObjectDefinitions();
 
 	/**
 	 * Updates the object definition in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.

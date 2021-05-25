@@ -118,7 +118,7 @@ public class ConfigurationFileInstaller implements FileInstaller {
 			String logString = StringPool.BLANK;
 
 			if (pid[1] != null) {
-				logString = StringPool.DASH + pid[1];
+				logString = StringPool.TILDE + pid[1];
 			}
 
 			if (old == null) {
@@ -151,7 +151,7 @@ public class ConfigurationFileInstaller implements FileInstaller {
 		String logString = StringPool.BLANK;
 
 		if (pid[1] != null) {
-			logString = StringPool.DASH + pid[1];
+			logString = StringPool.TILDE + pid[1];
 		}
 
 		if (_log.isInfoEnabled()) {
@@ -227,7 +227,7 @@ public class ConfigurationFileInstaller implements FileInstaller {
 	}
 
 	private Configuration _getConfiguration(
-			String fileName, String pid, String factoryPid)
+			String fileName, String pid, String name)
 		throws Exception {
 
 		Configuration configuration = _findExistingConfiguration(fileName);
@@ -236,9 +236,9 @@ public class ConfigurationFileInstaller implements FileInstaller {
 			return configuration;
 		}
 
-		if (factoryPid != null) {
-			return _configurationAdmin.createFactoryConfiguration(
-				pid, StringPool.QUESTION);
+		if (name != null) {
+			return _configurationAdmin.getFactoryConfiguration(
+				pid, name, StringPool.QUESTION);
 		}
 
 		return _configurationAdmin.getConfiguration(pid, StringPool.QUESTION);
@@ -247,14 +247,14 @@ public class ConfigurationFileInstaller implements FileInstaller {
 	private String[] _parsePid(String path) {
 		String pid = path.substring(0, path.lastIndexOf(CharPool.PERIOD));
 
-		int index = pid.indexOf(CharPool.DASH);
+		int index = pid.indexOf(CharPool.TILDE);
 
 		if (index > 0) {
-			String factoryPid = pid.substring(index + 1);
+			String name = pid.substring(index + 1);
 
 			pid = pid.substring(0, index);
 
-			return new String[] {pid, factoryPid};
+			return new String[] {pid, name};
 		}
 
 		return new String[] {pid, null};

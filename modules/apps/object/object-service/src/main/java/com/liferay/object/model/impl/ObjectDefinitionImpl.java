@@ -16,6 +16,7 @@ package com.liferay.object.model.impl;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 
 /**
@@ -51,6 +52,11 @@ public class ObjectDefinitionImpl extends ObjectDefinitionBaseImpl {
 	@Override
 	public String getPrimaryKeyColumnName() {
 		return TextFormatter.format(getName() + "Id", TextFormatter.I);
+	}
+
+	@Override
+	public String getRESTContextPath() {
+		return TextFormatter.formatPlural(StringUtil.toLowerCase(getName()));
 	}
 
 }

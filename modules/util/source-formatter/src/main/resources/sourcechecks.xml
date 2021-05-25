@@ -480,6 +480,7 @@
 		<check name="JavaMetaAnnotationsCheck">
 			<category name="Bug Prevention" />
 			<description name="Checks for correct use of attributes `description` and `name` in annotation `@aQute.bnd.annotation.metatype.Meta`." />
+			<property name="checkConfigurationName" value="false" />
 		</check>
 		<check name="JavaModifiedServiceMethodCheck">
 			<category name="Bug Prevention" />
@@ -1065,6 +1066,10 @@
 		<check name="JSPUnusedJSPFCheck">
 			<category name="Performance" />
 			<description name="Finds `.jspf` files that are not used." />
+		</check>
+		<check name="JSPVarNameCheck">
+			<category name="Styling" />
+			<description name="Checks that values of attribute `var` follow naming conventions." />
 		</check>
 		<check name="LocaleUtilCheck">
 			<category name="Bug Prevention" />

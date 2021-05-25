@@ -208,6 +208,11 @@ public class ObjectDefinitionWrapper
 		return model.getPrimaryKeyColumnName();
 	}
 
+	@Override
+	public String getRESTContextPath() {
+		return model.getRESTContextPath();
+	}
+
 	/**
 	 * Returns the user ID of this object definition.
 	 *

@@ -12,7 +12,7 @@ definition {
 	// All test cases are currently configured to run Liferay SAML as both the IdP and SP.
 
 	setUp {
-		User.firstLoginPG();
+		User.firstLoginUI();
 	}
 
 	@priority = "5"
@@ -24,7 +24,7 @@ definition {
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
 			spAttributes = "siteRoles",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		Navigator.openURL();
 
@@ -111,13 +111,13 @@ definition {
 
 		User.viewLoggedOutPG();
 
-		User.logoutPG(specificURL = "http://www.able.com:9080/");
+		User.logoutPG(specificURL = "http://www.able.com:9080");
 
 		User.viewLoggedOutPG();
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -156,10 +156,10 @@ definition {
 
 		PortalInstances.viewCP(virtualHost = "www.able.com");
 
-		User.firstLoginPG(
+		User.firstLoginUI(
 			password = "test",
-			userEmailAddress = "test@www.able.com",
-			virtualHostsURL = "http://www.able.com:8080");
+			specificURL = "http://www.able.com:8080",
+			userEmailAddress = "test@www.able.com");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Security",
@@ -177,10 +177,14 @@ definition {
 	test AssertKeepAliveToKeepMySAMLSessionAlive {
 		property test.name.skip.portal.instance = "SAML#AssertKeepAliveToKeepMySAMLSessionAlive";
 
-		User.logoutAndLoginPG(
-			nodePort = "9080",
-			userLoginEmailAddress = "test@liferay.com",
-			userLoginFullName = "Test Test");
+		// Add 2 new SP to the second portal instance at port 9080
+
+		UserBar.signOut();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "System",
@@ -197,10 +201,10 @@ definition {
 			virtualHost = "www.baker.com",
 			webId = "www.baker.com");
 
-		User.firstLoginPG(
+		User.firstLoginUI(
 			password = "test",
-			userEmailAddress = "test@www.able.com",
-			virtualHostsURL = "http://www.able.com:9080");
+			specificURL = "http://www.able.com:9080",
+			userEmailAddress = "test@liferay.com");
 
 		User.openUsersAdmin(baseURL = "http://www.able.com:9080");
 
@@ -209,11 +213,11 @@ definition {
 			userEmailAddress = "test@liferay.com",
 			userScreenName = "test");
 
-		User.logoutPG(specificURL = "http://www.able.com:9080/");
+		User.logoutPG(specificURL = "http://www.able.com:9080");
 
 		User.viewLoggedOutPG();
 
-		User.firstLoginPG(
+		User.firstLoginUI(
 			password = "test",
 			userEmailAddress = "test@www.baker.com",
 			virtualHostsURL = "http://www.baker.com:9080");
@@ -225,11 +229,11 @@ definition {
 			userEmailAddress = "test@liferay.com",
 			userScreenName = "test");
 
-		User.logoutPG(specificURL = "http://www.baker.com:9080/");
+		User.logoutPG(specificURL = "http://www.baker.com:9080");
 
 		User.viewLoggedOutPG();
 
-		User.firstLoginPG();
+		User.firstLoginUI();
 
 		SAML.configureLiferaySAMLAsIdP(samlEntityID = "samlidp");
 
@@ -237,7 +241,7 @@ definition {
 			idpKeepAliveURL = "http://localhost:8080/c/portal/saml/keep_alive",
 			samlEntityID = "samlsp",
 			spKeepAliveURL = "http://www.able.com:9080/c/portal/saml/keep_alive",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		SAML.configureLiferaySAMLAsSP(
 			idpKeepAliveURL = "http://localhost:8080/c/portal/saml/keep_alive",
@@ -259,8 +263,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -295,7 +298,7 @@ definition {
 			idpAttributes = "firstName",
 			samlEntityID = "samlsp",
 			spAttributes = "firstName",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -303,8 +306,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -313,11 +315,11 @@ definition {
 
 		User.viewLoggedInPG();
 
-		User.logoutPG(specificURL = "http://www.able.com:9080/");
+		User.logoutPG(specificURL = "http://www.able.com:9080");
 
 		User.viewLoggedOutPG();
 
-		User.loginPG(
+		User.firstLoginUI(
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -377,7 +379,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		Open.openNoError(locator1 = "http://www.able.com:9080/c/portal/saml/metadata");
 
@@ -418,7 +420,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -430,7 +432,7 @@ definition {
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
 			samlEnabled = "true",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		Navigator.openURL();
@@ -464,7 +466,7 @@ definition {
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
 			samlEnabled = "true",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		Navigator.openURL();
@@ -476,7 +478,7 @@ definition {
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
 			samlEnabled = "true",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		Navigator.openURL();
@@ -501,7 +503,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -512,7 +514,7 @@ definition {
 		SAML.executeIdPInitiatedSSO(
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -544,7 +546,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -556,7 +558,7 @@ definition {
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
 			samlEnabled = "true",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		Navigator.openURL();
@@ -592,7 +594,7 @@ definition {
 		SAML.configureLiferaySAMLAsSP(
 			encryptionCertificate = "true",
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		SAMLNavigation.gotoServiceProviderConnection();
 
@@ -606,8 +608,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -633,10 +634,9 @@ definition {
 
 		User.viewLoggedOutPG();
 
-		Navigator.openSpecificURL(url = "http://www.able.com:9080");
-
-		User._login(
+		User.firstLoginUI(
 			password = "test",
+			specificURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		AssertTextEquals(
@@ -668,7 +668,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -679,7 +679,7 @@ definition {
 		SAML.executeIdPInitiatedSSO(
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -707,8 +707,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -745,8 +744,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -846,7 +844,7 @@ definition {
 
 		Portlet.startServer(deleteLiferayHome = "false");
 
-		User.loginPG(
+		User.firstLoginUI(
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -892,14 +890,14 @@ definition {
 
 		User.logoutPG(specificURL = "http://www.able.com:9080");
 
-		User.loginPG(
+		User.firstLoginUI(
 			password = "test",
 			specificURL = "http://www.able.com:9080",
 			userEmailAddress = "ldapuseremail@liferay.com");
 
 		User.logoutPG(specificURL = "http://www.able.com:9080");
 
-		User.loginPG(
+		User.firstLoginUI(
 			password = "test",
 			specificURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
@@ -954,7 +952,7 @@ definition {
 		SAML.configureLiferaySAMLAsSP(
 			encryptionCertificate = "true",
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		SAMLNavigation.gotoServiceProviderConnection();
 
@@ -968,8 +966,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -991,9 +988,9 @@ definition {
 			certificateUsage = "ENCRYPTION",
 			keyStoreAlias = "samlsp-encryption");
 
-		User.logoutPG(specificURL = "http://www.able.com:9080/");
+		User.logoutPG(specificURL = "http://www.able.com:9080");
 
-		User.loginPG(
+		User.firstLoginUI(
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 	}
@@ -1009,7 +1006,7 @@ definition {
 			idpAttributes = "firstName",
 			samlEntityID = "samlsp",
 			spAttributes = "firstName",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -1017,8 +1014,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -1047,7 +1043,7 @@ definition {
 		Navigator.openSpecificURL(url = "http://www.able.com:9080");
 
 		if (IsElementNotPresent(locator1 = "UserBar#USER_AVATAR_IMAGE")) {
-			User.loginPG(
+			User.firstLoginUI(
 				password = "test",
 				specificURL = "http://www.able.com:9080",
 				userEmailAddress = "test@liferay.com");
@@ -1081,8 +1077,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -1099,7 +1094,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -1107,8 +1102,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -1163,7 +1157,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -1176,7 +1170,7 @@ definition {
 		SAML.executeIdPInitiatedSSO(
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -1209,7 +1203,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		User.logoutPG();
 
@@ -1223,7 +1217,7 @@ definition {
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
 			rememberMeChecked = "true",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -1252,10 +1246,14 @@ definition {
 	test ViewIdPSingleLogoutWithMultipleSPs {
 		property test.name.skip.portal.instance = "SAML#ViewIdPSingleLogoutWithMultipleSPs";
 
-		User.logoutAndLoginPG(
-			nodePort = "9080",
-			userLoginEmailAddress = "test@liferay.com",
-			userLoginFullName = "Test Test");
+		// Add 2 new SP to the second portal instance at port 9080
+
+		UserBar.signOut();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "System",
@@ -1272,10 +1270,10 @@ definition {
 			virtualHost = "www.baker.com",
 			webId = "www.baker.com");
 
-		User.firstLoginPG(
+		User.firstLoginUI(
 			password = "test",
-			userEmailAddress = "test@www.able.com",
-			virtualHostsURL = "http://www.able.com:9080");
+			specificURL = "http://www.able.com:9080",
+			userEmailAddress = "test@www.able.com");
 
 		User.openUsersAdmin(baseURL = "http://www.able.com:9080");
 
@@ -1284,14 +1282,14 @@ definition {
 			userEmailAddress = "test@liferay.com",
 			userScreenName = "test");
 
-		User.logoutPG(specificURL = "http://www.able.com:9080/");
+		User.logoutPG(specificURL = "http://www.able.com:9080");
 
 		User.viewLoggedOutPG();
 
-		User.firstLoginPG(
+		User.firstLoginUI(
 			password = "test",
-			userEmailAddress = "test@www.baker.com",
-			virtualHostsURL = "http://www.baker.com:9080");
+			specificURL = "http://www.baker.com:9080",
+			userEmailAddress = "test@www.baker.com");
 
 		User.openUsersAdmin(baseURL = "http://www.baker.com:9080");
 
@@ -1300,17 +1298,17 @@ definition {
 			userEmailAddress = "test@liferay.com",
 			userScreenName = "test");
 
-		User.logoutPG(specificURL = "http://www.baker.com:9080/");
+		User.logoutPG(specificURL = "http://www.baker.com:9080");
 
 		User.viewLoggedOutPG();
 
-		User.firstLoginPG();
+		User.firstLoginUI();
 
 		SAML.configureLiferaySAMLAsIdP(samlEntityID = "samlidp");
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp2",
@@ -1322,8 +1320,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -1365,10 +1362,14 @@ definition {
 	test ViewSingleLogoutAndForceAuthWithMultipleSPs {
 		property test.name.skip.portal.instance = "SAML#ViewSingleLogoutAndForceAuthWithMultipleSPs";
 
-		User.logoutAndLoginPG(
-			nodePort = "9080",
-			userLoginEmailAddress = "test@liferay.com",
-			userLoginFullName = "Test Test");
+		// Add 2 new SP to the second portal instance at port 9080
+
+		UserBar.signOut();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://localhost:9080",
+			userEmailAddress = "test@liferay.com");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "System",
@@ -1385,10 +1386,10 @@ definition {
 			virtualHost = "www.baker.com",
 			webId = "www.baker.com");
 
-		User.firstLoginPG(
+		User.firstLoginUI(
 			password = "test",
-			userEmailAddress = "test@www.able.com",
-			virtualHostsURL = "http://www.able.com:9080");
+			specificURL = "http://www.able.com:9080",
+			userEmailAddress = "test@www.able.com");
 
 		User.openUsersAdmin(baseURL = "http://www.able.com:9080");
 
@@ -1397,14 +1398,14 @@ definition {
 			userEmailAddress = "test@liferay.com",
 			userScreenName = "test");
 
-		User.logoutPG(specificURL = "http://www.able.com:9080/");
+		User.logoutPG(specificURL = "http://www.able.com:9080");
 
 		User.viewLoggedOutPG();
 
-		User.firstLoginPG(
+		User.firstLoginUI(
 			password = "test",
-			userEmailAddress = "test@www.baker.com",
-			virtualHostsURL = "http://www.baker.com:9080");
+			specificURL = "http://www.baker.com:9080",
+			userEmailAddress = "test@www.baker.com");
 
 		User.openUsersAdmin(baseURL = "http://www.baker.com:9080");
 
@@ -1413,17 +1414,17 @@ definition {
 			userEmailAddress = "test@liferay.com",
 			userScreenName = "test");
 
-		User.logoutPG(specificURL = "http://www.baker.com:9080/");
+		User.logoutPG(specificURL = "http://www.baker.com:9080");
 
 		User.viewLoggedOutPG();
 
-		User.firstLoginPG();
+		User.firstLoginUI();
 
 		SAML.configureLiferaySAMLAsIdP(samlEntityID = "samlidp");
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp2",
@@ -1435,8 +1436,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -1471,7 +1471,7 @@ definition {
 
 		User.viewLoggedOutPG();
 
-		User.loginPG(
+		User.firstLoginUI(
 			password = "test",
 			specificURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
@@ -1508,7 +1508,7 @@ definition {
 
 		User.viewLoggedOutPG();
 
-		User.loginPG(
+		User.firstLoginUI(
 			password = "test",
 			specificURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
@@ -1531,7 +1531,7 @@ definition {
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "System",
@@ -1552,7 +1552,7 @@ definition {
 			idpInitiatedSSOURL = "${portalURL}/c/portal/saml/sso?entityId=samlsp&amp;RelayState=http://www.able.com:9080",
 			password = "test",
 			rememberMeChecked = "true",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.logoutPG(specificURL = "http://www.able.com:9080");
@@ -1565,13 +1565,15 @@ definition {
 	@description = "Sign into portal by executing a SP initiated SSO login. This is done by clicking on the 'Sign In' link in the dockbar on the SP. After the SP is logged in, and if both instances has the same user and email address, the IdP will also be logged in."
 	@priority = "4"
 	test ViewSPInitiatedSSO {
+		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "SAML#ViewSPInitiatedSSO";
 
 		SAML.configureLiferaySAMLAsIdP(samlEntityID = "samlidp");
 
 		SAML.configureLiferaySAMLAsSP(
 			samlEntityID = "samlsp",
-			spURL = "http://www.able.com:9080/");
+			spURL = "http://www.able.com:9080",
+			userEmailAddress = "test@liferay.com");
 
 		User.logoutPG();
 
@@ -1581,8 +1583,7 @@ definition {
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:9080",
-			spURL = "http://www.able.com:9080/",
+			spURL = "http://www.able.com:9080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();
@@ -1622,10 +1623,10 @@ definition {
 
 		PortalInstances.viewCP(virtualHost = "www.able.com");
 
-		User.firstLoginPG(
+		User.firstLoginUI(
 			password = "test",
-			userEmailAddress = "test@www.able.com",
-			virtualHostsURL = "http://www.able.com:8080");
+			specificURL = "http://www.able.com:8080",
+			userEmailAddress = "test@www.able.com");
 
 		User.openUsersAdmin(baseURL = "http://www.able.com:8080");
 
@@ -1634,15 +1635,22 @@ definition {
 			userEmailAddress = "test@liferay.com",
 			userScreenName = "test");
 
-		User.logoutAndLoginPG(
-			userLoginEmailAddress = "test@liferay.com",
-			userLoginFullName = "Test Test");
+		User.logoutPG(specificURL = "http://www.able.com:8080");
 
-		User.logoutPG(specificURL = "http://www.able.com:8080/");
+		takeScreenshot();
 
 		User.viewLoggedOutPG();
 
-		User.firstLoginPG();
+		takeScreenshot();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://www.able.com:8080",
+			userEmailAddress = "test@liferay.com");
+
+		User.logoutPG(specificURL = "http://www.able.com:8080");
+
+		User.viewLoggedOutPG();
 
 		SAML.configureLiferaySAMLAsIdP(samlEntityID = "samlidp");
 
@@ -1673,7 +1681,7 @@ definition {
 		SAML.executeSPInitiatedSSO(
 			idpName = "samlidp",
 			samlMultiIdPs = "true",
-			specificURL = "http://www.baker.com:9080");
+			spURL = "http://www.baker.com:9080");
 
 		User.viewLoggedInPG();
 
@@ -1700,7 +1708,7 @@ definition {
 		SAML.executeSPInitiatedSSO(
 			idpName = "samlidp2",
 			samlMultiIdPs = "true",
-			specificURL = "http://www.baker.com:9080");
+			spURL = "http://www.baker.com:9080");
 
 		User.viewLoggedInPG();
 
@@ -1722,7 +1730,7 @@ definition {
 
 		User.viewLoggedOutPG();
 
-		User.loginPG(
+		User.firstLoginUI(
 			idpName = "samlidp",
 			password = "test",
 			samlMultiIdPs = "true",
@@ -1752,7 +1760,7 @@ definition {
 
 		User.viewLoggedOutPG();
 
-		User.loginPG(
+		User.firstLoginUI(
 			password = "test",
 			specificURL = "http://www.baker.com:9080",
 			userEmailAddress = "test@liferay.com");
@@ -1833,7 +1841,7 @@ uuid''',
 
 		SAML.executeSPInitiatedSSO(
 			password = "test",
-			specificURL = "http://www.able.com:8080",
+			spURL = "http://www.able.com:8080",
 			userEmailAddress = "test@liferay.com");
 
 		User.viewLoggedInPG();

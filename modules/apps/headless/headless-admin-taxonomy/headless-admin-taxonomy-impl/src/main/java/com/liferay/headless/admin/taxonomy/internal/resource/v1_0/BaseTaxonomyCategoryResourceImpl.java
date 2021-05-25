@@ -461,10 +461,12 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "TaxonomyCategory")})
-	public void putTaxonomyCategoryPermission(
-			@NotNull @Parameter(hidden = true) @PathParam("taxonomyCategoryId")
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putTaxonomyCategoryPermission(
+				@NotNull @Parameter(hidden = true)
+				@PathParam("taxonomyCategoryId")
 				String taxonomyCategoryId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String resourceName = getPermissionCheckerResourceName(
@@ -476,12 +478,15 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 			getPermissionCheckerGroupId(taxonomyCategoryId));
 
 		resourcePermissionLocalService.updateResourcePermissions(
-			contextCompany.getCompanyId(), 0, resourceName,
+			contextCompany.getCompanyId(),
+			getPermissionCheckerGroupId(taxonomyCategoryId), resourceName,
 			String.valueOf(resourceId),
 			ModelPermissionsUtil.toModelPermissions(
 				contextCompany.getCompanyId(), permissions, resourceId,
 				resourceName, resourceActionLocalService,
 				resourcePermissionLocalService, roleLocalService));
+
+		return toPermissionPage(resourceId, resourceName, null);
 	}
 
 	/**
@@ -601,7 +606,8 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 
 		for (TaxonomyCategory taxonomyCategory : taxonomyCategories) {
 			postTaxonomyVocabularyTaxonomyCategory(
-				(Long)parameters.get("taxonomyVocabularyId"), taxonomyCategory);
+				Long.parseLong((String)parameters.get("taxonomyVocabularyId")),
+				taxonomyCategory);
 		}
 	}
 

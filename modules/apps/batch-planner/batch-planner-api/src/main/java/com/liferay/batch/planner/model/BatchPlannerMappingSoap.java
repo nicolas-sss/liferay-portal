@@ -43,6 +43,11 @@ public class BatchPlannerMappingSoap implements Serializable {
 		soapModel.setCreateDate(model.getCreateDate());
 		soapModel.setModifiedDate(model.getModifiedDate());
 		soapModel.setBatchPlannerPlanId(model.getBatchPlannerPlanId());
+		soapModel.setExternalFieldName(model.getExternalFieldName());
+		soapModel.setExternalFieldType(model.getExternalFieldType());
+		soapModel.setInternalFieldName(model.getInternalFieldName());
+		soapModel.setInternalFieldType(model.getInternalFieldType());
+		soapModel.setScript(model.getScript());
 
 		return soapModel;
 	}
@@ -169,6 +174,46 @@ public class BatchPlannerMappingSoap implements Serializable {
 		_batchPlannerPlanId = batchPlannerPlanId;
 	}
 
+	public String getExternalFieldName() {
+		return _externalFieldName;
+	}
+
+	public void setExternalFieldName(String externalFieldName) {
+		_externalFieldName = externalFieldName;
+	}
+
+	public String getExternalFieldType() {
+		return _externalFieldType;
+	}
+
+	public void setExternalFieldType(String externalFieldType) {
+		_externalFieldType = externalFieldType;
+	}
+
+	public String getInternalFieldName() {
+		return _internalFieldName;
+	}
+
+	public void setInternalFieldName(String internalFieldName) {
+		_internalFieldName = internalFieldName;
+	}
+
+	public String getInternalFieldType() {
+		return _internalFieldType;
+	}
+
+	public void setInternalFieldType(String internalFieldType) {
+		_internalFieldType = internalFieldType;
+	}
+
+	public String getScript() {
+		return _script;
+	}
+
+	public void setScript(String script) {
+		_script = script;
+	}
+
 	private long _mvccVersion;
 	private long _batchPlannerMappingId;
 	private long _companyId;
@@ -177,5 +222,10 @@ public class BatchPlannerMappingSoap implements Serializable {
 	private Date _createDate;
 	private Date _modifiedDate;
 	private long _batchPlannerPlanId;
+	private String _externalFieldName;
+	private String _externalFieldType;
+	private String _internalFieldName;
+	private String _internalFieldType;
+	private String _script;
 
 }

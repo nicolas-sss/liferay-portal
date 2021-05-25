@@ -219,6 +219,38 @@ public class UserIndexerTest {
 	}
 
 	@Test
+	public void testNameFieldsChinese() {
+		String firstName = "姓氏";
+		String lastName = "名字";
+
+		User user = addUserWithNameFields(firstName, null, lastName);
+
+		assertFieldValue(
+			"firstName", firstName, byAttribute("firstName", "姓氏"));
+		assertFieldValue("lastName", lastName, byAttribute("lastName", "名字"));
+
+		assertUserId(user.getUserId(), byQueryString("名字"));
+		assertUserId(user.getUserId(), byQueryString("名字姓氏"));
+		assertUserId(user.getUserId(), byQueryString(user.getFullName()));
+	}
+
+	@Test
+	public void testNameFieldsJapanese() {
+		String firstName = "宮崎";
+		String lastName = "駿";
+
+		User user = addUserWithNameFields(firstName, null, lastName);
+
+		assertFieldValue(
+			"firstName", firstName, byAttribute("firstName", "宮崎"));
+		assertFieldValue("lastName", lastName, byAttribute("lastName", "駿"));
+
+		assertUserId(user.getUserId(), byQueryString("宮崎"));
+		assertUserId(user.getUserId(), byQueryString("駿 宮崎"));
+		assertUserId(user.getUserId(), byQueryString(user.getFullName()));
+	}
+
+	@Test
 	public void testNameFieldsNotTokenized() throws Exception {
 		String firstName = "Liferay7";
 		String lastName = "dell'Apostrophe";
@@ -234,6 +266,39 @@ public class UserIndexerTest {
 		String middleName = "alloy_4";
 
 		testNameFields(firstName, lastName, middleName);
+	}
+
+	@Test
+	public void testNameFieldsRandomString() throws Exception {
+		String firstName = RandomTestUtil.randomString();
+		String lastName = RandomTestUtil.randomString();
+		String middleName = "Middle";
+
+		User user = addUserWithNameFields(firstName, middleName, lastName);
+
+		assertUserId(user.getUserId(), byQueryString(firstName));
+		assertUserId(user.getUserId(), byQueryString(user.getFullName()));
+	}
+
+	@Test
+	public void testNameFieldsSpanish() {
+		String firstName = "José";
+		String lastName = "Sánchez";
+		String middleName = "Pedro";
+
+		User user = addUserWithNameFields(firstName, middleName, lastName);
+
+		assertFieldValue(
+			"firstName", firstName, byAttribute("firstName", "José"));
+		assertFieldValue(
+			"lastName", lastName, byAttribute("lastName", "Sánchez"));
+		assertFieldValue(
+			"middleName", middleName, byAttribute("middleName", "Pedro"));
+
+		assertUserId(user.getUserId(), byQueryString("Pedro"));
+		assertUserId(user.getUserId(), byQueryString("José Sánchez"));
+		assertUserId(user.getUserId(), byQueryString("Sánchez José"));
+		assertUserId(user.getUserId(), byQueryString(user.getFullName()));
 	}
 
 	@Test
@@ -257,9 +322,9 @@ public class UserIndexerTest {
 
 		addUserWithNameFields(firstName, middleName, lastName);
 
-		assertFieldValue("firstName", firstName, byQueryString("Fir"));
-		assertFieldValue("lastName", lastName, byQueryString("asT"));
-		assertFieldValue("middleName", middleName, byQueryString("idd"));
+		assertNoHits(byQueryString("irst"));
+		assertNoHits(byQueryString("asT"));
+		assertNoHits(byQueryString("idd"));
 	}
 
 	@Test
@@ -290,14 +355,15 @@ public class UserIndexerTest {
 	}
 
 	@Test
-	public void testScreenNameSubstring() throws Exception {
+	public void testScreenNamePrefix() throws Exception {
 		String screenName = "Open4Life" + RandomTestUtil.randomString();
 
 		addUserWithScreenName(screenName);
 
-		assertScreenNameFieldValue(screenName, byQueryString("open lite"));
+		assertNoHits(byQueryString("4lif"));
+		assertScreenNameFieldValue(screenName, byQueryString("open"));
+		assertScreenNameFieldValue(screenName, byQueryString("open4life"));
 		assertScreenNameFieldValue(screenName, byQueryString("OPE"));
-		assertScreenNameFieldValue(screenName, byQueryString("4lif"));
 	}
 
 	@Test

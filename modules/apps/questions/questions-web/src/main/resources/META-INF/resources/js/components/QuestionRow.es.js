@@ -15,6 +15,7 @@
 import {ClayButtonWithIcon} from '@clayui/button';
 import {ClayDropDownWithItems} from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
+import ClayLabel from '@clayui/label';
 import classNames from 'classnames';
 import React from 'react';
 
@@ -117,6 +118,13 @@ export default ({currentSection, items, question, showSectionLabel}) => {
 					)}
 				>
 					{question.headline}
+					{question.status && question.status !== 'approved' && (
+						<span className="c-ml-2">
+							<ClayLabel displayType="info">
+								{question.status}
+							</ClayLabel>
+						</span>
+					)}
 
 					{!!question.locked && (
 						<span className="c-ml-2">
@@ -142,20 +150,22 @@ export default ({currentSection, items, question, showSectionLabel}) => {
 
 			<div className="align-items-sm-center align-items-start d-flex flex-column-reverse flex-sm-row justify-content-between">
 				<div className="c-mt-3 c-mt-sm-0 stretched-link-layer">
-					<Link
-						to={`/questions/${sectionTitle}/creator/${question.creator.id}`}
-					>
-						<UserIcon
-							fullName={question.creator.name}
-							portraitURL={question.creator.image}
-							size="sm"
-							userId={String(question.creator.id)}
-						/>
+					{question.creator && (
+						<Link
+							to={`/questions/${sectionTitle}/creator/${question.creator.id}`}
+						>
+							<UserIcon
+								fullName={question.creator.name}
+								portraitURL={question.creator.image}
+								size="sm"
+								userId={String(question.creator.id)}
+							/>
 
-						<strong className="c-ml-2 text-dark">
-							{question.creator.name}
-						</strong>
-					</Link>
+							<strong className="c-ml-2 text-dark">
+								{question.creator.name}
+							</strong>
+						</Link>
+					)}
 
 					<span className="c-ml-2 small">
 						{'- ' + dateToInternationalHuman(question.dateModified)}

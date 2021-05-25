@@ -14,6 +14,9 @@
 
 package com.liferay.source.formatter.checkstyle.checks;
 
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -23,6 +26,7 @@ import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,9 +45,13 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 
 	protected abstract boolean allowNullValues();
 
+	protected abstract List<BuilderInformation> doGetBuilderInformationList();
+
 	@Override
 	protected void doVisitToken(DetailAST detailAST) {
-		if (isExcludedPath(RUN_OUTSIDE_PORTAL_EXCLUDES)) {
+		if (isExcludedPath(RUN_OUTSIDE_PORTAL_EXCLUDES) ||
+			ListUtil.isEmpty(getAttributeValues(_ENFORCE_BUILDER_NAMES_KEY))) {
+
 			return;
 		}
 
@@ -85,7 +93,18 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 
 	protected abstract String getAssignClassName(DetailAST assignDetailAST);
 
-	protected abstract List<BuilderInformation> getBuilderInformationList();
+	protected List<BuilderInformation> getBuilderInformationList() {
+		List<BuilderInformation> builderInformationList =
+			doGetBuilderInformationList();
+
+		List<String> enforceBuilderNames = getAttributeValues(
+			_ENFORCE_BUILDER_NAMES_KEY);
+
+		return ListUtil.filter(
+			builderInformationList,
+			builderInformation -> enforceBuilderNames.contains(
+				builderInformation.getBuilderClassName()));
+	}
 
 	protected String getNewInstanceTypeName(DetailAST assignDetailAST) {
 		DetailAST firstChildDetailAST = assignDetailAST.getFirstChild();
@@ -124,6 +143,10 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 		}
 
 		return identDetailAST.getText();
+	}
+
+	protected Map<String, String[][]> getReservedKeywordsMap() {
+		return Collections.emptyMap();
 	}
 
 	protected abstract List<String> getSupportsFunctionMethodNames();
@@ -296,7 +319,9 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 		while (true) {
 			nextSiblingDetailAST = nextSiblingDetailAST.getNextSibling();
 
-			if (nextSiblingDetailAST == null) {
+			if ((nextSiblingDetailAST == null) ||
+				hasPrecedingPlaceholder(nextSiblingDetailAST)) {
+
 				return;
 			}
 
@@ -323,8 +348,9 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 						return;
 					}
 
-					if (!allowNullValues() &&
-						_isNullValueExpression(childDetailAST)) {
+					if ((!allowNullValues() &&
+						 _isNullValueExpression(childDetailAST)) ||
+						containsVariableName(childDetailAST, variableName)) {
 
 						return;
 					}
@@ -368,18 +394,49 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 			_checkNullValues(expressionDetailASTMap, builderClassName);
 		}
 
+		_checkReservedKeywords(expressionDetailASTMap);
+
 		DetailAST parentDetailAST = methodCallDetailAST.getParent();
+
+		int endLineNumber = getEndLineNumber(parentDetailAST);
+		int startLineNumber = getStartLineNumber(parentDetailAST);
 
 		while ((parentDetailAST.getType() == TokenTypes.DOT) ||
 			   (parentDetailAST.getType() == TokenTypes.EXPR) ||
 			   (parentDetailAST.getType() == TokenTypes.METHOD_CALL)) {
 
+			endLineNumber = getEndLineNumber(parentDetailAST);
+			startLineNumber = getStartLineNumber(parentDetailAST);
+
 			parentDetailAST = parentDetailAST.getParent();
+		}
+
+		if (parentDetailAST.getType() == TokenTypes.ELIST) {
+			while (true) {
+				DetailAST grandParentDetailAST = parentDetailAST.getParent();
+
+				if (grandParentDetailAST == null) {
+					return;
+				}
+
+				if (grandParentDetailAST.getType() == TokenTypes.SLIST) {
+					_checkInline(
+						parentDetailAST, expressionDetailASTMap,
+						builderClassName, startLineNumber, endLineNumber);
+
+					return;
+				}
+
+				parentDetailAST = grandParentDetailAST;
+			}
 		}
 
 		if (parentDetailAST.getType() == TokenTypes.LITERAL_RETURN) {
 			_checkInline(
-				parentDetailAST, expressionDetailASTMap, builderClassName);
+				parentDetailAST, expressionDetailASTMap, builderClassName,
+				startLineNumber, endLineNumber);
+
+			return;
 		}
 
 		if (parentDetailAST.getType() != TokenTypes.ASSIGN) {
@@ -401,7 +458,9 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 			}
 		}
 
-		_checkInline(parentDetailAST, expressionDetailASTMap, builderClassName);
+		_checkInline(
+			parentDetailAST, expressionDetailASTMap, builderClassName,
+			startLineNumber, endLineNumber);
 
 		if (isJSPFile()) {
 			return;
@@ -465,65 +524,8 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 	}
 
 	private void _checkInline(
-		DetailAST parentDetailAST,
-		Map<String, List<DetailAST>> expressionDetailASTMap,
-		String builderClassName) {
-
-		if (!isAttributeValue(_CHECK_INLINE)) {
-			return;
-		}
-
-		List<String> supportsFunctionMethodNames =
-			getSupportsFunctionMethodNames();
-
-		if (supportsFunctionMethodNames.isEmpty()) {
-			return;
-		}
-
-		int builderLineNumber = getStartLineNumber(parentDetailAST);
-
-		int branchStatementLineNumber = -1;
-
-		List<DetailAST> branchingStatementDetailASTList = getAllChildTokens(
-			parentDetailAST.getParent(), true, TokenTypes.LITERAL_BREAK,
-			TokenTypes.LITERAL_CONTINUE, TokenTypes.LITERAL_RETURN);
-
-		for (DetailAST branchingStatementDetailAST :
-				branchingStatementDetailASTList) {
-
-			int lineNumber = branchingStatementDetailAST.getLineNo();
-
-			if (lineNumber >= builderLineNumber) {
-				break;
-			}
-
-			branchStatementLineNumber = lineNumber;
-		}
-
-		List<DetailAST> variableDefinitionDetailASTList = getAllChildTokens(
-			parentDetailAST.getParent(), false, TokenTypes.VARIABLE_DEF);
-
-		for (DetailAST variableDefinitionDetailAST :
-				variableDefinitionDetailASTList) {
-
-			int lineNumber = variableDefinitionDetailAST.getLineNo();
-
-			if (lineNumber >= builderLineNumber) {
-				return;
-			}
-
-			if (branchStatementLineNumber < lineNumber) {
-				_checkInline(
-					variableDefinitionDetailAST, builderClassName,
-					supportsFunctionMethodNames, expressionDetailASTMap,
-					builderLineNumber, getEndLineNumber(parentDetailAST));
-			}
-		}
-	}
-
-	private void _checkInline(
-		DetailAST variableDefinitionDetailAST, String builderClassName,
-		List<String> supportsFunctionMethodNames,
+		DetailAST variableDefinitionDetailAST, DetailAST parentDetailAST,
+		String builderClassName, List<String> supportsFunctionMethodNames,
 		Map<String, List<DetailAST>> expressionDetailASTMap,
 		int startLineNumber, int endlineNumber) {
 
@@ -557,23 +559,128 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 		matchingMethodName = _getInlineExpressionMethodName(
 			expressionDetailASTMap, dependentIdentDetailASTList);
 
-		if (matchingMethodName != null) {
-			List<Integer> dependentLineNumbers = _getDependentLineNumbers(
+		if (matchingMethodName == null) {
+			return;
+		}
+
+		List<DetailAST> additionalDependentDetailASTList =
+			_getAdditionalDependentDetailASTList(
 				dependentIdentDetailASTList,
 				variableDefinitionDetailAST.getLineNo(), startLineNumber);
 
-			if (dependentLineNumbers.isEmpty()) {
-				log(
-					identDetailAST, _MSG_INLINE_BUILDER_1,
-					identDetailAST.getText(), identDetailAST.getLineNo(),
-					builderClassName, startLineNumber);
+		if (additionalDependentDetailASTList.isEmpty()) {
+			log(
+				identDetailAST, _MSG_INLINE_BUILDER_1, identDetailAST.getText(),
+				identDetailAST.getLineNo(), builderClassName, startLineNumber);
+
+			return;
+		}
+
+		DetailAST lastAdditionalDependentDetailAST =
+			additionalDependentDetailASTList.get(
+				additionalDependentDetailASTList.size() - 1);
+
+		if (lastAdditionalDependentDetailAST.getLineNo() >=
+				parentDetailAST.getLineNo()) {
+
+			return;
+		}
+
+		String variableName = identDetailAST.getText();
+
+		for (DetailAST additionalDependentDetailAST :
+				additionalDependentDetailASTList) {
+
+			List<DetailAST> methodCallDetailASTList = getAllChildTokens(
+				additionalDependentDetailAST, true, TokenTypes.METHOD_CALL);
+
+			for (DetailAST methodCallDetailAST : methodCallDetailASTList) {
+				DetailAST firstChildDetailAST =
+					methodCallDetailAST.getFirstChild();
+
+				if (firstChildDetailAST.getType() == TokenTypes.DOT) {
+					FullIdent fullIdent = FullIdent.createFullIdent(
+						firstChildDetailAST);
+
+					String methodCall = fullIdent.getText();
+
+					if (!methodCall.startsWith(variableName + ".") &&
+						!methodCall.contains(".get")) {
+
+						return;
+					}
+				}
+				else if (firstChildDetailAST.getType() == TokenTypes.IDENT) {
+					String methodName = firstChildDetailAST.getText();
+
+					if (!methodName.matches("_?get.*")) {
+						return;
+					}
+				}
+				else {
+					return;
+				}
 			}
-			else {
-				log(
-					identDetailAST, _MSG_INLINE_BUILDER_2,
-					identDetailAST.getText(), identDetailAST.getLineNo(),
-					StringUtil.merge(dependentLineNumbers), builderClassName,
-					startLineNumber);
+		}
+
+		log(
+			identDetailAST, _MSG_INLINE_BUILDER_2, variableName,
+			identDetailAST.getLineNo(),
+			_getLineNumbers(additionalDependentDetailASTList), builderClassName,
+			startLineNumber);
+	}
+
+	private void _checkInline(
+		DetailAST parentDetailAST,
+		Map<String, List<DetailAST>> expressionDetailASTMap,
+		String builderClassName, int startLineNumber, int endLineNumber) {
+
+		if (!isAttributeValue(_CHECK_INLINE)) {
+			return;
+		}
+
+		List<String> supportsFunctionMethodNames =
+			getSupportsFunctionMethodNames();
+
+		if (supportsFunctionMethodNames.isEmpty()) {
+			return;
+		}
+
+		int branchStatementLineNumber = -1;
+
+		List<DetailAST> branchingStatementDetailASTList = getAllChildTokens(
+			parentDetailAST.getParent(), true, TokenTypes.LITERAL_BREAK,
+			TokenTypes.LITERAL_CONTINUE, TokenTypes.LITERAL_RETURN);
+
+		for (DetailAST branchingStatementDetailAST :
+				branchingStatementDetailASTList) {
+
+			int lineNumber = branchingStatementDetailAST.getLineNo();
+
+			if (lineNumber >= startLineNumber) {
+				break;
+			}
+
+			branchStatementLineNumber = lineNumber;
+		}
+
+		List<DetailAST> variableDefinitionDetailASTList = getAllChildTokens(
+			parentDetailAST.getParent(), false, TokenTypes.VARIABLE_DEF);
+
+		for (DetailAST variableDefinitionDetailAST :
+				variableDefinitionDetailASTList) {
+
+			int lineNumber = variableDefinitionDetailAST.getLineNo();
+
+			if (lineNumber >= startLineNumber) {
+				return;
+			}
+
+			if (branchStatementLineNumber < lineNumber) {
+				_checkInline(
+					variableDefinitionDetailAST, parentDetailAST,
+					builderClassName, supportsFunctionMethodNames,
+					expressionDetailASTMap, startLineNumber, endLineNumber);
 			}
 		}
 	}
@@ -590,6 +697,69 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 					log(
 						expressionDetailAST, _MSG_INCORRECT_NULL_VALUE,
 						builderClassName);
+				}
+			}
+		}
+	}
+
+	private void _checkReservedKeywords(
+		Map<String, List<DetailAST>> expressionDetailASTMap) {
+
+		Map<String, String[][]> reservedKeywordsMap = getReservedKeywordsMap();
+
+		for (Map.Entry<String, String[][]> entry :
+				reservedKeywordsMap.entrySet()) {
+
+			String methodName = entry.getKey();
+
+			List<DetailAST> expressionDetailASTList =
+				expressionDetailASTMap.get(methodName);
+
+			if (expressionDetailASTList == null) {
+				continue;
+			}
+
+			for (DetailAST expressionDetailAST : expressionDetailASTList) {
+				DetailAST previousDetailAST =
+					expressionDetailAST.getPreviousSibling();
+
+				if (previousDetailAST != null) {
+					continue;
+				}
+
+				DetailAST firstChildDetailAST =
+					expressionDetailAST.getFirstChild();
+
+				String value = null;
+
+				if (firstChildDetailAST.getType() ==
+						TokenTypes.STRING_LITERAL) {
+
+					value = StringUtil.removeChar(
+						firstChildDetailAST.getText(), CharPool.QUOTE);
+				}
+				else if (firstChildDetailAST.getType() == TokenTypes.DOT) {
+					FullIdent fullIdent = FullIdent.createFullIdent(
+						firstChildDetailAST);
+
+					value = fullIdent.getText();
+				}
+				else {
+					continue;
+				}
+
+				String[][] reservedKeywordsArray = entry.getValue();
+
+				for (String[] reservedKeywordArray : reservedKeywordsArray) {
+					String reservedKey = reservedKeywordArray[0];
+
+					if (value.equals(reservedKey)) {
+						log(
+							expressionDetailAST, _MSG_RESERVED_KEYWORD, value,
+							reservedKeywordArray[1]);
+
+						break;
+					}
 				}
 			}
 		}
@@ -629,15 +799,15 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 		return null;
 	}
 
-	private List<Integer> _getDependentLineNumbers(
+	private List<DetailAST> _getAdditionalDependentDetailASTList(
 		List<DetailAST> dependentIdentDetailASTList, int startLineNumber,
 		int endLineNumber) {
 
-		List<Integer> dependentLineNumbers = new ArrayList<>();
+		List<DetailAST> dependentDetailASTList = new ArrayList<>();
 
 		for (DetailAST dependentIdentDetailAST : dependentIdentDetailASTList) {
 			if (dependentIdentDetailAST.getLineNo() >= endLineNumber) {
-				return dependentLineNumbers;
+				return dependentDetailASTList;
 			}
 
 			DetailAST detailAST = dependentIdentDetailAST;
@@ -646,8 +816,8 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 				DetailAST parentDetailAST = detailAST.getParent();
 
 				if (parentDetailAST.getLineNo() < startLineNumber) {
-					if (!dependentLineNumbers.contains(detailAST.getLineNo())) {
-						dependentLineNumbers.add(detailAST.getLineNo());
+					if (!dependentDetailASTList.contains(detailAST)) {
+						dependentDetailASTList.add(detailAST);
 					}
 
 					break;
@@ -657,7 +827,7 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 			}
 		}
 
-		return dependentLineNumbers;
+		return dependentDetailASTList;
 	}
 
 	private Map<String, List<DetailAST>> _getExpressionDetailASTMap(
@@ -738,6 +908,19 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 		}
 
 		return methodName;
+	}
+
+	private String _getLineNumbers(List<DetailAST> detailASTList) {
+		StringBundler sb = new StringBundler(detailASTList.size() * 2);
+
+		for (DetailAST detailAST : detailASTList) {
+			sb.append(detailAST.getLineNo());
+			sb.append(StringPool.COMMA_AND_SPACE);
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		return sb.toString();
 	}
 
 	private List<String> _getVariableNames(DetailAST detailAST) {
@@ -889,6 +1072,9 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 
 	private static final String _CHECK_INLINE = "checkInline";
 
+	private static final String _ENFORCE_BUILDER_NAMES_KEY =
+		"enforceBuilderNames";
+
 	private static final String _MSG_INCLUDE_BUILDER = "builder.include";
 
 	private static final String _MSG_INCORRECT_NULL_VALUE =
@@ -897,6 +1083,8 @@ public abstract class BaseBuilderCheck extends BaseChainedMethodCheck {
 	private static final String _MSG_INLINE_BUILDER_1 = "builder.inline.1";
 
 	private static final String _MSG_INLINE_BUILDER_2 = "builder.inline.2";
+
+	private static final String _MSG_RESERVED_KEYWORD = "keyword.reserved";
 
 	private static final String _MSG_USE_BUILDER = "builder.use";
 

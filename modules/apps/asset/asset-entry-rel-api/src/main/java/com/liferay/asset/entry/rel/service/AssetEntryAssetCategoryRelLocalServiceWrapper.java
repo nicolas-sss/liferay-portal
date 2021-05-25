@@ -179,6 +179,13 @@ public class AssetEntryAssetCategoryRelLocalServiceWrapper
 	}
 
 	@Override
+	public int dslQueryCount(
+		com.liferay.petra.sql.dsl.query.DSLQuery dslQuery) {
+
+		return _assetEntryAssetCategoryRelLocalService.dslQueryCount(dslQuery);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
 		return _assetEntryAssetCategoryRelLocalService.dynamicQuery();
 	}
@@ -411,6 +418,15 @@ public class AssetEntryAssetCategoryRelLocalServiceWrapper
 	public int getAssetEntryAssetCategoryRelsCount(long assetEntryId) {
 		return _assetEntryAssetCategoryRelLocalService.
 			getAssetEntryAssetCategoryRelsCount(assetEntryId);
+	}
+
+	@Override
+	public int getAssetEntryAssetCategoryRelsCountByAssetCategoryId(
+		long assetCategoryId) {
+
+		return _assetEntryAssetCategoryRelLocalService.
+			getAssetEntryAssetCategoryRelsCountByAssetCategoryId(
+				assetCategoryId);
 	}
 
 	@Override

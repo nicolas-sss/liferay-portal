@@ -424,81 +424,6 @@ definition {
 		Click(locator1 = "Sidebar#BACK");
 	}
 
-	macro addFieldsets {
-		if (IsElementNotPresent(key_tabName = "Builder", locator1 = "Sidebar#ACTIVE_TAB")) {
-			Navigator.gotoSidebarTab(tabName = "Builder");
-		}
-
-		if (IsElementNotPresent(key_tab = "Fieldsets", locator1 = "NavTab#ACTIVE_TAB_LINK")) {
-			Navigator.gotoNavTab(navTab = "Fieldsets");
-		}
-
-		if (isSet(createNewFieldset)) {
-			Click(locator1 = "FormViewBuilder#CREATE_NEW_FIELD_SETS");
-
-			Type(
-				locator1 = "FormViewBuilder#FIELD_SET_NAME",
-				value1 = "${fieldsetName}");
-
-			DataEngine.addFields(fieldNameList = "${fieldNameList}");
-
-			if (isSet(fieldHelp)) {
-				for (var fieldName : list "${fieldNameList}") {
-					DataEngine.editFieldTip(
-						fieldFieldLabel = "${fieldName}",
-						fieldHelp = "${fieldName} Help Text");
-				}
-			}
-
-			if (isSet(fieldPlaceholder)) {
-				for (var fieldName : list "${fieldNameList}") {
-					DataEngine.editFieldTip(
-						fieldFieldLabel = "${fieldName}",
-						fieldPlaceholder = "${fieldName} Placeholder");
-				}
-			}
-
-			Modal.save();
-
-			Alert.viewSuccessMessage();
-		}
-
-		DoubleClick(
-			key_fieldName = "${fieldsetName}",
-			locator1 = "Sidebar#ADD_FIELD_NAME");
-
-		Pause(locator1 = "3000");
-
-		if (IsElementNotPresent(key_tab = "Basic", locator1 = "NavTab#ACTIVE_TAB_LINK")) {
-			Navigator.gotoNavTab(navTab = "Basic");
-		}
-
-		if (isSet(fieldsetLabel)) {
-			Type(
-				key_fieldLabel = "Label",
-				locator1 = "TextInput#GENERIC_TEXT_INPUT",
-				value1 = "${fieldsetLabel}");
-
-			AssertTextEquals(
-				key_fieldLabel = "Label",
-				locator1 = "TextInput#GENERIC_TEXT_INPUT",
-				value1 = "${fieldsetLabel}");
-
-			AssertElementPresent(
-				key_fieldsetLabel = "${fieldsetLabel}",
-				locator1 = "DDMEditStructure#FORM_FIELD_SETS_CONTAINER_LABEL",
-				value1 = "${fieldsetLabel}");
-		}
-		else {
-			AssertElementPresent(
-				key_fieldsetLabel = "${fieldsetName}",
-				locator1 = "DDMEditStructure#FORM_FIELD_SETS_CONTAINER_LABEL",
-				value1 = "${fieldsetName}");
-		}
-
-		Click(locator1 = "Sidebar#BACK");
-	}
-
 	macro addFieldsetToBuilder {
 		if (IsElementNotPresent(key_tabName = "Builder", locator1 = "Sidebar#ACTIVE_TAB")) {
 			Navigator.gotoSidebarTab(tabName = "Builder");
@@ -511,6 +436,12 @@ definition {
 		DoubleClick(
 			key_fieldName = "${fieldsetName}",
 			locator1 = "Sidebar#ADD_FIELD_NAME");
+
+		AssertElementPresent(
+			key_fieldsetLabel = "${fieldsetName}",
+			locator1 = "DDMEditStructure#FORM_FIELD_SETS_CONTAINER_LABEL");
+
+		Click(locator1 = "Sidebar#BACK");
 	}
 
 	macro addFieldToFieldsGroup {
@@ -584,36 +515,19 @@ definition {
 	}
 
 	macro addRepeatableField {
-		var key_fieldName = "${fieldName}";
-
-		Click(locator1 = "DDMField#FIELD_DUPLICATE");
-	}
-
-	macro addRepeatableFieldGroups {
-		var fieldName = "${fieldName}";
-		var i = "0";
-
-		while ("${i}" != "${totalPortletCount}") {
-			var i = ${i} + 1;
-
-			Click(locator1 = "WCEditWebContent#REPEATABLE_BUTTON");
+		if (!(isSet(index))) {
+			var index = "1";
 		}
-	}
 
-	macro addRepeatableFieldset {
-		Click(
-			key_fieldsetLabel = "${fieldsetLabel}",
-			locator1 = "WCEditWebContent#FIELDSET_REPEATABLE_BUTTON");
-	}
-
-	macro addRepeatableFieldsGroup {
 		WaitForElementPresent(
-			key_fieldsetLabel = "${fieldsGroupLabel}",
-			locator1 = "WCEditWebContent#FIELDSET_REPEATABLE_BUTTON");
+			index = "${index}",
+			key_fieldLabel = "${fieldLabel}",
+			locator1 = "DataEngineRenderer#REPEATABLE_FIELD_ADD_BUTTON_INDEXED");
 
 		Click(
-			key_fieldsetLabel = "${fieldsGroupLabel}",
-			locator1 = "WCEditWebContent#FIELDSET_REPEATABLE_BUTTON");
+			index = "${index}",
+			key_fieldLabel = "${fieldLabel}",
+			locator1 = "DataEngineRenderer#REPEATABLE_FIELD_ADD_BUTTON_INDEXED");
 	}
 
 	macro addTranslationToFieldset {
@@ -781,37 +695,6 @@ definition {
 				DataEngine.editFieldTip(
 					fieldFieldLabel = "${fieldName}",
 					fieldPlaceholder = "${fieldName} Placeholder");
-			}
-		}
-
-		if (isSet(localeList)) {
-			for (var locale : list "${localeList}") {
-				PortletEntry.changeLocale(
-					locale = "${locale}",
-					modal = "true");
-
-				Type(
-					locator1 = "FormViewBuilder#FIELD_SET_NAME",
-					value1 = "${fieldsetName} ${locale}");
-
-				for (var fieldName : list "${fieldNameList}") {
-					DataEngine.editFieldLabel(
-						fieldFieldLabel = "${fieldName}",
-						fieldFieldLabelEdit = "${fieldName} ${locale}",
-						fieldsetModal = "true");
-
-					if (isSet(fieldHelp)) {
-						DataEngine.editFieldTip(
-							fieldFieldLabel = "${fieldName} ${locale}",
-							fieldHelp = "${fieldName} Help Text ${locale}");
-					}
-
-					if (isSet(fieldPlaceholder)) {
-						DataEngine.editFieldTip(
-							fieldFieldLabel = "${fieldName} ${locale}",
-							fieldPlaceholder = "${fieldName} Placeholder ${locale}");
-					}
-				}
 			}
 		}
 
@@ -1084,23 +967,6 @@ definition {
 		Click(locator1 = "Sidebar#BACK");
 	}
 
-	macro editFieldRepeatable {
-		AssertClick.assertPartialTextClickAt(
-			key_fieldFieldLabel = "${fieldFieldLabel}",
-			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER",
-			value1 = "${fieldFieldLabel}");
-
-		if (IsElementNotPresent(locator1 = "NavTab#ACTIVE_TAB_LINK", key_tab = "Advanced")) {
-			Navigator.gotoNavTab(navTab = "Advanced");
-		}
-
-		Check.checkToggleSwitch(
-			checkboxName = "Repeatable",
-			locator1 = "Checkbox#ANY_CHECKBOX");
-
-		Click(locator1 = "Sidebar#BACK");
-	}
-
 	macro editFieldRequired {
 		AssertClick.assertPartialTextClickAt(
 			key_fieldFieldLabel = "${fieldFieldLabel}",
@@ -1132,19 +998,6 @@ definition {
 			key_fieldFieldLabel = "Searchable",
 			key_optionValue = "${searchableType}",
 			locator1 = "WCEditWebContent#SELECTION_OPTION");
-
-		Click(locator1 = "Sidebar#BACK");
-	}
-
-	macro editFieldsetRepeatable {
-		AssertClick.assertPartialTextClickAt(
-			key_fieldsetLabel = "${fieldsetLabel}",
-			locator1 = "DDMEditStructure#FORM_FIELDSET_CONTAINER",
-			value1 = "${fieldsetLabel}");
-
-		Check.checkToggleSwitch(
-			checkboxName = "Repeatable",
-			locator1 = "Checkbox#ANY_CHECKBOX");
 
 		Click(locator1 = "Sidebar#BACK");
 	}
@@ -1183,18 +1036,6 @@ definition {
 		AssertElementPresent(
 			key_fieldsetLabel = "${fieldsetLabelEdit}",
 			locator1 = "DDMEditStructure#FORM_FIELD_SETS_CONTAINER_LABEL");
-
-		Click(locator1 = "Sidebar#BACK");
-	}
-
-	macro editFieldsetsRepeatable {
-		Click(
-			key_fieldsetLabel = "${fieldsetLabel}",
-			locator1 = "DDMEditStructure#FORM_FIELD_SETS_CONTAINER_LABEL");
-
-		Check.checkToggleSwitch(
-			checkboxName = "Repeatable",
-			locator1 = "Checkbox#ANY_CHECKBOX");
 
 		Click(locator1 = "Sidebar#BACK");
 	}
@@ -1249,27 +1090,6 @@ definition {
 		AssertElementPresent(
 			key_fieldFieldLabel = "${fieldsGroupLabelEdit}",
 			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
-
-		Click(locator1 = "Sidebar#BACK");
-	}
-
-	macro editFieldsGroupRepeatable {
-		if (!(isSet(fieldsGroupLabel))) {
-			var fieldsGroupLabel = "Fields Group";
-		}
-
-		AssertClick.assertPartialTextClickAt(
-			key_fieldFieldLabel = "${fieldsGroupLabel}",
-			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL",
-			value1 = "${fieldsGroupLabel}");
-
-		if (IsElementNotPresent(locator1 = "NavTab#ACTIVE_TAB_LINK", key_tab = "Basic")) {
-			Navigator.gotoNavTab(navTab = "Basic");
-		}
-
-		Check.checkToggleSwitch(
-			checkboxName = "Repeatable",
-			locator1 = "Checkbox#ANY_CHECKBOX");
 
 		Click(locator1 = "Sidebar#BACK");
 	}
@@ -1450,6 +1270,12 @@ definition {
 		Click(locator1 = "FormViewBuilder#CREATE_NEW_FIELD_SETS");
 	}
 
+	macro gotoEditFieldset {
+		DataEngine.gotoFieldsetItemEllipsis(fieldsetName = "${fieldsetName}");
+
+		MenuItem.click(menuItem = "Edit");
+	}
+
 	macro gotoFieldsetItemEllipsis {
 		if (IsElementNotPresent(key_tabName = "Builder", locator1 = "Sidebar#ACTIVE_TAB")) {
 			Navigator.gotoSidebarTab(tabName = "Builder");
@@ -1487,6 +1313,50 @@ definition {
 			configurationScope = "Virtual Instance Scope");
 
 		PortalSettings.configureCurrentLanguagesCP(defaultPortalLanguage = "English (United States)");
+	}
+
+	macro toggleFieldRepeatable {
+		if (!(isSet(index))) {
+			var index = "1";
+		}
+
+		if (isSet(fieldFieldLabel)) {
+			var fieldLabel = "${fieldFieldLabel}";
+			var tab = "Advanced";
+		}
+		else if (isSet(fieldsetLabel)) {
+			var fieldLabel = "${fieldsetLabel}";
+			var tab = "Basic";
+		}
+		else if (isSet(fieldsGroupLabel)) {
+			var fieldLabel = "${fieldsGroupLabel}";
+			var tab = "Basic";
+		}
+
+		if (IsElementPresent(locator1 = "Modal#MODAL")) {
+			AssertClick.assertPartialTextClickAt(
+				index = "${index}",
+				key_fieldLabel = "${fieldLabel}",
+				locator1 = "DataEngineBuilder#FIELD_LABEL_IN_MODAL_INDEXED",
+				value1 = "${fieldLabel}");
+		}
+		else {
+			AssertClick.assertPartialTextClickAt(
+				index = "${index}",
+				key_fieldLabel = "${fieldLabel}",
+				locator1 = "DataEngineBuilder#FIELD_LABEL_INDEXED",
+				value1 = "${fieldLabel}");
+		}
+
+		if (IsElementNotPresent(locator1 = "NavTab#ACTIVE_TAB_LINK", key_tab = "${tab}")) {
+			Navigator.gotoNavTab(navTab = "${tab}");
+		}
+
+		Check.checkToggleSwitch(
+			checkboxName = "Repeatable",
+			locator1 = "Checkbox#ANY_CHECKBOX");
+
+		Click(locator1 = "Sidebar#BACK");
 	}
 
 	macro viewField {
@@ -1547,6 +1417,17 @@ definition {
 			key_fieldFieldLabel = "Searchable",
 			key_optionValue = "${searchableType}",
 			locator1 = "WCEditWebContent#SELECTION_OPTION");
+	}
+
+	macro viewFieldset {
+		AssertVisible(
+			key_fieldsetLabel = "${fieldsetName}",
+			locator1 = "DDMEditStructure#FORM_FIELD_SETS_CONTAINER_LABEL");
+		for (var fieldName : list "${fieldNameList}") {
+			AssertVisible(
+				key_fieldFieldLabel = "${fieldName}",
+				locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
+		}
 	}
 
 	macro viewFieldsetTranslation {

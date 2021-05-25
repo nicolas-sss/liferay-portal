@@ -292,6 +292,11 @@ public abstract class BaseMessageBoardMessageResourceImpl
 				messageBoardMessage.getSiteId());
 		}
 
+		if (messageBoardMessage.getStatus() != null) {
+			existingMessageBoardMessage.setStatus(
+				messageBoardMessage.getStatus());
+		}
+
 		if (messageBoardMessage.getSubscribed() != null) {
 			existingMessageBoardMessage.setSubscribed(
 				messageBoardMessage.getSubscribed());
@@ -530,11 +535,12 @@ public abstract class BaseMessageBoardMessageResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "MessageBoardMessage")})
-	public void putMessageBoardMessagePermission(
-			@NotNull @Parameter(hidden = true)
-			@PathParam("messageBoardMessageId")
-			Long messageBoardMessageId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putMessageBoardMessagePermission(
+				@NotNull @Parameter(hidden = true)
+				@PathParam("messageBoardMessageId")
+				Long messageBoardMessageId,
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String resourceName = getPermissionCheckerResourceName(
@@ -546,12 +552,15 @@ public abstract class BaseMessageBoardMessageResourceImpl
 			getPermissionCheckerGroupId(messageBoardMessageId));
 
 		resourcePermissionLocalService.updateResourcePermissions(
-			contextCompany.getCompanyId(), 0, resourceName,
+			contextCompany.getCompanyId(),
+			getPermissionCheckerGroupId(messageBoardMessageId), resourceName,
 			String.valueOf(resourceId),
 			ModelPermissionsUtil.toModelPermissions(
 				contextCompany.getCompanyId(), permissions, resourceId,
 				resourceName, resourceActionLocalService,
 				resourcePermissionLocalService, roleLocalService));
+
+		return toPermissionPage(resourceId, resourceName, null);
 	}
 
 	/**
@@ -994,9 +1003,11 @@ public abstract class BaseMessageBoardMessageResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "MessageBoardMessage")})
-	public void putSiteMessageBoardMessagePermission(
-			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putSiteMessageBoardMessagePermission(
+				@NotNull @Parameter(hidden = true) @PathParam("siteId") Long
+					siteId,
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String portletName = getPermissionCheckerPortletName(siteId);
@@ -1012,6 +1023,8 @@ public abstract class BaseMessageBoardMessageResourceImpl
 				contextCompany.getCompanyId(), permissions, siteId, portletName,
 				resourceActionLocalService, resourcePermissionLocalService,
 				roleLocalService));
+
+		return toPermissionPage(siteId, portletName, null);
 	}
 
 	@Override
@@ -1023,7 +1036,7 @@ public abstract class BaseMessageBoardMessageResourceImpl
 
 		for (MessageBoardMessage messageBoardMessage : messageBoardMessages) {
 			postMessageBoardThreadMessageBoardMessage(
-				(Long)parameters.get("messageBoardThreadId"),
+				Long.parseLong((String)parameters.get("messageBoardThreadId")),
 				messageBoardMessage);
 		}
 	}
@@ -1061,8 +1074,9 @@ public abstract class BaseMessageBoardMessageResourceImpl
 		throws Exception {
 
 		return getSiteMessageBoardMessagesPage(
-			(Long)parameters.get("siteId"), (Boolean)parameters.get("flatten"),
-			search, null, filter, pagination, sorts);
+			Long.parseLong((String)parameters.get("siteId")),
+			Boolean.parseBoolean((String)parameters.get("flatten")), search,
+			null, filter, pagination, sorts);
 	}
 
 	@Override
@@ -1097,7 +1111,8 @@ public abstract class BaseMessageBoardMessageResourceImpl
 			putMessageBoardMessage(
 				messageBoardMessage.getId() != null ?
 					messageBoardMessage.getId() :
-						(Long)parameters.get("messageBoardMessageId"),
+						Long.parseLong(
+							(String)parameters.get("messageBoardMessageId")),
 				messageBoardMessage);
 		}
 	}

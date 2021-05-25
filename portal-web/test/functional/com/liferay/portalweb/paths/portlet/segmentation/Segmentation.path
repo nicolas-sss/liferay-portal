@@ -54,6 +54,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>CRITERION_CONJUNCTION</td>
+	<td>//div[contains(@class,'criteria')]//button[contains(@class,'dropdown-toggle')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CRITERION_CONJUNCTION_ITEM</td>
+	<td>//button[contains(@class,'dropdown-item') and contains(.,'${key_criterionConjunctionItem}')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>DELETE_SEGMENT</td>
 	<td>//*[contains(@class, 'lexicon-icon-times-circle')]</td>
 	<td></td>
@@ -76,11 +86,6 @@
 <tr>
 	<td>PROPERTY_FIELD</td>
 	<td>//div[@class='criterion'][1]//*[@data-testid='simple-string']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>ORGANIZATION_MENU</td>
-	<td>//a[contains(@class, 'sidebar-collapse-header') and contains(text(),'Organization')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -111,11 +116,6 @@
 <tr>
 	<td>SEGMENT_OPTIONS_MENU</td>
 	<td>//*[@id='qfkd____']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SESSION_MENU</td>
-	<td>//a[contains(@class, 'sidebar-collapse-header') and contains(text(),'Session')]</td>
 	<td></td>
 </tr>
 <tr>

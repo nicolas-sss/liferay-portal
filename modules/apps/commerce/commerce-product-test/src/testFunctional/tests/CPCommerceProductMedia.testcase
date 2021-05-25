@@ -11,13 +11,6 @@ definition {
 		User.firstLoginPG();
 
 		CommerceConfiguration.commerceStoreFrontSetUp();
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "Search");
-
-		SearchAdministration.executeSearchActions(actionsDescription = "Reindex all search indexes.");
 	}
 
 	tearDown {
@@ -42,6 +35,8 @@ definition {
 	test AddAnAttachment {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductMedia#AddAnAttachment";
+
+		// TODO Review
 
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
@@ -76,6 +71,8 @@ definition {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductMedia#AddAnImage";
 
+		// TODO Review
+
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
 		CommerceNavigator.gotoPortlet(
@@ -98,6 +95,8 @@ definition {
 	test AddAnImageToAnOption {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductMedia#AddAnImageToAnOption";
+
+		// TODO Review
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",
@@ -155,6 +154,8 @@ definition {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductMedia#EditAnAttachment";
 
+		// TODO Review
+
 		// TODO Fix Commerce tests that are skipping portal instances - COMMERCE-6586
 
 		ApplicationsMenu.gotoPortlet(
@@ -203,12 +204,43 @@ definition {
 	}
 
 	@description = "This is a test for COMMERCE-6027. EditAnImage"
-	@ignore = "true"
 	@priority = "3"
 	test EditAnImage {
 		property portal.acceptance = "false";
+		property test.name.skip.portal.instance = "CPCommerceProductMedia#EditAnImage";
 
-		// TODO COMMERCE-6027 EditAnImage
+		// TODO Review
+
+		CommerceNavigator.gotoPortlet(
+			category = "Product Management",
+			portlet = "Products");
+
+		CPCommerceCatalog.newProductsEntry(
+			productCatalog = "Master",
+			productName = "Simple T-Shirt",
+			productType = "Simple");
+
+		CommerceEntry.gotoMenuTab(menuTab = "Media");
+
+		CommerceProductImages.addProductImages(
+			imageTitles = "Black",
+			validationImage = "true");
+
+		Click(
+			key_value = "Commerce_Black.jpg",
+			locator1 = "CommerceEntry#BODY_VERTICAL_ELLIPSIS");
+
+		MenuItem.click(menuItem = "Edit");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "CommerceEntry#IFRAME_SIDE_PANEL");
+
+		Type(
+			locator1 = "TextInput#TITLE",
+			value1 = "Commerce_Black_Edit");
+
+		Button.clickPublish();
+
+		Alert.viewSuccessMessage();
 	}
 
 	@description = "This is a test for COMMERCE-6033. RemoveAnAttachment"
@@ -216,6 +248,8 @@ definition {
 	test RemoveAnAttachment {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductMedia#RemoveAnAttachment";
+
+		// TODO Review
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",
@@ -244,6 +278,8 @@ definition {
 	test RemoveAnImage {
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "CPCommerceProductMedia#RemoveAnImage";
+
+		// TODO Review
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",

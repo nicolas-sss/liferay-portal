@@ -9,15 +9,13 @@
  * distribution rights of the Software.
  */
 
-import React, {createContext, useCallback, useContext, useReducer} from 'react';
+import React, {createContext, useContext, useReducer} from 'react';
 
-import ConnectionContext from './ConnectionContext';
-
-const ADD_DATA_SET_ITEMS = 'add-data-keys';
-const CHANGE_TIME_SPAN_KEY = 'change-time-span-key';
-const NEXT_TIME_SPAN = 'next-time-span';
-const PREV_TIME_SPAN = 'previous-time-span';
-const SET_LOADING = 'set-loading';
+const ADD_DATA_SET_ITEMS = 'ADD_DATA_SET_ITEMS';
+const CHANGE_TIME_SPAN_KEY = 'CHANGE_TIME_SPAN_KEY';
+const NEXT_TIME_SPAN = 'NEXT_TIME_SPAN';
+const PREV_TIME_SPAN = 'PREV_TIME_SPAN';
+const SET_LOADING = 'SET_LOADING';
 
 const INITIAL_STATE = {
 	dataSet: {histogram: [], keyList: [], totals: []},
@@ -30,7 +28,8 @@ const INITIAL_STATE = {
 
 const FALLBACK_DATA_SET_ITEM = {histogram: [], value: null};
 
-const ChartStateContext = createContext(INITIAL_STATE);
+export const ChartDispatchContext = createContext(() => {});
+export const ChartStateContext = createContext(INITIAL_STATE);
 
 export const ChartStateContextProvider = ({
 	children,
@@ -38,7 +37,7 @@ export const ChartStateContextProvider = ({
 	timeRange,
 	timeSpanKey,
 }) => {
-	const stateAndDispatch = useReducer(reducer, {
+	const [state, dispatch] = useReducer(reducer, {
 		...INITIAL_STATE,
 		publishDate,
 		timeRange,
@@ -46,44 +45,18 @@ export const ChartStateContextProvider = ({
 	});
 
 	return (
-		<ChartStateContext.Provider value={stateAndDispatch}>
-			{children}
-		</ChartStateContext.Provider>
+		<ChartDispatchContext.Provider value={dispatch}>
+			<ChartStateContext.Provider value={state}>
+				{children}
+			</ChartStateContext.Provider>
+		</ChartDispatchContext.Provider>
 	);
-};
-
-export const useAddDataSetItems = () => {
-	const [, dispatch] = useContext(ChartStateContext);
-	const {validAnalyticsConnection} = useContext(ConnectionContext);
-
-	return useCallback(
-		(payload) =>
-			dispatch({
-				payload,
-				type: ADD_DATA_SET_ITEMS,
-				validAnalyticsConnection,
-			}),
-		[dispatch, validAnalyticsConnection]
-	);
-};
-
-export const useChangeTimeSpanKey = () => {
-	const [, dispatch] = useContext(ChartStateContext);
-
-	return (payload) => dispatch({payload, type: CHANGE_TIME_SPAN_KEY});
-};
-
-export const useChartState = () => {
-	const [state] = useContext(ChartStateContext);
-
-	return state;
 };
 
 export function useDateTitle() {
-	const [state] = useContext(ChartStateContext);
+	const {dataSet, timeRange} = useContext(ChartStateContext);
 
-	const {histogram} = state.dataSet;
-	const {timeRange} = state;
+	const {histogram} = dataSet;
 
 	if (histogram.length) {
 		const firstDateLabel = histogram[0].label;
@@ -103,10 +76,9 @@ export function useDateTitle() {
 }
 
 export function useIsPreviousPeriodButtonDisabled() {
-	const [state] = useContext(ChartStateContext);
+	const {dataSet, publishDate} = useContext(ChartStateContext);
 
-	const {histogram} = state.dataSet;
-	const {publishDate} = state;
+	const {histogram} = dataSet;
 
 	if (histogram.length) {
 		const firstDateLabel = histogram[0].label;
@@ -119,24 +91,6 @@ export function useIsPreviousPeriodButtonDisabled() {
 
 	return true;
 }
-
-export const useNextTimeSpan = () => {
-	const [, dispatch] = useContext(ChartStateContext);
-
-	return () => dispatch({type: NEXT_TIME_SPAN});
-};
-
-export const useSetLoading = () => {
-	const [, dispatch] = useContext(ChartStateContext);
-
-	return useCallback(() => dispatch({type: SET_LOADING}), [dispatch]);
-};
-
-export const usePreviousTimeSpan = () => {
-	const [, dispatch] = useContext(ChartStateContext);
-
-	return () => dispatch({type: PREV_TIME_SPAN});
-};
 
 /**
  * {
@@ -169,6 +123,7 @@ function reducer(state, action) {
 
 	switch (action.type) {
 		case ADD_DATA_SET_ITEMS:
+			nextState = setLoadingState(state);
 			nextState = [...action.payload.keys].reduce((state, key) => {
 				const dataSetItem =
 					action.payload.dataSetItems?.[key] ??
@@ -188,6 +143,7 @@ function reducer(state, action) {
 		case CHANGE_TIME_SPAN_KEY:
 			nextState = {
 				...state,
+				loading: true,
 				timeSpanKey: action.payload.key,
 				timeSpanOffset: 0,
 			};
@@ -195,12 +151,14 @@ function reducer(state, action) {
 		case NEXT_TIME_SPAN:
 			nextState = {
 				...state,
+				loading: true,
 				timeSpanOffset: state.timeSpanOffset - 1,
 			};
 			break;
 		case PREV_TIME_SPAN:
 			nextState = {
 				...state,
+				loading: true,
 				timeSpanOffset: state.timeSpanOffset + 1,
 			};
 			break;
@@ -208,7 +166,7 @@ function reducer(state, action) {
 			nextState = setLoadingState(state);
 			break;
 		default:
-			state = nextState;
+			nextState = state;
 			break;
 	}
 

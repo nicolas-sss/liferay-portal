@@ -13,6 +13,7 @@
  */
 
 import {useIsMounted} from '@liferay/frontend-js-react-web';
+import {ImageEditor} from 'item-selector-taglib';
 import PropTypes from 'prop-types';
 import React, {useCallback, useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
@@ -30,13 +31,18 @@ const KEY_CODE = {
 const ItemSelectorPreview = ({
 	container,
 	currentIndex = 0,
+	editImageURL,
 	handleSelectedItem,
 	headerTitle,
+	itemReturnType,
 	items,
 }) => {
 	const [currentItemIndex, setCurrentItemIndex] = useState(currentIndex);
+	const [isEditing, setIsEditing] = useState();
 	const [itemList, setItemList] = useState(items);
 	const [reloadOnHide, setReloadOnHide] = useState(false);
+
+	const currentItem = itemList[currentItemIndex];
 
 	const infoButtonRef = React.createRef();
 
@@ -45,6 +51,35 @@ const ItemSelectorPreview = ({
 	const close = useCallback(() => {
 		ReactDOM.unmountComponentAtNode(container);
 	}, [container]);
+
+	const handleCancelEditing = () => {
+		setIsEditing(false);
+	};
+
+	const handleClickBack = () => {
+		close();
+
+		if (reloadOnHide) {
+			const frame = window.frameElement;
+
+			if (frame) {
+				frame.contentWindow.location.reload();
+			}
+		}
+	};
+
+	const handleClickDone = () => {
+
+		// LPS-120692
+
+		close();
+
+		handleSelectedItem(currentItem);
+	};
+
+	const handleClickEdit = () => {
+		setIsEditing(true);
+	};
 
 	const handleClickNext = useCallback(() => {
 		if (itemList.length > 1) {
@@ -93,7 +128,37 @@ const ItemSelectorPreview = ({
 		[close, handleClickNext, handleClickPrevious, isMounted]
 	);
 
-	const currentItem = itemList[currentItemIndex];
+	const handleSaveEditedImage = ({file, success}) => {
+		if (success) {
+			const newItem = {
+				...currentItem,
+				fileEntryId: file.fileEntryId,
+				groupId: file.groupId,
+				title: file.title,
+				url: file.url,
+				uuid: file.uuid,
+				value: file.resolvedValue,
+			};
+
+			if (!newItem.value) {
+				const imageValue = {
+					fileEntryId: newItem.fileEntryId,
+					groupId: newItem.groupId,
+					title: newItem.title,
+					type: newItem.type,
+					url: newItem.url,
+					uuid: newItem.uuid,
+				};
+
+				newItem.value = JSON.stringify(imageValue);
+			}
+
+			setIsEditing(false);
+
+			close();
+			handleSelectedItem(newItem);
+		}
+	};
 
 	const updateItemList = (newItemList) => {
 		setItemList(newItemList);
@@ -101,11 +166,11 @@ const ItemSelectorPreview = ({
 	};
 
 	const updateCurrentItem = useCallback(
-		({url, value}) => {
+		(itemData) => {
 			if (isMounted()) {
 				const newItemList = [...itemList];
 
-				newItemList[currentItemIndex] = {...currentItem, url, value};
+				newItemList[currentItemIndex] = {...currentItem, ...itemData};
 
 				updateItemList(newItemList);
 			}
@@ -147,50 +212,45 @@ const ItemSelectorPreview = ({
 		}
 	}, [infoButtonRef]);
 
-	const handleClickBack = () => {
-		close();
-
-		if (reloadOnHide) {
-			const frame = window.frameElement;
-
-			if (frame) {
-				frame.contentWindow.location.reload();
-			}
-		}
-	};
-
-	const handleClickDone = () => {
-
-		// LPS-120692
-
-		close();
-
-		handleSelectedItem(currentItem);
-	};
-
 	return (
 		<div className="fullscreen item-selector-preview">
 			<Header
 				disabledAddButton={!currentItem.url}
 				handleClickAdd={handleClickDone}
 				handleClickBack={handleClickBack}
+				handleClickEdit={handleClickEdit}
 				headerTitle={headerTitle}
 				infoButtonRef={infoButtonRef}
+				showEditIcon={true}
 				showInfoIcon={!!currentItem.metadata}
+				showNavbar={!isEditing}
 			/>
+			{isEditing ? (
+				<ImageEditor
+					imageId={currentItem.fileEntryId || currentItem.fileentryid}
+					imageSrc={currentItem.url}
+					itemReturnType={itemReturnType}
+					onCancel={handleCancelEditing}
+					onSave={handleSaveEditedImage}
+					saveURL={editImageURL}
+				/>
+			) : (
+				<>
+					<Carousel
+						currentItem={currentItem}
+						handleClickNext={handleClickNext}
+						handleClickPrevious={handleClickPrevious}
+						showArrows={itemList.length > 1}
+					/>
 
-			<Carousel
-				currentItem={currentItem}
-				handleClickNext={handleClickNext}
-				handleClickPrevious={handleClickPrevious}
-				showArrows={itemList.length > 1}
-			/>
-
-			<Footer
-				currentIndex={currentItemIndex}
-				title={currentItem.title}
-				totalItems={itemList.length}
-			/>
+					<Footer
+						currentIndex={currentItemIndex}
+						title={currentItem.title}
+						totalItems={itemList.length}
+					/>
+				</>
+			)}
+			;
 		</div>
 	);
 };
@@ -198,6 +258,7 @@ const ItemSelectorPreview = ({
 ItemSelectorPreview.propTypes = {
 	container: PropTypes.instanceOf(Element).isRequired,
 	currentIndex: PropTypes.number,
+	editItemURL: PropTypes.string,
 	handleSelectedItem: PropTypes.func.isRequired,
 	headerTitle: PropTypes.string.isRequired,
 	items: PropTypes.arrayOf(

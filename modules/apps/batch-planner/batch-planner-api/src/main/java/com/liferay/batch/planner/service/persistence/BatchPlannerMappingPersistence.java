@@ -186,6 +186,70 @@ public interface BatchPlannerMappingPersistence
 	public int countByBatchPlannerPlanId(long batchPlannerPlanId);
 
 	/**
+	 * Returns the batch planner mapping where batchPlannerPlanId = &#63; and externalFieldName = &#63; and internalFieldName = &#63; or throws a <code>NoSuchMappingException</code> if it could not be found.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param externalFieldName the external field name
+	 * @param internalFieldName the internal field name
+	 * @return the matching batch planner mapping
+	 * @throws NoSuchMappingException if a matching batch planner mapping could not be found
+	 */
+	public BatchPlannerMapping findByBPPI_EFN_IFN(
+			long batchPlannerPlanId, String externalFieldName,
+			String internalFieldName)
+		throws NoSuchMappingException;
+
+	/**
+	 * Returns the batch planner mapping where batchPlannerPlanId = &#63; and externalFieldName = &#63; and internalFieldName = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param externalFieldName the external field name
+	 * @param internalFieldName the internal field name
+	 * @return the matching batch planner mapping, or <code>null</code> if a matching batch planner mapping could not be found
+	 */
+	public BatchPlannerMapping fetchByBPPI_EFN_IFN(
+		long batchPlannerPlanId, String externalFieldName,
+		String internalFieldName);
+
+	/**
+	 * Returns the batch planner mapping where batchPlannerPlanId = &#63; and externalFieldName = &#63; and internalFieldName = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param externalFieldName the external field name
+	 * @param internalFieldName the internal field name
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching batch planner mapping, or <code>null</code> if a matching batch planner mapping could not be found
+	 */
+	public BatchPlannerMapping fetchByBPPI_EFN_IFN(
+		long batchPlannerPlanId, String externalFieldName,
+		String internalFieldName, boolean useFinderCache);
+
+	/**
+	 * Removes the batch planner mapping where batchPlannerPlanId = &#63; and externalFieldName = &#63; and internalFieldName = &#63; from the database.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param externalFieldName the external field name
+	 * @param internalFieldName the internal field name
+	 * @return the batch planner mapping that was removed
+	 */
+	public BatchPlannerMapping removeByBPPI_EFN_IFN(
+			long batchPlannerPlanId, String externalFieldName,
+			String internalFieldName)
+		throws NoSuchMappingException;
+
+	/**
+	 * Returns the number of batch planner mappings where batchPlannerPlanId = &#63; and externalFieldName = &#63; and internalFieldName = &#63;.
+	 *
+	 * @param batchPlannerPlanId the batch planner plan ID
+	 * @param externalFieldName the external field name
+	 * @param internalFieldName the internal field name
+	 * @return the number of matching batch planner mappings
+	 */
+	public int countByBPPI_EFN_IFN(
+		long batchPlannerPlanId, String externalFieldName,
+		String internalFieldName);
+
+	/**
 	 * Caches the batch planner mapping in the entity cache if it is enabled.
 	 *
 	 * @param batchPlannerMapping the batch planner mapping

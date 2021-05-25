@@ -225,8 +225,8 @@ public class DLFileEntryTypeServiceTest {
 		byte[] bytes = _CONTENT.getBytes();
 
 		FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
-			_group.getGroupId(), _folder.getFolderId(), name,
-			ContentTypes.TEXT_PLAIN, name, "", "", bytes,
+			null, _group.getGroupId(), _folder.getFolderId(), name,
+			ContentTypes.TEXT_PLAIN, name, "", "", bytes, null, null,
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
 		assertFileEntryType(fileEntry, _dlFileEntryType1);
@@ -234,8 +234,8 @@ public class DLFileEntryTypeServiceTest {
 		// Add file to subfolder
 
 		fileEntry = DLAppServiceUtil.addFileEntry(
-			_group.getGroupId(), _subfolder.getFolderId(), name,
-			ContentTypes.TEXT_PLAIN, name, "", "", bytes,
+			null, _group.getGroupId(), _subfolder.getFolderId(), name,
+			ContentTypes.TEXT_PLAIN, name, "", "", bytes, null, null,
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
 		assertFileEntryType(fileEntry, _dlFileEntryType1);
@@ -247,9 +247,9 @@ public class DLFileEntryTypeServiceTest {
 			_subfolder.getName(), _subfolder.getDescription(),
 			_getFolderServiceContext(_basicDocumentDLFileEntryType));
 
-		fileEntry = DLAppServiceUtil.getFileEntry(fileEntry.getFileEntryId());
-
-		assertFileEntryType(fileEntry, _basicDocumentDLFileEntryType);
+		assertFileEntryType(
+			DLAppServiceUtil.getFileEntry(fileEntry.getFileEntryId()),
+			_basicDocumentDLFileEntryType);
 	}
 
 	@Test

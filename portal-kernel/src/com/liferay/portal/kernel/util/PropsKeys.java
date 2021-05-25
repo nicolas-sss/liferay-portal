@@ -603,6 +603,9 @@ public interface PropsKeys {
 	public static final String COMPANY_SECURITY_STRANGERS_WITH_MX =
 		"company.security.strangers.with.mx";
 
+	public static final String COMPANY_SECURITY_UPDATE_PASSWORD_REQUIRED =
+		"company.security.update.password.required";
+
 	public static final String COMPANY_SETTINGS_FORM_AUTHENTICATION =
 		"company.settings.form.authentication";
 
@@ -2747,12 +2750,24 @@ public interface PropsKeys {
 	public static final String RECENT_GROUPS_MAX_ELEMENTS =
 		"recent.groups.max.elements";
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x)
+	 */
+	@Deprecated
 	public static final String REDIRECT_URL_DOMAINS_ALLOWED =
 		"redirect.url.domains.allowed";
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x)
+	 */
+	@Deprecated
 	public static final String REDIRECT_URL_IPS_ALLOWED =
 		"redirect.url.ips.allowed";
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x)
+	 */
+	@Deprecated
 	public static final String REDIRECT_URL_SECURITY_MODE =
 		"redirect.url.security.mode";
 
@@ -2925,6 +2940,10 @@ public interface PropsKeys {
 	public static final String SESSION_COOKIE_USE_FULL_HOSTNAME =
 		"session.cookie.use.full.hostname";
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), with no direct replacement
+	 */
+	@Deprecated
 	public static final String SESSION_DISABLED = "session.disabled";
 
 	public static final String SESSION_ENABLE_PERSISTENT_COOKIES =

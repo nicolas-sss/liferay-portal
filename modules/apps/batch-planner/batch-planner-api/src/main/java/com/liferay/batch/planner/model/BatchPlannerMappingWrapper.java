@@ -50,6 +50,11 @@ public class BatchPlannerMappingWrapper
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("batchPlannerPlanId", getBatchPlannerPlanId());
+		attributes.put("externalFieldName", getExternalFieldName());
+		attributes.put("externalFieldType", getExternalFieldType());
+		attributes.put("internalFieldName", getInternalFieldName());
+		attributes.put("internalFieldType", getInternalFieldType());
+		attributes.put("script", getScript());
 
 		return attributes;
 	}
@@ -104,6 +109,36 @@ public class BatchPlannerMappingWrapper
 		if (batchPlannerPlanId != null) {
 			setBatchPlannerPlanId(batchPlannerPlanId);
 		}
+
+		String externalFieldName = (String)attributes.get("externalFieldName");
+
+		if (externalFieldName != null) {
+			setExternalFieldName(externalFieldName);
+		}
+
+		String externalFieldType = (String)attributes.get("externalFieldType");
+
+		if (externalFieldType != null) {
+			setExternalFieldType(externalFieldType);
+		}
+
+		String internalFieldName = (String)attributes.get("internalFieldName");
+
+		if (internalFieldName != null) {
+			setInternalFieldName(internalFieldName);
+		}
+
+		String internalFieldType = (String)attributes.get("internalFieldType");
+
+		if (internalFieldType != null) {
+			setInternalFieldType(internalFieldType);
+		}
+
+		String script = (String)attributes.get("script");
+
+		if (script != null) {
+			setScript(script);
+		}
 	}
 
 	/**
@@ -147,6 +182,46 @@ public class BatchPlannerMappingWrapper
 	}
 
 	/**
+	 * Returns the external field name of this batch planner mapping.
+	 *
+	 * @return the external field name of this batch planner mapping
+	 */
+	@Override
+	public String getExternalFieldName() {
+		return model.getExternalFieldName();
+	}
+
+	/**
+	 * Returns the external field type of this batch planner mapping.
+	 *
+	 * @return the external field type of this batch planner mapping
+	 */
+	@Override
+	public String getExternalFieldType() {
+		return model.getExternalFieldType();
+	}
+
+	/**
+	 * Returns the internal field name of this batch planner mapping.
+	 *
+	 * @return the internal field name of this batch planner mapping
+	 */
+	@Override
+	public String getInternalFieldName() {
+		return model.getInternalFieldName();
+	}
+
+	/**
+	 * Returns the internal field type of this batch planner mapping.
+	 *
+	 * @return the internal field type of this batch planner mapping
+	 */
+	@Override
+	public String getInternalFieldType() {
+		return model.getInternalFieldType();
+	}
+
+	/**
 	 * Returns the modified date of this batch planner mapping.
 	 *
 	 * @return the modified date of this batch planner mapping
@@ -174,6 +249,16 @@ public class BatchPlannerMappingWrapper
 	@Override
 	public long getPrimaryKey() {
 		return model.getPrimaryKey();
+	}
+
+	/**
+	 * Returns the script of this batch planner mapping.
+	 *
+	 * @return the script of this batch planner mapping
+	 */
+	@Override
+	public String getScript() {
+		return model.getScript();
 	}
 
 	/**
@@ -252,6 +337,46 @@ public class BatchPlannerMappingWrapper
 	}
 
 	/**
+	 * Sets the external field name of this batch planner mapping.
+	 *
+	 * @param externalFieldName the external field name of this batch planner mapping
+	 */
+	@Override
+	public void setExternalFieldName(String externalFieldName) {
+		model.setExternalFieldName(externalFieldName);
+	}
+
+	/**
+	 * Sets the external field type of this batch planner mapping.
+	 *
+	 * @param externalFieldType the external field type of this batch planner mapping
+	 */
+	@Override
+	public void setExternalFieldType(String externalFieldType) {
+		model.setExternalFieldType(externalFieldType);
+	}
+
+	/**
+	 * Sets the internal field name of this batch planner mapping.
+	 *
+	 * @param internalFieldName the internal field name of this batch planner mapping
+	 */
+	@Override
+	public void setInternalFieldName(String internalFieldName) {
+		model.setInternalFieldName(internalFieldName);
+	}
+
+	/**
+	 * Sets the internal field type of this batch planner mapping.
+	 *
+	 * @param internalFieldType the internal field type of this batch planner mapping
+	 */
+	@Override
+	public void setInternalFieldType(String internalFieldType) {
+		model.setInternalFieldType(internalFieldType);
+	}
+
+	/**
 	 * Sets the modified date of this batch planner mapping.
 	 *
 	 * @param modifiedDate the modified date of this batch planner mapping
@@ -279,6 +404,16 @@ public class BatchPlannerMappingWrapper
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
+	}
+
+	/**
+	 * Sets the script of this batch planner mapping.
+	 *
+	 * @param script the script of this batch planner mapping
+	 */
+	@Override
+	public void setScript(String script) {
+		model.setScript(script);
 	}
 
 	/**

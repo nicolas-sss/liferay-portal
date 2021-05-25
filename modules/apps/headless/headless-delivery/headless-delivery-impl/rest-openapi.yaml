@@ -2509,6 +2509,12 @@ components:
                     format: int64
                     readOnly: true
                     type: integer
+                status:
+                    # @review
+                    description:
+                        The message's status.
+                    readOnly: true
+                    type: string
                 subscribed:
                     # @review
                     description:
@@ -2741,6 +2747,12 @@ components:
                     format: int64
                     readOnly: true
                     type: integer
+                status:
+                    # @review
+                    description:
+                        The thread's status.
+                    readOnly: true
+                    type: string
                 subscribed:
                     # @review
                     description:
@@ -4481,6 +4493,10 @@ components:
                     description:
                         The wiki node's description.
                     type: string
+                externalReferenceCode:
+                    description:
+                        The wiki node's external reference code.
+                    type: string
                 id:
                     description:
                         The wiki node's ID.
@@ -4573,6 +4589,10 @@ components:
                     description:
                         The wiki page's media format (e.g., HTML, BBCode, etc.).
                     type: string
+                externalReferenceCode:
+                    description:
+                        The wiki page's external reference code.
+                    type: string
                 headline:
                     description:
                         The wiki page's main title.
@@ -4648,6 +4668,12 @@ components:
                     enum: [Anyone, Members, Owner]
                     type: string
                     writeOnly: true
+                wikiNodeId:
+                    # @review
+                    description:
+                        The ID of the wiki node to which the wiki page belongs.
+                    format: int64
+                    type: integer
             required:
                 - encodingFormat
                 - headline
@@ -11577,6 +11603,100 @@ paths:
                     description:
                         ""
             tags: ["WikiNode"]
+    "/sites/{siteId}/wiki-nodes/by-external-reference-code/{externalReferenceCode}":
+        delete:
+            # @review
+            description:
+                Deletes the site's wiki node by external reference code.
+            operationId: deleteSiteWikiNodeByExternalReferenceCode
+            parameters:
+                - in: path
+                  name: siteId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: externalReferenceCode
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                204:
+                    content:
+                        application/json: { }
+                        application/xml: { }
+                    description:
+                        ""
+            tags: [ "WikiNode" ]
+        get:
+            # @review
+            description:
+                Retrieves the site's wiki node by external reference code.
+            operationId: getSiteWikiNodeByExternalReferenceCode
+            parameters:
+                - in: path
+                  name: siteId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: externalReferenceCode
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WikiNode"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/WikiNode"
+                    description:
+                        ""
+            tags: [ "WikiNode" ]
+        put:
+            # @review
+            description:
+                Updates the site's wiki node with the given external reference code, or creates it if it not exists.
+            operationId: putSiteWikiNodeByExternalReferenceCode
+            parameters:
+                - in: path
+                  name: siteId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: externalReferenceCode
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/WikiNode"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/WikiNode"
+                description:
+                    ""
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WikiNode"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/WikiNode"
+                    description:
+                        ""
+            tags: [ "WikiNode" ]
     "/sites/{siteId}/wiki-nodes/permissions":
         get:
             operationId: getSiteWikiNodePermissionsPage
@@ -11616,6 +11736,100 @@ paths:
                     description:
                         ""
             tags: ["WikiNode"]
+    "/sites/{siteId}/wiki-pages/by-external-reference-code/{externalReferenceCode}":
+        delete:
+            # @review
+            description:
+                Deletes the wiki page by external reference code.
+            operationId: deleteSiteWikiPageByExternalReferenceCode
+            parameters:
+                - in: path
+                  name: siteId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: externalReferenceCode
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                204:
+                    content:
+                        application/json: { }
+                        application/xml: { }
+                    description:
+                        ""
+            tags: [ "WikiPage" ]
+        get:
+            # @review
+            description:
+                Retrieves the wiki page by external reference code
+            operationId: getSiteWikiPageByExternalReferenceCode
+            parameters:
+                - in: path
+                  name: siteId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: externalReferenceCode
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WikiPage"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/WikiPage"
+                    description:
+                        ""
+            tags: [ "WikiPage" ]
+        put:
+            # @review
+            description:
+                Updates the wiki page with the given external reference code, or creates it if it not exists.
+            operationId: putSiteWikiPageByExternalReferenceCode
+            parameters:
+                - in: path
+                  name: siteId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: externalReferenceCode
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/WikiPage"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/WikiPage"
+                description:
+                    ""
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WikiPage"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/WikiPage"
+                    description:
+                        ""
+            tags: [ "WikiPage" ]
     "/structured-content-folder/{structuredContentFolderId}/permissions":
         get:
             operationId: getStructuredContentFolderPermissionsPage

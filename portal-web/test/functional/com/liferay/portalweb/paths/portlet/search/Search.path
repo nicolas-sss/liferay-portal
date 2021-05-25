@@ -14,8 +14,34 @@
 	<td></td>
 </tr>
 <tr>
+	<td>GLOBAL_SEARCH_SUGGESTION</td>
+	<td>//div[contains(@class,'commerce-suggestions__item ') and contains(.,'${key_entryName}')]
+</td>
+	<td></td>
+</tr>
+<tr>
 	<td>CATEGORY_FACET_CLOUD_LAYOUT</td>
 	<td>//ul[contains(@class,'tag-cloud')]//button[contains(.,'${categoryName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GLOBAL_SEARCH_BAR</td>
+	<td>//input[@ref='searchInput']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GLOBAL_SEARCH_CLEAN_BUTTON</td>
+	<td>//button[contains(@class, 'commerce-search__button')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GLOBAL_SEARCH_SUGGESTIONS</td>
+	<td>//div[contains(@class, 'commerce-suggestions__item') and contains (.,'${key_suggestionName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ACCOUNT_SEARCH_SUGGESTION</td>
+	<td>//div[contains(@class,'commerce-item__content') and contains(.,'${key_entryName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -66,6 +92,16 @@
 <tr>
 	<td>SEARCH_BAR_WIDGET</td>
 	<td>//input[not(ancestor::header[@id='banner'])][contains(@data-qa-id,'searchInput')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SEARCH_BAR_WIDGET_CONTENT</td>
+	<td>//input[contains(@class,'after')]|nput[contains(@value,'${key_contentName}')]</td>	
+	<td></td>
+</tr>
+<tr>
+	<td>SEARCH_RESULT_WIDGET</td>
+	<td>//div//a[contains(text(), '${key_contentName}')]/../../div//strong[text()='${key_contentType}']</td>	
 	<td></td>
 </tr>
 <tr>

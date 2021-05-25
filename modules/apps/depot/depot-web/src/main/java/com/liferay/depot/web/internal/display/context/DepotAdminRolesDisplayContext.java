@@ -50,7 +50,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import javax.portlet.PortletURL;
 import javax.portlet.WindowStateException;
 
 /**
@@ -103,7 +102,7 @@ public class DepotAdminRolesDisplayContext {
 		return portletNamespace + "selectDepotRole";
 	}
 
-	public PortletURL getSelectDepotRolesURL() throws WindowStateException {
+	public String getSelectDepotRolesURL() throws WindowStateException {
 		RequestBackedPortletURLFactory requestBackedPortletURLFactory =
 			RequestBackedPortletURLFactoryUtil.create(_liferayPortletRequest);
 
@@ -127,7 +126,7 @@ public class DepotAdminRolesDisplayContext {
 			"step", "1"
 		).setWindowState(
 			LiferayWindowState.POP_UP
-		).build();
+		).buildString();
 	}
 
 	public List<UserGroupRole> getUserGroupRoles(int start, int end)

@@ -13,14 +13,16 @@
  */
 
 import ClayLink from '@clayui/link';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 
-export default function EmptyLayoutReports({
-	assetsPath,
-	configureGooglePageSpeedURL,
-}) {
-	const defaultIllustration = `${assetsPath}/issues-default.svg`;
+import {StoreStateContext} from '../context/StoreContext';
+
+export default function EmptyLayoutReports() {
+	const {data} = useContext(StoreStateContext);
+
+	const {configureGooglePageSpeedURL, imagesPath} = data;
+
+	const defaultIllustration = `${imagesPath}/issues_default.svg`;
 
 	return (
 		<div className="text-center">
@@ -28,7 +30,7 @@ export default function EmptyLayoutReports({
 				alt={Liferay.Language.get(
 					'default-page-audit-image-alt-description'
 				)}
-				className="c-mb-4 c-mt-5"
+				className="c-my-4"
 				src={defaultIllustration}
 				width="120px"
 			/>
@@ -68,8 +70,3 @@ export default function EmptyLayoutReports({
 		</div>
 	);
 }
-
-EmptyLayoutReports.propTypes = {
-	assetsPath: PropTypes.string.isRequired,
-	configurePageSpeedURL: PropTypes.string,
-};

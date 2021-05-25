@@ -26,6 +26,7 @@ import selectLanguageId from '../../selectors/selectLanguageId';
 import resolveEditableValue from '../../utils/editable-value/resolveEditableValue';
 import {getFrontendTokenValue} from '../../utils/getFrontendTokenValue';
 import {getResponsiveConfig} from '../../utils/getResponsiveConfig';
+import {isValidSpacingOption} from '../../utils/isValidSpacingOption';
 import useBackgroundImageValue from '../../utils/useBackgroundImageValue';
 import {useId} from '../../utils/useId';
 
@@ -152,43 +153,46 @@ const Container = React.forwardRef(
 		const content = (
 			<div
 				{...(link ? {} : data)}
-				className={classNames(
-					className,
-					`mb-${marginBottom || 0}`,
-					`mt-${marginTop || 0}`,
-					`pb-${paddingBottom || 0}`,
-					`pl-${paddingLeft || 0}`,
-					`pr-${paddingRight || 0}`,
-					`pt-${paddingTop || 0}`,
-					{
-						[align]: !!align,
-						[`container-fluid`]:
-							widthType === CONTAINER_WIDTH_TYPES.fixed,
-						[`container-fluid-max-xl`]:
-							widthType === CONTAINER_WIDTH_TYPES.fixed,
-						'd-flex flex-column':
-							contentDisplay ===
-							CONTAINER_DISPLAY_OPTIONS.flexColumn,
-						'd-flex flex-row':
-							contentDisplay ===
-							CONTAINER_DISPLAY_OPTIONS.flexRow,
-						empty: !item.children.length && !height,
-						[`bg-${backgroundColor}`]:
-							backgroundColor && !backgroundColor.startsWith('#'),
-						[justify]: !!justify,
-						[`ml-${marginLeft || 0}`]:
-							widthType !== CONTAINER_WIDTH_TYPES.fixed &&
-							!withinTopper,
-						[`mr-${marginRight || 0}`]:
-							widthType !== CONTAINER_WIDTH_TYPES.fixed &&
-							!withinTopper,
-						[textAlign
-							? textAlign.startsWith('text-')
-								? textAlign
-								: `text-${textAlign}`
-							: '']: textAlign,
-					}
-				)}
+				className={classNames(className, {
+					[align]: !!align,
+					[`container-fluid`]:
+						widthType === CONTAINER_WIDTH_TYPES.fixed,
+					[`container-fluid-max-xl`]:
+						widthType === CONTAINER_WIDTH_TYPES.fixed,
+					'd-flex flex-column':
+						contentDisplay === CONTAINER_DISPLAY_OPTIONS.flexColumn,
+					'd-flex flex-row':
+						contentDisplay === CONTAINER_DISPLAY_OPTIONS.flexRow,
+					empty: !item.children.length && !height,
+					[`bg-${backgroundColor}`]:
+						backgroundColor && !backgroundColor.startsWith('#'),
+					[justify]: !!justify,
+					[`mb-${marginBottom}`]: isValidSpacingOption(marginBottom),
+					[`mt-${marginTop}`]: isValidSpacingOption(marginTop),
+					[`pb-${paddingBottom}`]: isValidSpacingOption(
+						paddingBottom
+					),
+					[`pl-${paddingLeft || 0}`]:
+						isValidSpacingOption(paddingLeft) ||
+						CONTAINER_WIDTH_TYPES.fixed,
+					[`pr-${paddingRight || 0}`]:
+						isValidSpacingOption(paddingRight) ||
+						CONTAINER_WIDTH_TYPES.fixed,
+					[`pt-${paddingTop}`]: isValidSpacingOption(paddingTop),
+					[`ml-${marginLeft}`]:
+						isValidSpacingOption(marginLeft) &&
+						widthType !== CONTAINER_WIDTH_TYPES.fixed &&
+						!withinTopper,
+					[`mr-${marginRight}`]:
+						isValidSpacingOption(marginRight) &&
+						widthType !== CONTAINER_WIDTH_TYPES.fixed &&
+						!withinTopper,
+					[textAlign
+						? textAlign.startsWith('text-')
+							? textAlign
+							: `text-${textAlign}`
+						: '']: textAlign,
+				})}
 				id={elementId}
 				ref={ref}
 				style={style}

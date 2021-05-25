@@ -120,6 +120,8 @@ definition {
 
 	@priority = "4"
 	test DiscardConflictingChangesOnContentPage {
+		property test.assert.warning.exceptions = "true";
+
 		JSONGroup.addGroup(groupName = "Site Name");
 
 		JSONLayout.addPublicLayout(
@@ -197,13 +199,13 @@ definition {
 		Publications.discardChanges(
 			changeCategory = "com.liferay.layout.page.template.model.LayoutPageTemplateStructure",
 			changeTitle = "com.liferay.layout.page.template.model.LayoutPageTemplateStructure",
-			conflictingPublications = "true",
+			conflictingChanges = "true",
 			entryTitle = "com.liferay.layout.page.template.model.LayoutPageTemplateStructure");
 
 		Publications.discardChanges(
 			changeCategory = "com.liferay.portal.kernel.model.PortletPreferenceValue",
 			changeTitle = "com.liferay.portal.kernel.model.PortletPreferenceValue",
-			conflictingPublications = "true",
+			conflictingChanges = "true",
 			entryTitle = "com.liferay.portal.kernel.model.PortletPreferenceValue");
 
 		// Workaround LPS-124618
@@ -267,6 +269,8 @@ definition {
 
 	@priority = "4"
 	test PublishPrivateContentPageWithFragment {
+		property test.assert.warning.exceptions = "true";
+
 		JSONPublications.addPublication(publicationName = "Publication Name");
 
 		JSONPublications.selectPublication(publicationName = "Publication Name");

@@ -402,11 +402,12 @@ public abstract class BaseDataRecordCollectionResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@PUT
 	@Tags(value = {@Tag(name = "DataRecordCollection")})
-	public void putDataRecordCollectionPermission(
-			@NotNull @Parameter(hidden = true)
-			@PathParam("dataRecordCollectionId")
-			Long dataRecordCollectionId,
-			com.liferay.portal.vulcan.permission.Permission[] permissions)
+	public Page<com.liferay.portal.vulcan.permission.Permission>
+			putDataRecordCollectionPermission(
+				@NotNull @Parameter(hidden = true)
+				@PathParam("dataRecordCollectionId")
+				Long dataRecordCollectionId,
+				com.liferay.portal.vulcan.permission.Permission[] permissions)
 		throws Exception {
 
 		String resourceName = getPermissionCheckerResourceName(
@@ -419,12 +420,15 @@ public abstract class BaseDataRecordCollectionResourceImpl
 			getPermissionCheckerGroupId(dataRecordCollectionId));
 
 		resourcePermissionLocalService.updateResourcePermissions(
-			contextCompany.getCompanyId(), 0, resourceName,
+			contextCompany.getCompanyId(),
+			getPermissionCheckerGroupId(dataRecordCollectionId), resourceName,
 			String.valueOf(resourceId),
 			ModelPermissionsUtil.toModelPermissions(
 				contextCompany.getCompanyId(), permissions, resourceId,
 				resourceName, resourceActionLocalService,
 				resourcePermissionLocalService, roleLocalService));
+
+		return toPermissionPage(resourceId, resourceName, null);
 	}
 
 	/**
@@ -494,7 +498,8 @@ public abstract class BaseDataRecordCollectionResourceImpl
 				dataRecordCollections) {
 
 			postDataDefinitionDataRecordCollection(
-				(Long)parameters.get("dataDefinitionId"), dataRecordCollection);
+				Long.parseLong((String)parameters.get("dataDefinitionId")),
+				dataRecordCollection);
 		}
 	}
 
@@ -533,7 +538,7 @@ public abstract class BaseDataRecordCollectionResourceImpl
 		throws Exception {
 
 		return getDataDefinitionDataRecordCollectionsPage(
-			(Long)parameters.get("dataDefinitionId"),
+			Long.parseLong((String)parameters.get("dataDefinitionId")),
 			(String)parameters.get("keywords"), pagination);
 	}
 
@@ -571,7 +576,8 @@ public abstract class BaseDataRecordCollectionResourceImpl
 			putDataRecordCollection(
 				dataRecordCollection.getId() != null ?
 					dataRecordCollection.getId() :
-						(Long)parameters.get("dataRecordCollectionId"),
+						Long.parseLong(
+							(String)parameters.get("dataRecordCollectionId")),
 				dataRecordCollection);
 		}
 	}

@@ -14,24 +14,14 @@
 
 package com.liferay.headless.delivery.internal.resource.v1_0;
 
-import com.liferay.asset.kernel.model.AssetTag;
-import com.liferay.asset.kernel.service.AssetCategoryLocalService;
-import com.liferay.asset.kernel.service.AssetEntryLocalService;
-import com.liferay.asset.kernel.service.AssetLinkLocalService;
-import com.liferay.asset.kernel.service.AssetTagLocalService;
-import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.expando.kernel.service.ExpandoColumnLocalService;
 import com.liferay.expando.kernel.service.ExpandoTableLocalService;
 import com.liferay.headless.common.spi.service.context.ServiceContextRequestUtil;
-import com.liferay.headless.delivery.dto.v1_0.TaxonomyCategoryBrief;
 import com.liferay.headless.delivery.dto.v1_0.WikiPage;
-import com.liferay.headless.delivery.internal.dto.v1_0.util.AggregateRatingUtil;
-import com.liferay.headless.delivery.internal.dto.v1_0.util.CreatorUtil;
-import com.liferay.headless.delivery.internal.dto.v1_0.util.CustomFieldsUtil;
+import com.liferay.headless.delivery.dto.v1_0.util.CustomFieldsUtil;
+import com.liferay.headless.delivery.internal.dto.v1_0.converter.WikiPageDTOConverter;
 import com.liferay.headless.delivery.internal.dto.v1_0.util.EntityFieldsUtil;
-import com.liferay.headless.delivery.internal.dto.v1_0.util.RelatedContentUtil;
-import com.liferay.headless.delivery.internal.dto.v1_0.util.TaxonomyCategoryBriefUtil;
 import com.liferay.headless.delivery.internal.odata.entity.v1_0.WikiPageEntityModel;
 import com.liferay.headless.delivery.resource.v1_0.WikiPageResource;
 import com.liferay.headless.delivery.search.aggregation.AggregationUtil;
@@ -47,10 +37,8 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.search.aggregation.Aggregations;
@@ -65,9 +53,6 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.SearchUtil;
-import com.liferay.portal.vulcan.util.TransformUtil;
-import com.liferay.ratings.kernel.service.RatingsStatsLocalService;
-import com.liferay.subscription.service.SubscriptionLocalService;
 import com.liferay.wiki.constants.WikiConstants;
 import com.liferay.wiki.constants.WikiPageConstants;
 import com.liferay.wiki.model.WikiNode;
@@ -77,11 +62,9 @@ import com.liferay.wiki.service.WikiPageService;
 
 import java.io.Serializable;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.osgi.service.component.annotations.Component;
@@ -99,9 +82,21 @@ public class WikiPageResourceImpl
 	extends BaseWikiPageResourceImpl implements EntityModelResource {
 
 	@Override
+	public void deleteSiteWikiPageByExternalReferenceCode(
+			Long siteId, String externalReferenceCode)
+		throws Exception {
+
+		com.liferay.wiki.model.WikiPage wikiPage =
+			_wikiPageService.getLatestPageByExternalReferenceCode(
+				siteId, externalReferenceCode);
+
+		_wikiPageService.deletePage(wikiPage.getNodeId(), wikiPage.getTitle());
+	}
+
+	@Override
 	public void deleteWikiPage(Long wikiPageId) throws Exception {
 		com.liferay.wiki.model.WikiPage wikiPage =
-			_wikiPageLocalService.getPageByPageId(wikiPageId);
+			_wikiPageLocalService.getPage(wikiPageId);
 
 		_wikiPageService.deletePage(wikiPage.getNodeId(), wikiPage.getTitle());
 	}
@@ -114,6 +109,16 @@ public class WikiPageResourceImpl
 					com.liferay.wiki.model.WikiPage.class.getName()),
 				contextCompany.getCompanyId(), _expandoColumnLocalService,
 				_expandoTableLocalService));
+	}
+
+	@Override
+	public WikiPage getSiteWikiPageByExternalReferenceCode(
+			Long siteId, String externalReferenceCode)
+		throws Exception {
+
+		return _toWikiPage(
+			_wikiPageService.getLatestPageByExternalReferenceCode(
+				siteId, externalReferenceCode));
 	}
 
 	@Override
@@ -168,7 +173,7 @@ public class WikiPageResourceImpl
 	@Override
 	public WikiPage getWikiPage(Long wikiPageId) throws Exception {
 		com.liferay.wiki.model.WikiPage wikiPage =
-			_wikiPageLocalService.getPageByPageId(wikiPageId);
+			_wikiPageLocalService.getPage(wikiPageId);
 
 		_wikiPageModelResourcePermission.check(
 			PermissionThreadLocal.getPermissionChecker(), wikiPage,
@@ -182,7 +187,7 @@ public class WikiPageResourceImpl
 		throws Exception {
 
 		com.liferay.wiki.model.WikiPage wikiPage =
-			_wikiPageLocalService.getPageByPageId(parentWikiPageId);
+			_wikiPageLocalService.getPage(parentWikiPageId);
 
 		_wikiPageModelResourcePermission.check(
 			PermissionThreadLocal.getPermissionChecker(), wikiPage,
@@ -236,7 +241,7 @@ public class WikiPageResourceImpl
 		throws Exception {
 
 		com.liferay.wiki.model.WikiPage parentWikiPage =
-			_wikiPageLocalService.getPageByPageId(parentWikiPageId);
+			_wikiPageLocalService.getPage(parentWikiPageId);
 
 		_wikiNodeModelResourcePermission.check(
 			PermissionThreadLocal.getPermissionChecker(),
@@ -261,38 +266,53 @@ public class WikiPageResourceImpl
 	}
 
 	@Override
+	public WikiPage putSiteWikiPageByExternalReferenceCode(
+			Long siteId, String externalReferenceCode, WikiPage wikiPage)
+		throws Exception {
+
+		com.liferay.wiki.model.WikiPage serviceBuilderWikiPage =
+			_wikiPageLocalService.fetchLatestPageByExternalReferenceCode(
+				siteId, externalReferenceCode);
+
+		if (serviceBuilderWikiPage != null) {
+			return _updateWikiPage(serviceBuilderWikiPage, wikiPage);
+		}
+
+		if (wikiPage.getWikiNodeId() == null) {
+			throw new BadRequestException("WikiNode ID is null");
+		}
+
+		return _toWikiPage(
+			_wikiPageService.addPage(
+				externalReferenceCode, wikiPage.getWikiNodeId(),
+				wikiPage.getHeadline(), wikiPage.getContent(),
+				wikiPage.getDescription(), false, wikiPage.getEncodingFormat(),
+				null, null,
+				ServiceContextRequestUtil.createServiceContext(
+					wikiPage.getTaxonomyCategoryIds(), wikiPage.getKeywords(),
+					_getExpandoBridgeAttributes(wikiPage),
+					contextUser.getGroupId(), contextHttpServletRequest,
+					wikiPage.getViewableByAsString())));
+	}
+
+	@Override
 	public WikiPage putWikiPage(Long wikiPageId, WikiPage wikiPage)
 		throws Exception {
 
 		com.liferay.wiki.model.WikiPage serviceBuilderWikiPage =
-			_wikiPageLocalService.getPageByPageId(wikiPageId);
+			_wikiPageLocalService.getPage(wikiPageId);
 
 		_wikiPageModelResourcePermission.check(
 			PermissionThreadLocal.getPermissionChecker(),
 			serviceBuilderWikiPage, ActionKeys.UPDATE);
 
-		ServiceContext serviceContext =
-			ServiceContextRequestUtil.createServiceContext(
-				wikiPage.getTaxonomyCategoryIds(), wikiPage.getKeywords(),
-				_getExpandoBridgeAttributes(wikiPage),
-				serviceBuilderWikiPage.getGroupId(), contextHttpServletRequest,
-				wikiPage.getViewableByAsString());
-
-		serviceContext.setCommand("update");
-
-		return _toWikiPage(
-			_wikiPageService.updatePage(
-				serviceBuilderWikiPage.getNodeId(), wikiPage.getHeadline(),
-				serviceBuilderWikiPage.getVersion(), wikiPage.getContent(),
-				wikiPage.getDescription(), true, wikiPage.getEncodingFormat(),
-				serviceBuilderWikiPage.getParentTitle(),
-				serviceBuilderWikiPage.getRedirectTitle(), serviceContext));
+		return _updateWikiPage(serviceBuilderWikiPage, wikiPage);
 	}
 
 	@Override
 	public void putWikiPageSubscribe(Long wikiPageId) throws Exception {
 		com.liferay.wiki.model.WikiPage wikiPage =
-			_wikiPageLocalService.getPageByPageId(wikiPageId);
+			_wikiPageLocalService.getPage(wikiPageId);
 
 		_wikiPageService.subscribePage(
 			wikiPage.getNodeId(), wikiPage.getTitle());
@@ -301,7 +321,7 @@ public class WikiPageResourceImpl
 	@Override
 	public void putWikiPageUnsubscribe(Long wikiPageId) throws Exception {
 		com.liferay.wiki.model.WikiPage wikiPage =
-			_wikiPageLocalService.getPageByPageId(wikiPageId);
+			_wikiPageLocalService.getPage(wikiPageId);
 
 		_wikiPageService.unsubscribePage(
 			wikiPage.getNodeId(), wikiPage.getTitle());
@@ -310,7 +330,7 @@ public class WikiPageResourceImpl
 	@Override
 	protected Long getPermissionCheckerGroupId(Object id) throws Exception {
 		com.liferay.wiki.model.WikiPage wikiPage =
-			_wikiPageLocalService.getPageByPageId((Long)id);
+			_wikiPageLocalService.getPage((Long)id);
 
 		return wikiPage.getGroupId();
 	}
@@ -323,7 +343,7 @@ public class WikiPageResourceImpl
 	@Override
 	protected Long getPermissionCheckerResourceId(Object id) throws Exception {
 		com.liferay.wiki.model.WikiPage wikiPage =
-			_wikiPageLocalService.getPageByPageId((Long)id);
+			_wikiPageLocalService.getPage((Long)id);
 
 		return wikiPage.getResourcePrimKey();
 	}
@@ -331,24 +351,6 @@ public class WikiPageResourceImpl
 	@Override
 	protected String getPermissionCheckerResourceName(Object id) {
 		return com.liferay.wiki.model.WikiPage.class.getName();
-	}
-
-	private String _getEncodingFormat(
-		com.liferay.wiki.model.WikiPage wikiPage) {
-
-		String format = wikiPage.getFormat();
-
-		if (format.equals("creole")) {
-			return "text/x-wiki";
-		}
-		else if (format.equals("html")) {
-			return "text/html";
-		}
-		else if (format.equals("plain_text")) {
-			return "text/plain";
-		}
-
-		return format;
 	}
 
 	private Map<String, Serializable> _getExpandoBridgeAttributes(
@@ -363,9 +365,10 @@ public class WikiPageResourceImpl
 	private WikiPage _toWikiPage(com.liferay.wiki.model.WikiPage wikiPage)
 		throws Exception {
 
-		return new WikiPage() {
-			{
-				actions = HashMapBuilder.put(
+		return _wikiPageDTOConverter.toDTO(
+			new DefaultDTOConverterContext(
+				contextAcceptLanguage.isAcceptAllLanguages(),
+				HashMapBuilder.put(
 					"add-page",
 					addAction(
 						ActionKeys.UPDATE, wikiPage.getResourcePrimKey(),
@@ -401,95 +404,37 @@ public class WikiPageResourceImpl
 						ActionKeys.SUBSCRIBE, wikiPage.getResourcePrimKey(),
 						"putWikiPageUnsubscribe", wikiPage.getUserId(),
 						WikiPage.class.getName(), wikiPage.getGroupId())
-				).build();
-				aggregateRating = AggregateRatingUtil.toAggregateRating(
-					_ratingsStatsLocalService.fetchStats(
-						com.liferay.wiki.model.WikiPage.class.getName(),
-						wikiPage.getResourcePrimKey()));
-				content = wikiPage.getContent();
-				creator = CreatorUtil.toCreator(
-					_portal, Optional.of(contextUriInfo),
-					_userLocalService.fetchUser(wikiPage.getUserId()));
-				customFields = CustomFieldsUtil.toCustomFields(
-					contextAcceptLanguage.isAcceptAllLanguages(),
-					com.liferay.wiki.model.WikiPage.class.getName(),
-					wikiPage.getPageId(), wikiPage.getCompanyId(),
-					contextAcceptLanguage.getPreferredLocale());
-				dateCreated = wikiPage.getCreateDate();
-				dateModified = wikiPage.getModifiedDate();
-				description = wikiPage.getSummary();
-				encodingFormat = _getEncodingFormat(wikiPage);
-				headline = wikiPage.getTitle();
-				id = wikiPage.getPageId();
-				keywords = ListUtil.toArray(
-					_assetTagLocalService.getTags(
-						BlogsEntry.class.getName(), wikiPage.getPageId()),
-					AssetTag.NAME_ACCESSOR);
-				numberOfAttachments = wikiPage.getAttachmentsFileEntriesCount();
-				numberOfWikiPages = Optional.ofNullable(
-					wikiPage.getChildPages()
-				).map(
-					List::size
-				).orElse(
-					0
-				);
-				relatedContents = RelatedContentUtil.toRelatedContents(
-					_assetEntryLocalService, _assetLinkLocalService,
-					_dtoConverterRegistry, wikiPage.getModelClassName(),
-					wikiPage.getResourcePrimKey(),
-					contextAcceptLanguage.getPreferredLocale());
-				siteId = wikiPage.getGroupId();
-				subscribed = _subscriptionLocalService.isSubscribed(
-					wikiPage.getCompanyId(), contextUser.getUserId(),
-					com.liferay.wiki.model.WikiPage.class.getName(),
-					wikiPage.getResourcePrimKey());
-				taxonomyCategoryBriefs = TransformUtil.transformToArray(
-					_assetCategoryLocalService.getCategories(
-						com.liferay.wiki.model.WikiPage.class.getName(),
-						wikiPage.getPageId()),
-					assetCategory ->
-						TaxonomyCategoryBriefUtil.toTaxonomyCategoryBrief(
-							assetCategory,
-							new DefaultDTOConverterContext(
-								contextAcceptLanguage.isAcceptAllLanguages(),
-								Collections.emptyMap(), _dtoConverterRegistry,
-								contextHttpServletRequest,
-								assetCategory.getCategoryId(),
-								contextAcceptLanguage.getPreferredLocale(),
-								contextUriInfo, contextUser)),
-					TaxonomyCategoryBrief.class);
+				).build(),
+				_dtoConverterRegistry, wikiPage.getResourcePrimKey(),
+				contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
+				contextUser));
+	}
 
-				setParentWikiPageId(
-					() -> {
-						com.liferay.wiki.model.WikiPage parentWikiPage =
-							wikiPage.getParentPage();
+	private WikiPage _updateWikiPage(
+			com.liferay.wiki.model.WikiPage serviceBuilderWikiPage,
+			WikiPage wikiPage)
+		throws Exception {
 
-						if ((parentWikiPage == null) ||
-							(parentWikiPage.getPageId() == 0L)) {
+		ServiceContext serviceContext =
+			ServiceContextRequestUtil.createServiceContext(
+				wikiPage.getTaxonomyCategoryIds(), wikiPage.getKeywords(),
+				_getExpandoBridgeAttributes(wikiPage),
+				serviceBuilderWikiPage.getGroupId(), contextHttpServletRequest,
+				wikiPage.getViewableByAsString());
 
-							return null;
-						}
+		serviceContext.setCommand("update");
 
-						return parentWikiPage.getPageId();
-					});
-			}
-		};
+		return _toWikiPage(
+			_wikiPageService.updatePage(
+				serviceBuilderWikiPage.getNodeId(), wikiPage.getHeadline(),
+				serviceBuilderWikiPage.getVersion(), wikiPage.getContent(),
+				wikiPage.getDescription(), true, wikiPage.getEncodingFormat(),
+				serviceBuilderWikiPage.getParentTitle(),
+				serviceBuilderWikiPage.getRedirectTitle(), serviceContext));
 	}
 
 	@Reference
 	private Aggregations _aggregations;
-
-	@Reference
-	private AssetCategoryLocalService _assetCategoryLocalService;
-
-	@Reference
-	private AssetEntryLocalService _assetEntryLocalService;
-
-	@Reference
-	private AssetLinkLocalService _assetLinkLocalService;
-
-	@Reference
-	private AssetTagLocalService _assetTagLocalService;
 
 	@Reference
 	private DDMIndexer _ddmIndexer;
@@ -510,25 +455,19 @@ public class WikiPageResourceImpl
 	private Queries _queries;
 
 	@Reference
-	private RatingsStatsLocalService _ratingsStatsLocalService;
-
-	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
 	@Reference
 	private Sorts _sorts;
-
-	@Reference
-	private SubscriptionLocalService _subscriptionLocalService;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 	@Reference(target = "(model.class.name=com.liferay.wiki.model.WikiNode)")
 	private ModelResourcePermission<WikiNode> _wikiNodeModelResourcePermission;
 
 	@Reference
 	private WikiNodeService _wikiNodeService;
+
+	@Reference
+	private WikiPageDTOConverter _wikiPageDTOConverter;
 
 	@Reference
 	private WikiPageLocalService _wikiPageLocalService;

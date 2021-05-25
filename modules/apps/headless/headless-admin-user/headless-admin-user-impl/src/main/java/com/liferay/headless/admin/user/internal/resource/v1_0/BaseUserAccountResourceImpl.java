@@ -385,6 +385,10 @@ public abstract class BaseUserAccountResourceImpl
 			existingUserAccount.setDateModified(userAccount.getDateModified());
 		}
 
+		if (userAccount.getEmailAddress() != null) {
+			existingUserAccount.setEmailAddress(userAccount.getEmailAddress());
+		}
+
 		if (userAccount.getFamilyName() != null) {
 			existingUserAccount.setFamilyName(userAccount.getFamilyName());
 		}
@@ -535,7 +539,8 @@ public abstract class BaseUserAccountResourceImpl
 		throws Exception {
 
 		return getSiteUserAccountsPage(
-			(Long)parameters.get("siteId"), search, filter, pagination, sorts);
+			Long.parseLong((String)parameters.get("siteId")), search, filter,
+			pagination, sorts);
 	}
 
 	@Override
@@ -569,7 +574,7 @@ public abstract class BaseUserAccountResourceImpl
 		for (UserAccount userAccount : userAccounts) {
 			putUserAccount(
 				userAccount.getId() != null ? userAccount.getId() :
-					(Long)parameters.get("userAccountId"),
+					Long.parseLong((String)parameters.get("userAccountId")),
 				userAccount);
 		}
 	}

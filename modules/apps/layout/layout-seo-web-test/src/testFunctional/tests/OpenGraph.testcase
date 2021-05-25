@@ -122,12 +122,12 @@ definition {
 		Site.openSiteSettingsAdmin(siteURLKey = "test-site-name");
 
 		Click(
-			key_url = "site-configuration-other",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Pages",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		AssertElementNotPresent(
-			key_panel = "open graph",
-			locator1 = "Panel#PANEL_COLLAPSED");
+			key_panel = "Open Graph",
+			locator1 = "NavTab#TAB_LINK");
 
 		User.logoutPG();
 
@@ -142,7 +142,7 @@ definition {
 	test DisableConfigurationAtSiteLevel {
 		property test.name.skip.portal.instance = "OpenGraph#DisableConfigurationAtSiteLevel";
 
-		OpenGraph.disableOpenGraphAtSiteLevel();
+		OpenGraph.disableOpenGraphAtSiteLevel(siteURLKey = "test-site-name");
 
 		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
 
@@ -437,10 +437,10 @@ definition {
 		Site.openSiteSettingsAdmin(siteURLKey = "test-site-name");
 
 		Click(
-			key_url = "site-configuration-other",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Pages",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
-		Panel.expandPanel(panel = "Open Graph");
+		Navigator.gotoNavTab(navTab = "Open Graph");
 
 		OpenGraph.configureOpenGraph(
 			altDescription = "This is image alternative description",

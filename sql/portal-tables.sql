@@ -142,7 +142,7 @@ create table AssetEntry (
 	publishDate DATE null,
 	expirationDate DATE null,
 	mimeType VARCHAR(75) null,
-	title STRING null,
+	title TEXT null,
 	description TEXT null,
 	summary TEXT null,
 	url STRING null,
@@ -315,6 +315,7 @@ create table DLFileEntry (
 	mvccVersion LONG default 0 not null,
 	ctCollectionId LONG default 0 not null,
 	uuid_ VARCHAR(75) null,
+	externalReferenceCode VARCHAR(75) null,
 	fileEntryId LONG not null,
 	groupId LONG,
 	companyId LONG,
@@ -342,6 +343,8 @@ create table DLFileEntry (
 	custom1ImageId LONG,
 	custom2ImageId LONG,
 	manualCheckInRequired BOOLEAN,
+	expirationDate DATE null,
+	reviewDate DATE null,
 	lastPublishDate DATE null,
 	primary key (fileEntryId, ctCollectionId)
 );
@@ -438,6 +441,8 @@ create table DLFileVersion (
 	version VARCHAR(75) null,
 	size_ LONG,
 	checksum VARCHAR(75) null,
+	expirationDate DATE null,
+	reviewDate DATE null,
 	lastPublishDate DATE null,
 	status INTEGER,
 	statusByUserId LONG,
@@ -969,6 +974,7 @@ create table PluginSetting (
 create table PortalPreferenceValue (
 	mvccVersion LONG default 0 not null,
 	portalPreferenceValueId LONG not null primary key,
+	companyId LONG,
 	portalPreferencesId LONG,
 	index_ INTEGER,
 	key_ VARCHAR(255) null,
@@ -980,6 +986,7 @@ create table PortalPreferenceValue (
 create table PortalPreferences (
 	mvccVersion LONG default 0 not null,
 	portalPreferencesId LONG not null primary key,
+	companyId LONG,
 	ownerId LONG,
 	ownerType INTEGER
 );

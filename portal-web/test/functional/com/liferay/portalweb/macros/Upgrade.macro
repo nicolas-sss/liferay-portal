@@ -254,7 +254,7 @@ definition {
 
 		Form.editDescription(formDescription = "Form Description");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldName = FormFields.getFieldName();
 
@@ -1865,26 +1865,13 @@ definition {
 	}
 
 	macro viewAssetPublisher {
-		Navigator.gotoPage(pageName = "Asset Publisher");
+		task ("Configure the Asset Publisher to show full content") {
+			Navigator.gotoPage(pageName = "Asset Publisher");
 
-		AssetPublisherPortlet.configureAssetLinkBehaviorPG(assetLinkBehavior = "Show Full Content");
-
-		AssertTextEquals(
-			key_portletName = "Asset Publisher",
-			locator1 = "Portlet#TITLE",
-			value1 = "Asset Publisher");
-
-		AssetPublisherPortlet.viewAssetPG(
-			assetContent = "Web Content Content",
-			assetTitle = "Web Content Title");
-
-		if (isSet(categoryName)) {
-			AssetPublisherPortlet.viewAssetMetadataPG(categoryName = "${categoryName}");
+			AssetPublisherPortlet.configureAssetLinkBehaviorPG(assetLinkBehavior = "Show Full Content");
 		}
 
-		if (IsElementPresent(locator1 = "Home#PAGE_4")) {
-			Click(locator1 = "Home#PAGE_4");
-
+		task ("View the dynamic selection asset in Asset Publisher") {
 			AssertTextEquals(
 				key_portletName = "Asset Publisher",
 				locator1 = "Portlet#TITLE",
@@ -1893,6 +1880,27 @@ definition {
 			AssetPublisherPortlet.viewAssetPG(
 				assetContent = "Web Content Content",
 				assetTitle = "Web Content Title");
+		}
+
+		task ("View category shown in Asset Publisher") {
+			if (isSet(categoryName)) {
+				AssetPublisherPortlet.viewAssetMetadataPG(categoryName = "${categoryName}");
+			}
+		}
+
+		task ("View the manual selection asset in Asset Publisher") {
+			if (IsElementPresent(key_pageName = "Asset Publisher Test 2", locator1 = "Home#PAGE")) {
+				Navigator.gotoPage(pageName = "Asset Publisher Test 2");
+
+				AssertTextEquals(
+					key_portletName = "Asset Publisher",
+					locator1 = "Portlet#TITLE",
+					value1 = "Asset Publisher");
+
+				AssetPublisherPortlet.viewAssetPG(
+					assetContent = "Web Content Content",
+					assetTitle = "Web Content Title");
+			}
 		}
 	}
 
@@ -2011,10 +2019,6 @@ definition {
 				locator1 = "//div[contains(@class,'container')][contains(@class,'pb-3 pt-3')]",
 				locator2 = "max-width",
 				value1 = "${containerWidth}px");
-
-			AssertElementNotPresent(locator1 = "//div[contains(@class,'container')][contains(@class,'ml-0')]");
-
-			AssertElementNotPresent(locator1 = "//div[contains(@class,'container')][contains(@class,'mr-0')]");
 		}
 
 		task ("Assert styles of Button in view mode") {
@@ -3291,10 +3295,6 @@ definition {
 
 		SignIn.signIn(userEmailAddress = "user@liferay.com");
 
-		var portalURL = PropsUtil.get("portal.url");
-
-		AssertLocation(value1 = "${portalURL}/web/guest/home");
-
 		Navigator.gotoPage(pageName = "Web Content");
 
 		WebContent.viewPGViaWCD(webContentContent = "Web Content Content");
@@ -3562,6 +3562,24 @@ definition {
 			key_fieldFieldLabel = "Image",
 			key_image = "/documents/",
 			locator1 = "WCEditWebContent#IMAGE_PICKER_PREVIEW");
+	}
+
+	macro viewWebContentWithNoDisplayPageTemplate {
+		task ("View the View Content action not shown in dropdown list and the None is selected in Display Page Template field") {
+			for (var n : list "1,2") {
+				WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+				Click(
+					key_webContentTitle = "Web Content Title ${n} Edit",
+					locator1 = "WC#ENTRY_LIST_MENULIST_ICON");
+
+				MenuItem.viewNotPresent(menuItem = "View Content");
+
+				MenuItem.click(menuItem = "Edit");
+
+				WebContent.viewSelectedDisplayPageTemplateCP(displayPageTemplateType = "None");
+			}
+		}
 	}
 
 	macro viewWebContentWithPredefinedValueInWebContentField {

@@ -405,7 +405,7 @@ definition {
 			fieldName = "Numeric",
 			targetFieldLabel = "Text");
 
-		DataEngine.editFieldsGroupRepeatable();
+		DataEngine.toggleFieldRepeatable(fieldsGroupLabel = "Fields Group");
 
 		Button.clickSave();
 
@@ -415,9 +415,7 @@ definition {
 
 		PortletEntry.inputTitle(title = "${dmDocumentTitle}");
 
-		DataEngine.addRepeatableFieldGroups(
-			fieldName = "FieldsGroup",
-			totalPortletCount = "1");
+		DataEngine.addRepeatableField(fieldLabel = "Fields Group");
 
 		PortletEntry.publish();
 
@@ -426,7 +424,7 @@ definition {
 			rowEntry = "${dmDocumentTitle}");
 
 		WebContent.viewDuplicatedField(
-			fieldName = "FieldsGroup",
+			fieldLabel = "Fields Group",
 			totalPortletCount = "2");
 	}
 

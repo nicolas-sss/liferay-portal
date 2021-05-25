@@ -64,8 +64,10 @@ definition {
 		if ("${siteType}" == "Site Template") {
 			if ("${uncheckPropagation}" == "true") {
 				Click(
-					key_url = "site-configuration-pages",
-					locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+					key_itemName = "Pages",
+					locator1 = "ListGroupItem#ITEM_TEXT");
+
+				Navigator.gotoNavTab(navTab = "Pages");
 
 				Uncheck.uncheckToggleSwitch(locator1 = "Checkbox#ENABLE_PROPAGATION");
 
@@ -76,8 +78,8 @@ definition {
 		}
 
 		Click(
-			key_url = "site-configuration-details",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		if ("${membershipType}" == "Private") {
 			Select(
@@ -98,9 +100,7 @@ definition {
 		if (isSet(parentSiteName)) {
 			WaitForLiferayEvent.initializeLiferayEventLog();
 
-			AssertClick(
-				locator1 = "Button#SELECT",
-				value1 = "Select");
+			Button.click(button = "Change");
 
 			var key_parentSiteName = "${parentSiteName}";
 
@@ -140,8 +140,8 @@ definition {
 		Modal.save();
 
 		Click(
-			key_url = "site-configuration-details",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		AssertTextEquals(
 			locator1 = "SitesEditSite#DETAILS_NAME",
@@ -160,15 +160,15 @@ definition {
 
 	macro addVirtualHostsURLCP {
 		Click(
-			key_url = "site-configuration-other",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		Navigator.gotoNavTab(navTab = "Site URL");
 
 		if (isSet(publicVirtualHosts)) {
 			AssertTextEquals(
 				locator1 = "SiteSettingsSiteURL#SITE_URL_VIRTUAL_HOSTS_PUBLIC_PAGES_LABEL",
-				value1 = "Public Pages");
+				value1 = "Public Pages Virtual Host");
 
 			Type(
 				locator1 = "TextInput#PUBLIC_VIRTUAL_HOST_URL",
@@ -178,7 +178,7 @@ definition {
 		if (isSet(privateVirtualHosts)) {
 			AssertTextEquals(
 				locator1 = "SiteSettingsSiteURL#SITE_URL_VIRTUAL_HOSTS_PRIVATE_PAGES_LABEL",
-				value1 = "Private Pages");
+				value1 = "Private Pages Virtual Host");
 
 			Type(
 				locator1 = "TextInput#PRIVATE_VIRTUAL_HOST_URL",
@@ -267,12 +267,10 @@ definition {
 
 	macro assignDefaultSiteTeam {
 		Click(
-			key_url = "site-configuration-default-user-associations",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Users",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
-		AssertClick(
-			locator1 = "SiteSettingsDefaultUserAssociations#TEAMS_SELECT",
-			value1 = "Select");
+		Click(locator1 = "SiteSettingsDefaultUserAssociations#TEAMS_SELECT");
 
 		SelectFrame(locator1 = "IFrame#MODAL_BODY");
 
@@ -478,9 +476,16 @@ definition {
 	}
 
 	macro configureCurrentLanguagesCP {
-		Click(
-			key_url = "site-configuration-languages",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+		if (isSet(category)) {
+			Click(
+				key_itemName = "${category}",
+				locator1 = "ListGroupItem#ITEM_TEXT");
+		}
+		else {
+			Click(
+				key_itemName = "Localization",
+				locator1 = "ListGroupItem#ITEM_TEXT");
+		}
 
 		Check.checkNotVisible(
 			index = "2",
@@ -635,8 +640,8 @@ definition {
 
 	macro disableRecycleBinCP {
 		Click(
-			key_url = "site-configuration-recycle-bin",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Recycle Bin",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		Uncheck.uncheckToggleSwitchNoErrorNoAssert(locator1 = "Checkbox#ENABLE_RECYCLE_BIN");
 
@@ -649,8 +654,8 @@ definition {
 
 	macro editCP {
 		Click(
-			key_url = "site-configuration-details",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		AssertTextEquals(
 			locator1 = "TextInput#NAME",
@@ -667,8 +672,8 @@ definition {
 
 	macro editFriendlyURLCP {
 		Click(
-			key_url = "site-configuration-other",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		Navigator.gotoNavTab(navTab = "Site URL");
 
@@ -702,8 +707,8 @@ definition {
 
 	macro editGoogleAnalyticsIDCP {
 		Click(
-			key_url = "site-configuration-analytics",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Analytics",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		Type(
 			locator1 = "TextInput#GOOGLE_ANALYTICS_ID",
@@ -714,8 +719,8 @@ definition {
 
 	macro editPiwikCP {
 		Click(
-			key_url = "site-configuration-analytics",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Analytics",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		Type(
 			locator1 = "TextInput#PIWIK",
@@ -730,8 +735,8 @@ definition {
 			portlet = "Site Settings");
 
 		Click(
-			key_url = "site-configuration-details",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		AssertElementPresent(locator1 = "SitesEditSite#SITE_ID");
 
@@ -768,8 +773,8 @@ definition {
 
 	macro inactivateCP {
 		Click(
-			key_url = "site-configuration-details",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		AssertTextEquals(
 			locator1 = "TextInput#NAME",
@@ -893,8 +898,8 @@ definition {
 
 	macro limitMembership {
 		Click(
-			key_url = "site-configuration-details",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		if ("${siteLimitMembership}" == "Yes") {
 			Check.checkToggleSwitch(locator1 = "SitesEditSite#PARENT_SITE_LIMIT_MEMBERSHIP_CHECKBOX");
@@ -908,8 +913,8 @@ definition {
 
 	macro manageMembershipOptions {
 		Click(
-			key_url = "site-configuration-details",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		Pause(locator1 = "5000");
 
@@ -1068,8 +1073,10 @@ definition {
 
 	macro selectPageType {
 		Click(
-			key_url = "site-configuration-pages",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Pages",
+			locator1 = "ListGroupItem#ITEM_TEXT");
+
+		Navigator.gotoNavTab(navTab = "Pages");
 
 		if ("${selectPublicPages}" == "true") {
 			Select(
@@ -1091,12 +1098,10 @@ definition {
 
 	macro selectParentSite {
 		Click(
-			key_url = "site-configuration-details",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
-		AssertClick(
-			locator1 = "SitesEditSite#PARENT_SITE_SELECT",
-			value1 = "Select");
+		Button.click(button = "Change");
 
 		var key_parentSiteName = "${parentSiteName}";
 
@@ -1463,8 +1468,8 @@ definition {
 
 	macro viewSiteClonedFromSiteTemplateCP {
 		Click(
-			key_url = "site-configuration-other",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Other",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		Navigator.gotoNavTab(navTab = "Site Template");
 

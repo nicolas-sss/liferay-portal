@@ -78,7 +78,11 @@ public class BatchPlannerMappingModelImpl
 		{"mvccVersion", Types.BIGINT}, {"batchPlannerMappingId", Types.BIGINT},
 		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
 		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
-		{"modifiedDate", Types.TIMESTAMP}, {"batchPlannerPlanId", Types.BIGINT}
+		{"modifiedDate", Types.TIMESTAMP}, {"batchPlannerPlanId", Types.BIGINT},
+		{"externalFieldName", Types.VARCHAR},
+		{"externalFieldType", Types.VARCHAR},
+		{"internalFieldName", Types.VARCHAR},
+		{"internalFieldType", Types.VARCHAR}, {"script", Types.CLOB}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -93,10 +97,15 @@ public class BatchPlannerMappingModelImpl
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("batchPlannerPlanId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("externalFieldName", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("externalFieldType", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("internalFieldName", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("internalFieldType", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("script", Types.CLOB);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table BatchPlannerMapping (mvccVersion LONG default 0 not null,batchPlannerMappingId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,batchPlannerPlanId LONG)";
+		"create table BatchPlannerMapping (mvccVersion LONG default 0 not null,batchPlannerMappingId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,batchPlannerPlanId LONG,externalFieldName VARCHAR(75) null,externalFieldType VARCHAR(75) null,internalFieldName VARCHAR(75) null,internalFieldType VARCHAR(75) null,script TEXT null)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table BatchPlannerMapping";
@@ -120,11 +129,23 @@ public class BatchPlannerMappingModelImpl
 	public static final long BATCHPLANNERPLANID_COLUMN_BITMASK = 1L;
 
 	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long EXTERNALFIELDNAME_COLUMN_BITMASK = 2L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long INTERNALFIELDNAME_COLUMN_BITMASK = 4L;
+
+	/**
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
 	 *		#getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long MODIFIEDDATE_COLUMN_BITMASK = 2L;
+	public static final long MODIFIEDDATE_COLUMN_BITMASK = 8L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
@@ -165,6 +186,11 @@ public class BatchPlannerMappingModelImpl
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
 		model.setBatchPlannerPlanId(soapModel.getBatchPlannerPlanId());
+		model.setExternalFieldName(soapModel.getExternalFieldName());
+		model.setExternalFieldType(soapModel.getExternalFieldType());
+		model.setInternalFieldName(soapModel.getInternalFieldName());
+		model.setInternalFieldType(soapModel.getInternalFieldType());
+		model.setScript(soapModel.getScript());
 
 		return model;
 	}
@@ -369,6 +395,35 @@ public class BatchPlannerMappingModelImpl
 			"batchPlannerPlanId",
 			(BiConsumer<BatchPlannerMapping, Long>)
 				BatchPlannerMapping::setBatchPlannerPlanId);
+		attributeGetterFunctions.put(
+			"externalFieldName", BatchPlannerMapping::getExternalFieldName);
+		attributeSetterBiConsumers.put(
+			"externalFieldName",
+			(BiConsumer<BatchPlannerMapping, String>)
+				BatchPlannerMapping::setExternalFieldName);
+		attributeGetterFunctions.put(
+			"externalFieldType", BatchPlannerMapping::getExternalFieldType);
+		attributeSetterBiConsumers.put(
+			"externalFieldType",
+			(BiConsumer<BatchPlannerMapping, String>)
+				BatchPlannerMapping::setExternalFieldType);
+		attributeGetterFunctions.put(
+			"internalFieldName", BatchPlannerMapping::getInternalFieldName);
+		attributeSetterBiConsumers.put(
+			"internalFieldName",
+			(BiConsumer<BatchPlannerMapping, String>)
+				BatchPlannerMapping::setInternalFieldName);
+		attributeGetterFunctions.put(
+			"internalFieldType", BatchPlannerMapping::getInternalFieldType);
+		attributeSetterBiConsumers.put(
+			"internalFieldType",
+			(BiConsumer<BatchPlannerMapping, String>)
+				BatchPlannerMapping::setInternalFieldType);
+		attributeGetterFunctions.put("script", BatchPlannerMapping::getScript);
+		attributeSetterBiConsumers.put(
+			"script",
+			(BiConsumer<BatchPlannerMapping, String>)
+				BatchPlannerMapping::setScript);
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
@@ -533,6 +588,124 @@ public class BatchPlannerMappingModelImpl
 			this.<Long>getColumnOriginalValue("batchPlannerPlanId"));
 	}
 
+	@JSON
+	@Override
+	public String getExternalFieldName() {
+		if (_externalFieldName == null) {
+			return "";
+		}
+		else {
+			return _externalFieldName;
+		}
+	}
+
+	@Override
+	public void setExternalFieldName(String externalFieldName) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_externalFieldName = externalFieldName;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public String getOriginalExternalFieldName() {
+		return getColumnOriginalValue("externalFieldName");
+	}
+
+	@JSON
+	@Override
+	public String getExternalFieldType() {
+		if (_externalFieldType == null) {
+			return "";
+		}
+		else {
+			return _externalFieldType;
+		}
+	}
+
+	@Override
+	public void setExternalFieldType(String externalFieldType) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_externalFieldType = externalFieldType;
+	}
+
+	@JSON
+	@Override
+	public String getInternalFieldName() {
+		if (_internalFieldName == null) {
+			return "";
+		}
+		else {
+			return _internalFieldName;
+		}
+	}
+
+	@Override
+	public void setInternalFieldName(String internalFieldName) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_internalFieldName = internalFieldName;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public String getOriginalInternalFieldName() {
+		return getColumnOriginalValue("internalFieldName");
+	}
+
+	@JSON
+	@Override
+	public String getInternalFieldType() {
+		if (_internalFieldType == null) {
+			return "";
+		}
+		else {
+			return _internalFieldType;
+		}
+	}
+
+	@Override
+	public void setInternalFieldType(String internalFieldType) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_internalFieldType = internalFieldType;
+	}
+
+	@JSON
+	@Override
+	public String getScript() {
+		if (_script == null) {
+			return "";
+		}
+		else {
+			return _script;
+		}
+	}
+
+	@Override
+	public void setScript(String script) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_script = script;
+	}
+
 	public long getColumnBitmask() {
 		if (_columnBitmask > 0) {
 			return _columnBitmask;
@@ -600,6 +773,11 @@ public class BatchPlannerMappingModelImpl
 		batchPlannerMappingImpl.setCreateDate(getCreateDate());
 		batchPlannerMappingImpl.setModifiedDate(getModifiedDate());
 		batchPlannerMappingImpl.setBatchPlannerPlanId(getBatchPlannerPlanId());
+		batchPlannerMappingImpl.setExternalFieldName(getExternalFieldName());
+		batchPlannerMappingImpl.setExternalFieldType(getExternalFieldType());
+		batchPlannerMappingImpl.setInternalFieldName(getInternalFieldName());
+		batchPlannerMappingImpl.setInternalFieldType(getInternalFieldType());
+		batchPlannerMappingImpl.setScript(getScript());
 
 		batchPlannerMappingImpl.resetOriginalValues();
 
@@ -719,6 +897,54 @@ public class BatchPlannerMappingModelImpl
 		batchPlannerMappingCacheModel.batchPlannerPlanId =
 			getBatchPlannerPlanId();
 
+		batchPlannerMappingCacheModel.externalFieldName =
+			getExternalFieldName();
+
+		String externalFieldName =
+			batchPlannerMappingCacheModel.externalFieldName;
+
+		if ((externalFieldName != null) && (externalFieldName.length() == 0)) {
+			batchPlannerMappingCacheModel.externalFieldName = null;
+		}
+
+		batchPlannerMappingCacheModel.externalFieldType =
+			getExternalFieldType();
+
+		String externalFieldType =
+			batchPlannerMappingCacheModel.externalFieldType;
+
+		if ((externalFieldType != null) && (externalFieldType.length() == 0)) {
+			batchPlannerMappingCacheModel.externalFieldType = null;
+		}
+
+		batchPlannerMappingCacheModel.internalFieldName =
+			getInternalFieldName();
+
+		String internalFieldName =
+			batchPlannerMappingCacheModel.internalFieldName;
+
+		if ((internalFieldName != null) && (internalFieldName.length() == 0)) {
+			batchPlannerMappingCacheModel.internalFieldName = null;
+		}
+
+		batchPlannerMappingCacheModel.internalFieldType =
+			getInternalFieldType();
+
+		String internalFieldType =
+			batchPlannerMappingCacheModel.internalFieldType;
+
+		if ((internalFieldType != null) && (internalFieldType.length() == 0)) {
+			batchPlannerMappingCacheModel.internalFieldType = null;
+		}
+
+		batchPlannerMappingCacheModel.script = getScript();
+
+		String script = batchPlannerMappingCacheModel.script;
+
+		if ((script != null) && (script.length() == 0)) {
+			batchPlannerMappingCacheModel.script = null;
+		}
+
 		return batchPlannerMappingCacheModel;
 	}
 
@@ -801,6 +1027,11 @@ public class BatchPlannerMappingModelImpl
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
 	private long _batchPlannerPlanId;
+	private String _externalFieldName;
+	private String _externalFieldType;
+	private String _internalFieldName;
+	private String _internalFieldType;
+	private String _script;
 
 	public <T> T getColumnValue(String columnName) {
 		Function<BatchPlannerMapping, Object> function =
@@ -838,6 +1069,11 @@ public class BatchPlannerMappingModelImpl
 		_columnOriginalValues.put("createDate", _createDate);
 		_columnOriginalValues.put("modifiedDate", _modifiedDate);
 		_columnOriginalValues.put("batchPlannerPlanId", _batchPlannerPlanId);
+		_columnOriginalValues.put("externalFieldName", _externalFieldName);
+		_columnOriginalValues.put("externalFieldType", _externalFieldType);
+		_columnOriginalValues.put("internalFieldName", _internalFieldName);
+		_columnOriginalValues.put("internalFieldType", _internalFieldType);
+		_columnOriginalValues.put("script", _script);
 	}
 
 	private transient Map<String, Object> _columnOriginalValues;
@@ -866,6 +1102,16 @@ public class BatchPlannerMappingModelImpl
 		columnBitmasks.put("modifiedDate", 64L);
 
 		columnBitmasks.put("batchPlannerPlanId", 128L);
+
+		columnBitmasks.put("externalFieldName", 256L);
+
+		columnBitmasks.put("externalFieldType", 512L);
+
+		columnBitmasks.put("internalFieldName", 1024L);
+
+		columnBitmasks.put("internalFieldType", 2048L);
+
+		columnBitmasks.put("script", 4096L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

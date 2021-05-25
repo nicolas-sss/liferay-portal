@@ -8,6 +8,10 @@ definition {
 		}
 	}
 
+	macro _openToAddQuestion {
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/${siteURLKey}/${layoutName}#/questions/${topicName}/new");
+	}
+
 	macro addQuestionByAPI {
 		Navigator.openURL();
 
@@ -135,7 +139,15 @@ definition {
 	}
 
 	macro askQuestionFillingTheMandatoryFields {
-		Click(locator1 = "Questions#ASK_QUESTION_BUTTON");
+		if (isSet(siteURLKey)) {
+			Questions._openToAddQuestion(
+				layoutName = "${layoutName}",
+				siteURLKey = "${siteURLKey}",
+				topicName = "${topicName}");
+		}
+		else {
+			Click(locator1 = "Questions#ASK_QUESTION_BUTTON");
+		}
 
 		if (isSet(anonymousUser)) {
 			Type.typePause(
@@ -479,11 +491,19 @@ definition {
 	}
 
 	macro editRootTopic {
-		var key_categoryName = "${categoryName}";
+		if (isSet(siteURLKey)) {
+			MessageboardsCategory.openToEditCategory(
+				categoryName = "${categoryName}",
+				groupName = "${groupName}",
+				siteURLKey = "${siteURLKey}");
+		}
+		else {
+			var key_categoryName = "${categoryName}";
 
-		LexiconEntry.openEntryMenu(rowEntry = "${categoryName}");
+			LexiconEntry.openEntryMenu(rowEntry = "${categoryName}");
 
-		MenuItem.click(menuItem = "Edit");
+			MenuItem.click(menuItem = "Edit");
+		}
 
 		PortletEntry.inputName(name = "${categoryNameEdit}");
 
@@ -492,10 +512,6 @@ definition {
 			value1 = "Save");
 
 		Alert.viewSuccessMessage();
-
-		AssertTextEquals(
-			locator1 = "MessageBoards#CATEGORY_LIST_CATEGORY",
-			value1 = "${categoryNameEdit}");
 	}
 
 	macro enableRedirectToLogin {
@@ -542,8 +558,6 @@ definition {
 
 		AssertElementPresent(locator1 = "Questions#QUESTIONS_HOME_ICON");
 
-		Pause(locator1 = "3000");
-
 		AssertVisible(
 			key_categoryTitle = "${categoryName}",
 			locator1 = "Questions#QUESTIONS_CATEGORY_TITLE");
@@ -568,6 +582,27 @@ definition {
 		AssertVisible(
 			key_questionTabField = "${questionTabField}",
 			locator1 = "Questions#QUESTIONS_LIST_ACTIVE_TAB_FIELD");
+	}
+
+	macro openToEditQuestion {
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/${siteURLKey}/${layoutName}#/questions/${topicName}/${questionsTitle}/edit");
+	}
+
+	macro openToQuestionDetails {
+		if (isSet(localization)) {
+			Navigator.openWithAppendToBaseURL(urlAppend = "web/${siteURLKey}/${layoutName}#/questions/${topicName}/-");
+		}
+		else {
+			Navigator.openWithAppendToBaseURL(urlAppend = "web/${siteURLKey}/${layoutName}#/questions/${topicName}/${questionsTitle}");
+		}
+	}
+
+	macro openToQuestionsTopic {
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/${siteURLKey}/${layoutName}#/questions/${topicName}");
+	}
+
+	macro openToTagsTab {
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/${siteURLKey}/${layoutName}#/tags");
 	}
 
 	macro removeRootTopicConfiguration {
@@ -657,7 +692,7 @@ definition {
 		AssertElementNotPresent(locator1 = "Questions#QUESTIONS_LIST");
 	}
 
-	macro unSubscribeQuestion {
+	macro unsubscribeFromQuestion {
 		Click.waitForMenuToggleJSClick(
 			key_questionTitle = "${questionTitle}",
 			locator1 = "Questions#QUESTIONS_ELLIPSIS_ICON");
@@ -665,7 +700,13 @@ definition {
 		MenuItem.clickNoError(menuItem = "Unsubscribe");
 	}
 
-	macro unSubscribeTopic {
+	macro unsubscribeFromQuestionViaDetails {
+		Click(locator1 = "Questions#QUESTIONS_UNSUBSCRIBE");
+
+		AssertElementNotPresent(locator1 = "Questions#QUESTIONS_UNSUBSCRIBE");
+	}
+
+	macro unsubscribeFromTopic {
 		LexiconCard.clickEllipsisItem(
 			card = "${topicName}",
 			item = "Unsubscribe");
@@ -699,6 +740,12 @@ definition {
 				locator1 = "Questions#QUESTIONS_BREADCRUMB_TOPIC_DROPDOWN_OPTION",
 				value1 = "${topicName}");
 		}
+	}
+
+	macro viewImageInQuestion {
+		AssertVisible(
+			key_imageFileName = "${imageFileName}",
+			locator1 = "Questions#QUESTIONS_IMAGE_NAME");
 	}
 
 	macro viewList {
@@ -757,6 +804,20 @@ definition {
 			value1 = "No results found");
 	}
 
+	macro viewNoPermissionsAddQuestion {
+		AssertElementNotPresent(locator1 = "Questions#ASK_QUESTION_BUTTON");
+	}
+
+	macro viewNoPermissionsAddTopic {
+		AssertElementNotPresent(locator1 = "Questions#NEW_TOPIC");
+	}
+
+	macro viewNoRelatedQuestions {
+		AssertTextEquals(
+			locator1 = "Questions#RELATED_QUESTIONS_EMPTY_TEXT",
+			value1 = "No related questions were found.");
+	}
+
 	macro viewNoSearchResults {
 		for (var questionTitle : list "${questionsList}") {
 			AssertElementNotPresent(
@@ -777,6 +838,24 @@ definition {
 		AssertTextEquals(
 			locator1 = "Questions#PAGINATION_RESULTS",
 			value1 = "${results}");
+	}
+
+	macro viewQuestionViaTag {
+		Click(
+			key_tagName = "${tagName}",
+			locator1 = "Questions#TAGS_LIST_TAB_NAMES");
+
+		AssertElementPresent(
+			key_titleField = "${questionTitle}",
+			locator1 = "Questions#ASK_QUESTION_SEARCH_QUESTION");
+	}
+
+	macro viewRelatedQuestion {
+		AssertElementPresent(
+			key_questionTitle = "${questionTitle}",
+			locator1 = "Questions#RELATED_QUESTIONS_QUESTIONS_TITLE");
+
+		AssertElementNotPresent(locator1 = "Questions#RELATED_QUESTIONS_EMPTY_TEXT");
 	}
 
 	macro viewSearchResults {
@@ -832,6 +911,16 @@ definition {
 		}
 	}
 
+	macro viewSubscriptionStatusFromDetails {
+		if (isSet(subscribedQuestion)) {
+			AssertElementPresent(locator1 = "Questions#QUESTIONS_UNSUBSCRIBE");
+		}
+
+		if (isSet(unsubscribedQuestion)) {
+			AssertElementPresent(locator1 = "Questions#QUESTIONS_SUBSCRIBE");
+		}
+	}
+
 	macro viewTags {
 		if (isSet(noTagResults)) {
 			AssertTextEquals(
@@ -870,6 +959,12 @@ definition {
 				locator1 = "Questions#TAGS_POSITION",
 				value1 = "Created");
 		}
+	}
+
+	macro viewTopicDefault {
+		AssertElementPresent(
+			key_emptyInfo = "This topic is empty.",
+			locator1 = "Questions#EMPTY_STATE_MESSAGE");
 	}
 
 	macro viewUnlockedQuestion {

@@ -26,14 +26,10 @@ import {
 } from 'recharts';
 
 import {
-	useAddDataSetItems,
-	useChangeTimeSpanKey,
-	useChartState,
+	ChartDispatchContext,
+	ChartStateContext,
 	useDateTitle,
 	useIsPreviousPeriodButtonDisabled,
-	useNextTimeSpan,
-	usePreviousTimeSpan,
-	useSetLoading,
 } from '../context/ChartStateContext';
 import ConnectionContext from '../context/ConnectionContext';
 import {StoreDispatchContext, StoreStateContext} from '../context/StoreContext';
@@ -142,25 +138,23 @@ export default function Chart({
 }) {
 	const {validAnalyticsConnection} = useContext(ConnectionContext);
 
-	const dispatch = useContext(StoreDispatchContext);
+	const storeDispatch = useContext(StoreDispatchContext);
+
+	const chartDispatch = useContext(ChartDispatchContext);
 
 	const {languageTag, publishedToday} = useContext(StoreStateContext);
 
-	const chartState = useChartState();
+	const {
+		dataSet,
+		loading,
+		timeRange,
+		timeSpanKey,
+		timeSpanOffset,
+	} = useContext(ChartStateContext);
 
 	const {firstDate, lastDate} = useDateTitle();
 
 	const isPreviousPeriodButtonDisabled = useIsPreviousPeriodButtonDisabled();
-
-	const addDataSetItems = useAddDataSetItems();
-
-	const changeTimeSpanKey = useChangeTimeSpanKey();
-
-	const nextTimeSpan = useNextTimeSpan();
-
-	const previousTimeSpan = usePreviousTimeSpan();
-
-	const setLoading = useSetLoading();
 
 	const dateFormatters = useMemo(() => dateFormat(languageTag), [
 		languageTag,
@@ -173,10 +167,8 @@ export default function Chart({
 	useEffect(() => {
 		let gone = false;
 
-		setLoading();
-
 		const timeSpanComparator =
-			chartState.timeSpanKey === LAST_24_HOURS
+			timeSpanKey === LAST_24_HOURS
 				? HOUR_IN_MILLISECONDS
 				: DAY_IN_MILLISECONDS;
 
@@ -206,21 +198,29 @@ export default function Chart({
 						};
 					}
 					else {
-						dispatch({type: 'ADD_WARNING'});
+						storeDispatch({type: 'ADD_WARNING'});
 					}
 				}
 
-				addDataSetItems({
-					dataSetItems,
-					keys,
-					timeSpanComparator,
+				chartDispatch({
+					payload: {
+						dataSetItems,
+						keys,
+						timeSpanComparator,
+					},
+					type: 'ADD_DATA_SET_ITEMS',
+					validAnalyticsConnection,
 				});
 			});
 		}
 		else {
-			addDataSetItems({
-				keys,
-				timeSpanComparator,
+			chartDispatch({
+				payload: {
+					keys,
+					timeSpanComparator,
+				},
+				type: 'ADD_DATA_SET_ITEMS',
+				validAnalyticsConnection,
 			});
 		}
 
@@ -228,24 +228,17 @@ export default function Chart({
 			gone = true;
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [chartState.timeSpanKey, chartState.timeSpanOffset]);
+	}, [timeSpanKey, timeSpanOffset]);
 
-	const {dataSet} = chartState;
 	const {histogram, keyList} = dataSet;
 
 	const referenceDotPosition = useMemo(() => {
 		const publishDateISOString = new Date(publishDate).toISOString();
 
-		return chartState.timeSpanKey === LAST_24_HOURS
+		return timeSpanKey === LAST_24_HOURS
 			? publishDateISOString.split(':')[0].concat(':00:00')
 			: publishDateISOString.split('T')[0].concat('T00:00:00');
-	}, [chartState.timeSpanKey, publishDate]);
-
-	const handleTimeSpanChange = (event) => {
-		const {value} = event.target;
-
-		changeTimeSpanKey({key: value});
-	};
+	}, [timeSpanKey, publishDate]);
 
 	const legendFormatter =
 		dataSet &&
@@ -257,12 +250,12 @@ export default function Chart({
 		);
 
 	const xAxisFormatter =
-		chartState.timeSpanKey === LAST_24_HOURS
+		timeSpanKey === LAST_24_HOURS
 			? dateFormatters.formatNumericHour
 			: dateFormatters.formatNumericDay;
 
 	const lineChartWrapperClasses = className('line-chart-wrapper', {
-		'line-chart-wrapper--loading': chartState.loading,
+		'line-chart-wrapper--loading': loading,
 	});
 
 	return (
@@ -270,14 +263,11 @@ export default function Chart({
 			{timeSpanOptions.length && (
 				<div className="c-mb-3 c-mt-4">
 					<TimeSpanSelector
-						disabledNextTimeSpan={chartState.timeSpanOffset === 0}
+						disabledNextTimeSpan={timeSpanOffset === 0}
 						disabledPreviousPeriodButton={
 							isPreviousPeriodButtonDisabled
 						}
-						onNextTimeSpanClick={nextTimeSpan}
-						onPreviousTimeSpanClick={previousTimeSpan}
-						onTimeSpanChange={handleTimeSpanChange}
-						timeSpanKey={chartState.timeSpanKey}
+						timeSpanKey={timeSpanKey}
 						timeSpanOptions={timeSpanOptions}
 					/>
 				</div>
@@ -285,7 +275,7 @@ export default function Chart({
 
 			{dataSet ? (
 				<div className={lineChartWrapperClasses}>
-					{chartState.loading && (
+					{loading && (
 						<ClayLoadingIndicator
 							className="chart-loading-indicator"
 							small
@@ -330,10 +320,10 @@ export default function Chart({
 									histogram.length === 0
 										? [
 												new Date(
-													chartState.timeRange.startDate
+													timeRange.startDate
 												).getDate(),
 												new Date(
-													chartState.timeRange.endDate
+													timeRange.endDate
 												).getDate(),
 										  ]
 										: []

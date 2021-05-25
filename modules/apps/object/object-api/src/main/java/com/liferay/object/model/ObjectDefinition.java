@@ -67,4 +67,6 @@ public interface ObjectDefinition
 
 	public String getPrimaryKeyColumnName();
 
+	public String getRESTContextPath();
+
 }

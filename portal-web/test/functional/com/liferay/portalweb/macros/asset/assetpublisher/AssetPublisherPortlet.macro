@@ -201,6 +201,10 @@ definition {
 	}
 
 	macro configureCategoriesFilterPG {
+		if (!(isSet(portletName))) {
+			var portletName = "Asset Publisher";
+		}
+
 		AssetPublisherPortlet.gotoConfigurationPG(portletName = "${portletName}");
 
 		Navigator.gotoNavTab(navTab = "Asset Selection");
@@ -221,7 +225,28 @@ definition {
 
 		Click(locator1 = "Button#SELECT_CATEGORIES");
 
-		AssetCategorization.selectCategory(categoryName = "${categoryName}");
+		AssetCategorization.gotoSelectCategory();
+
+		Pause(locator1 = "3000");
+
+		Portlet.selectTreeNode(nodeName = "${categoryName}");
+
+		SelectFrameTop();
+
+		SelectFrame(
+			key_title = "${portletName}",
+			locator1 = "IFrame#MODAL_ANY");
+
+		if (IsElementPresent(key_text = "Add", locator1 = "Modal#MODAL_FOOTER_BUTTON")) {
+			Click(
+				key_text = "Add",
+				locator1 = "Modal#MODAL_FOOTER_BUTTON");
+		}
+		else if (IsElementPresent(key_text = "Done", locator1 = "Modal#MODAL_FOOTER_BUTTON")) {
+			Click(
+				key_text = "Done",
+				locator1 = "Modal#MODAL_FOOTER_BUTTON");
+		}
 
 		AssertTextEquals(
 			key_categoryName = "${categoryName}",
@@ -230,7 +255,7 @@ definition {
 
 		PortletEntry.save();
 
-		IFrame.selectTopFrame();
+		SelectFrameTop();
 	}
 
 	macro configureCollectionProviderPG {
@@ -729,7 +754,11 @@ definition {
 	}
 
 	macro editConfigureCategoriesFilterPG {
-		AssetPublisherPortlet.gotoConfigurationPG();
+		if (!(isSet(portletName))) {
+			var portletName = "Asset Publisher";
+		}
+
+		AssetPublisherPortlet.gotoConfigurationPG(portletName = "${portletName}");
 
 		Navigator.gotoNavTab(navTab = "Asset Selection");
 
@@ -749,7 +778,11 @@ definition {
 			Portlet.selectTreeNode(nodeName = "${categoryName}");
 		}
 
-		SelectFrame(value1 = "relative=top");
+		SelectFrameTop();
+
+		SelectFrame(
+			key_title = "${portletName}",
+			locator1 = "IFrame#MODAL_ANY");
 
 		if (IsElementPresent(locator1 = "//button[contains(.,'Add')]")) {
 			AssertClick(
@@ -762,9 +795,9 @@ definition {
 				value1 = "Done");
 		}
 
-		SelectFrame(locator1 = "IFrame#MODAL_BODY");
-
 		PortletEntry.save();
+
+		SelectFrameTop();
 	}
 
 	macro enableRSSSubscription {

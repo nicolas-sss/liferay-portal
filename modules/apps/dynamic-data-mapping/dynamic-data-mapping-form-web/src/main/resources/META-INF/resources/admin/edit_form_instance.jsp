@@ -142,11 +142,7 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 		<aui:input name="serializedFormBuilderContext" type="hidden" value="<%= formBuilderContextJSONObject %>" />
 		<aui:input name="serializedSettingsContext" type="hidden" value="" />
 
-		<clay:container-fluid>
-			<div class="exception-container">
-				<%@ include file="/admin/exceptions.jspf" %>
-			</div>
-		</clay:container-fluid>
+		<%@ include file="/admin/exceptions.jspf" %>
 
 		<div id="<portlet:namespace />-container">
 			<react:component
@@ -167,9 +163,9 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 					).put(
 						"defaultLanguageId", ddmFormAdminDisplayContext.getDefaultLanguageId()
 					).put(
-						"fieldSetDefinitionURL", ddmFormAdminDisplayContext.getFieldSetDefinitionURL()
+						"elementSets", ddmFormAdminDisplayContext.getFieldSetsJSONArray()
 					).put(
-						"fieldSets", ddmFormAdminDisplayContext.getFieldSetsJSONArray()
+						"fieldSetDefinitionURL", ddmFormAdminDisplayContext.getFieldSetDefinitionURL()
 					).put(
 						"fieldTypes", ddmFormAdminDisplayContext.getDDMFormFieldTypesJSONArray()
 					).put(

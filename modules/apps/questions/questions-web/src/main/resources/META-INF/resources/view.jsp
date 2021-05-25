@@ -30,11 +30,17 @@
 			HashMapBuilder.<String, Object>put(
 				"defaultRank", renderRequest.getAttribute(QuestionsWebKeys.DEFAULT_RANK)
 			).put(
+				"historyRouterBasePath", questionsConfiguration.historyRouterBasePath()
+			).put(
+				"i18nPath", renderRequest.getAttribute(WebKeys.I18N_PATH)
+			).put(
 				"imageBrowseURL", renderRequest.getAttribute(QuestionsWebKeys.IMAGE_BROWSE_URL)
 			).put(
 				"includeContextPath", renderRequest.getAttribute("javax.servlet.include.context_path")
 			).put(
 				"isOmniAdmin", permissionChecker.isOmniadmin()
+			).put(
+				"npmResolvedPackageName", npmResolvedPackageName
 			).put(
 				"redirectToLogin", questionsConfiguration.enableRedirectToLogin()
 			).put(

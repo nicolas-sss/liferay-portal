@@ -78,8 +78,10 @@ public class BatchPlannerLogModelImpl
 		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
 		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
 		{"modifiedDate", Types.TIMESTAMP}, {"batchPlannerPlanId", Types.BIGINT},
-		{"size_", Types.INTEGER}, {"total", Types.INTEGER},
-		{"status", Types.INTEGER}
+		{"batchEngineExportTaskERC", Types.VARCHAR},
+		{"batchEngineImportTaskERC", Types.VARCHAR},
+		{"dispatchTriggerERC", Types.VARCHAR}, {"size_", Types.INTEGER},
+		{"total", Types.INTEGER}, {"status", Types.INTEGER}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -94,13 +96,16 @@ public class BatchPlannerLogModelImpl
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("batchPlannerPlanId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("batchEngineExportTaskERC", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("batchEngineImportTaskERC", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("dispatchTriggerERC", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("size_", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("total", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table BatchPlannerLog (mvccVersion LONG default 0 not null,batchPlannerLogId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,batchPlannerPlanId LONG,size_ INTEGER,total INTEGER,status INTEGER)";
+		"create table BatchPlannerLog (mvccVersion LONG default 0 not null,batchPlannerLogId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,batchPlannerPlanId LONG,batchEngineExportTaskERC VARCHAR(75) null,batchEngineImportTaskERC VARCHAR(75) null,dispatchTriggerERC VARCHAR(75) null,size_ INTEGER,total INTEGER,status INTEGER)";
 
 	public static final String TABLE_SQL_DROP = "drop table BatchPlannerLog";
 
@@ -120,14 +125,32 @@ public class BatchPlannerLogModelImpl
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long BATCHPLANNERPLANID_COLUMN_BITMASK = 1L;
+	public static final long BATCHENGINEEXPORTTASKERC_COLUMN_BITMASK = 1L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long BATCHENGINEIMPORTTASKERC_COLUMN_BITMASK = 2L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long BATCHPLANNERPLANID_COLUMN_BITMASK = 4L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long DISPATCHTRIGGERERC_COLUMN_BITMASK = 8L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
 	 *		#getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long MODIFIEDDATE_COLUMN_BITMASK = 2L;
+	public static final long MODIFIEDDATE_COLUMN_BITMASK = 16L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
@@ -166,6 +189,11 @@ public class BatchPlannerLogModelImpl
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
 		model.setBatchPlannerPlanId(soapModel.getBatchPlannerPlanId());
+		model.setBatchEngineExportTaskERC(
+			soapModel.getBatchEngineExportTaskERC());
+		model.setBatchEngineImportTaskERC(
+			soapModel.getBatchEngineImportTaskERC());
+		model.setDispatchTriggerERC(soapModel.getDispatchTriggerERC());
 		model.setSize(soapModel.getSize());
 		model.setTotal(soapModel.getTotal());
 		model.setStatus(soapModel.getStatus());
@@ -364,6 +392,26 @@ public class BatchPlannerLogModelImpl
 			"batchPlannerPlanId",
 			(BiConsumer<BatchPlannerLog, Long>)
 				BatchPlannerLog::setBatchPlannerPlanId);
+		attributeGetterFunctions.put(
+			"batchEngineExportTaskERC",
+			BatchPlannerLog::getBatchEngineExportTaskERC);
+		attributeSetterBiConsumers.put(
+			"batchEngineExportTaskERC",
+			(BiConsumer<BatchPlannerLog, String>)
+				BatchPlannerLog::setBatchEngineExportTaskERC);
+		attributeGetterFunctions.put(
+			"batchEngineImportTaskERC",
+			BatchPlannerLog::getBatchEngineImportTaskERC);
+		attributeSetterBiConsumers.put(
+			"batchEngineImportTaskERC",
+			(BiConsumer<BatchPlannerLog, String>)
+				BatchPlannerLog::setBatchEngineImportTaskERC);
+		attributeGetterFunctions.put(
+			"dispatchTriggerERC", BatchPlannerLog::getDispatchTriggerERC);
+		attributeSetterBiConsumers.put(
+			"dispatchTriggerERC",
+			(BiConsumer<BatchPlannerLog, String>)
+				BatchPlannerLog::setDispatchTriggerERC);
 		attributeGetterFunctions.put("size", BatchPlannerLog::getSize);
 		attributeSetterBiConsumers.put(
 			"size",
@@ -542,6 +590,93 @@ public class BatchPlannerLogModelImpl
 
 	@JSON
 	@Override
+	public String getBatchEngineExportTaskERC() {
+		if (_batchEngineExportTaskERC == null) {
+			return "";
+		}
+		else {
+			return _batchEngineExportTaskERC;
+		}
+	}
+
+	@Override
+	public void setBatchEngineExportTaskERC(String batchEngineExportTaskERC) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_batchEngineExportTaskERC = batchEngineExportTaskERC;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public String getOriginalBatchEngineExportTaskERC() {
+		return getColumnOriginalValue("batchEngineExportTaskERC");
+	}
+
+	@JSON
+	@Override
+	public String getBatchEngineImportTaskERC() {
+		if (_batchEngineImportTaskERC == null) {
+			return "";
+		}
+		else {
+			return _batchEngineImportTaskERC;
+		}
+	}
+
+	@Override
+	public void setBatchEngineImportTaskERC(String batchEngineImportTaskERC) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_batchEngineImportTaskERC = batchEngineImportTaskERC;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public String getOriginalBatchEngineImportTaskERC() {
+		return getColumnOriginalValue("batchEngineImportTaskERC");
+	}
+
+	@JSON
+	@Override
+	public String getDispatchTriggerERC() {
+		if (_dispatchTriggerERC == null) {
+			return "";
+		}
+		else {
+			return _dispatchTriggerERC;
+		}
+	}
+
+	@Override
+	public void setDispatchTriggerERC(String dispatchTriggerERC) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_dispatchTriggerERC = dispatchTriggerERC;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public String getOriginalDispatchTriggerERC() {
+		return getColumnOriginalValue("dispatchTriggerERC");
+	}
+
+	@JSON
+	@Override
 	public int getSize() {
 		return _size;
 	}
@@ -649,6 +784,11 @@ public class BatchPlannerLogModelImpl
 		batchPlannerLogImpl.setCreateDate(getCreateDate());
 		batchPlannerLogImpl.setModifiedDate(getModifiedDate());
 		batchPlannerLogImpl.setBatchPlannerPlanId(getBatchPlannerPlanId());
+		batchPlannerLogImpl.setBatchEngineExportTaskERC(
+			getBatchEngineExportTaskERC());
+		batchPlannerLogImpl.setBatchEngineImportTaskERC(
+			getBatchEngineImportTaskERC());
+		batchPlannerLogImpl.setDispatchTriggerERC(getDispatchTriggerERC());
 		batchPlannerLogImpl.setSize(getSize());
 		batchPlannerLogImpl.setTotal(getTotal());
 		batchPlannerLogImpl.setStatus(getStatus());
@@ -769,6 +909,41 @@ public class BatchPlannerLogModelImpl
 
 		batchPlannerLogCacheModel.batchPlannerPlanId = getBatchPlannerPlanId();
 
+		batchPlannerLogCacheModel.batchEngineExportTaskERC =
+			getBatchEngineExportTaskERC();
+
+		String batchEngineExportTaskERC =
+			batchPlannerLogCacheModel.batchEngineExportTaskERC;
+
+		if ((batchEngineExportTaskERC != null) &&
+			(batchEngineExportTaskERC.length() == 0)) {
+
+			batchPlannerLogCacheModel.batchEngineExportTaskERC = null;
+		}
+
+		batchPlannerLogCacheModel.batchEngineImportTaskERC =
+			getBatchEngineImportTaskERC();
+
+		String batchEngineImportTaskERC =
+			batchPlannerLogCacheModel.batchEngineImportTaskERC;
+
+		if ((batchEngineImportTaskERC != null) &&
+			(batchEngineImportTaskERC.length() == 0)) {
+
+			batchPlannerLogCacheModel.batchEngineImportTaskERC = null;
+		}
+
+		batchPlannerLogCacheModel.dispatchTriggerERC = getDispatchTriggerERC();
+
+		String dispatchTriggerERC =
+			batchPlannerLogCacheModel.dispatchTriggerERC;
+
+		if ((dispatchTriggerERC != null) &&
+			(dispatchTriggerERC.length() == 0)) {
+
+			batchPlannerLogCacheModel.dispatchTriggerERC = null;
+		}
+
 		batchPlannerLogCacheModel.size = getSize();
 
 		batchPlannerLogCacheModel.total = getTotal();
@@ -857,6 +1032,9 @@ public class BatchPlannerLogModelImpl
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
 	private long _batchPlannerPlanId;
+	private String _batchEngineExportTaskERC;
+	private String _batchEngineImportTaskERC;
+	private String _dispatchTriggerERC;
 	private int _size;
 	private int _total;
 	private int _status;
@@ -898,6 +1076,11 @@ public class BatchPlannerLogModelImpl
 		_columnOriginalValues.put("createDate", _createDate);
 		_columnOriginalValues.put("modifiedDate", _modifiedDate);
 		_columnOriginalValues.put("batchPlannerPlanId", _batchPlannerPlanId);
+		_columnOriginalValues.put(
+			"batchEngineExportTaskERC", _batchEngineExportTaskERC);
+		_columnOriginalValues.put(
+			"batchEngineImportTaskERC", _batchEngineImportTaskERC);
+		_columnOriginalValues.put("dispatchTriggerERC", _dispatchTriggerERC);
 		_columnOriginalValues.put("size_", _size);
 		_columnOriginalValues.put("total", _total);
 		_columnOriginalValues.put("status", _status);
@@ -940,11 +1123,17 @@ public class BatchPlannerLogModelImpl
 
 		columnBitmasks.put("batchPlannerPlanId", 128L);
 
-		columnBitmasks.put("size_", 256L);
+		columnBitmasks.put("batchEngineExportTaskERC", 256L);
 
-		columnBitmasks.put("total", 512L);
+		columnBitmasks.put("batchEngineImportTaskERC", 512L);
 
-		columnBitmasks.put("status", 1024L);
+		columnBitmasks.put("dispatchTriggerERC", 1024L);
+
+		columnBitmasks.put("size_", 2048L);
+
+		columnBitmasks.put("total", 4096L);
+
+		columnBitmasks.put("status", 8192L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

@@ -352,6 +352,10 @@ public class CommercePriceListLocalServiceUtil {
 		return getService().dslQuery(dslQuery);
 	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
 	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
@@ -518,6 +522,13 @@ public class CommercePriceListLocalServiceUtil {
 
 		return getService().fetchCommercePriceListByUuidAndGroupId(
 			uuid, groupId);
+	}
+
+	public static CommercePriceList forceDeleteCommercePriceList(
+			CommercePriceList commercePriceList)
+		throws PortalException {
+
+		return getService().forceDeleteCommercePriceList(commercePriceList);
 	}
 
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery

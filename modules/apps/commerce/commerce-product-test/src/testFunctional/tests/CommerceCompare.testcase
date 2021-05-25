@@ -31,6 +31,8 @@ definition {
 	test AddComparisonItemFromProductDetailsPage {
 		property portal.acceptance = "false";
 
+		// TODO Review
+
 		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
 
 		ApplicationsMenu.gotoSite(site = "Minium");
@@ -48,6 +50,8 @@ definition {
 	@priority = "3"
 	test AssertComparisonItemsAreVisibleOnMiniCompare {
 		property portal.acceptance = "false";
+
+		// TODO Review
 
 		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
 
@@ -95,18 +99,47 @@ definition {
 	}
 
 	@description = "COMMERCE-5913. As a buyer, I want to deselect items in Catalog for compare in MiniCompare widget"
-	@ignore = "true"
 	@priority = "3"
 	test RemoveComparisonItemFromMiniCompare {
 		property portal.acceptance = "false";
 
-		// TODO COMMERCE-5913 RemoveComparisonItemFromMiniCompare pending implementation
+		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
+
+		ApplicationsMenu.gotoSite(site = "Minium");
+
+		Click.clickAtNotVisible(
+			key_productName = "U-Joint",
+			locator1 = "CommerceEntry#PRODUCT_CARD_COMPARE_CHECKBOX");
+
+		Click.clickAtNotVisible(
+			key_productName = "Transmission Fluid",
+			locator1 = "CommerceEntry#PRODUCT_CARD_COMPARE_CHECKBOX");
+
+		Refresh();
+
+		AssertElementPresent(
+			key_productName = "u-joint",
+			locator1 = "CommerceFrontStore#MINI_COMPARE_ITEM_REMOVE_BUTTON");
+
+		AssertElementPresent(
+			key_productName = "transmission-fluid",
+			locator1 = "CommerceFrontStore#MINI_COMPARE_ITEM_REMOVE_BUTTON");
+
+		Click(
+			key_productName = "u-joint",
+			locator1 = "CommerceFrontStore#MINI_COMPARE_ITEM_REMOVE_BUTTON");
+
+		AssertElementNotPresent(
+			key_productName = "u-joint",
+			locator1 = "CommerceAccelerators#CHECK_ITEM_COMPARE");
 	}
 
 	@description = "COMMERCE-5914. As a buyer, I want to deselect a item in Product Details for compare in Product Widget"
 	@priority = "3"
 	test RemoveComparisonItemFromProductDetailsPage {
 		property portal.acceptance = "false";
+
+		// TODO Review
 
 		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
 
@@ -143,13 +176,70 @@ definition {
 			locator1 = "CommerceFrontStore#MINI_COMPARE_ITEM_CUSTOM_IMAGE");
 	}
 
-	@description = "COMMERCE-5919. As a buyer, when comparing items in Compare page, I want to view product options and specifications, if set"
+	@description = "COMMERCE-6662. I want to be able to use ADT to render Commerce Comparison Bar widget and I want to be able to select a Display Template and see it applied to the widget"
 	@ignore = "true"
+	@priority = "3"
+	test UseADTInCommerceComparisonBarWidget {
+		property portal.acceptance = "false";
+
+		// TODO COMMERCE-6662 UseADTInCommerceComparisonBarWidget pending implementation
+	}
+
+	@description = "COMMERCE-6661. I want to be able to use ADT to render Commerce Comparison Table widget and I want to be able to select a Display Template and see it applied to the widget"
+	@ignore = "true"
+	@priority = "3"
+	test UseADTInCommerceComparisonTableWidget {
+		property portal.acceptance = "false";
+
+		// TODO COMMERCE-6661 UseADTInCommerceComparisonTableWidget pending implementation
+	}
+
+	@description = "COMMERCE-5919. As a buyer, when comparing items in Compare page, I want to view product options and specifications, if set"
 	@priority = "3"
 	test ViewProductOptionsAndSpecificationsWhenComparingItemsInComparePage {
 		property portal.acceptance = "false";
 
-		// TODO COMMERCE-5919 ViewProductOptionsAndSpecificationsWhenComparingItemsInComparePage pending implementation
+		// TODO Review
+
+		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
+
+		ApplicationsMenu.gotoSite(site = "Minium");
+
+		CommerceNavigator.gotoMiniumSidebarItem(menuItem = "Account Management");
+
+		CommerceAcceleratorsInitializer.createNewAccountViaFront(
+			accountName = "Commerce Account",
+			adminEmailAddress = "test@liferay.com");
+
+		Click(
+			key_navUnderline = "Members",
+			locator1 = "NavUnderline#NAV_UNDERLINE_LINK");
+
+		CommerceAcceleratorsInitializer.inviteNewMemberWithRoleToAccount(
+			emailAddress = "buyer@liferay.com",
+			role = "Buyer");
+
+		ApplicationsMenu.gotoSite(site = "Minium");
+
+		CommerceAcceleratorsInitializer.changeProductsSorting(sortingType = "Name Ascending");
+
+		Check.checkToggleSwitch(
+			key_productName = "ABS Sensor",
+			locator1 = "CommerceEntry#PRODUCT_CARD_COMPARE_CHECKBOX");
+
+		Check.checkToggleSwitch(
+			key_productName = "Brake Fluid",
+			locator1 = "CommerceEntry#PRODUCT_CARD_COMPARE_CHECKBOX");
+
+		Button.click(button = "Compare");
+
+		AssertElementPresent(
+			key_productName = "ABS Sensor",
+			locator1 = "CommerceAccelerators#PRODUCT_CARD_NAME");
+
+		AssertElementPresent(
+			key_productName = "Brake Fluid",
+			locator1 = "CommerceAccelerators#PRODUCT_CARD_NAME");
 	}
 
 }

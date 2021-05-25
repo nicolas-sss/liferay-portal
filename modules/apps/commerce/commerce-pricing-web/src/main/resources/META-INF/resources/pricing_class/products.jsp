@@ -38,12 +38,12 @@ boolean hasPermission = commercePricingClassCPDefinitionDisplayContext.hasPermis
 
 				var id = <%= commercePricingClass.getCommercePricingClassId() %>;
 				var pricingClassExternalReferenceCode =
-					'<%= commercePricingClass.getExternalReferenceCode() %>';
+					'<%= HtmlUtil.escapeJS(commercePricingClass.getExternalReferenceCode()) %>';
 
 				function selectItem(product) {
 					var productData = {
 						productExternalReferenceCode: product.externalReferenceCode,
-						productId: product.id,
+						productId: product.productId,
 						productGroupExternalReferenceCode: pricingClassExternalReferenceCode,
 						productGroupId: id,
 					};

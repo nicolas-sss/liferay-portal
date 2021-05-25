@@ -55,6 +55,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -116,11 +117,18 @@ public class ContentUtil {
 			HttpServletRequest httpServletRequest, long plid)
 		throws PortalException {
 
-		return JSONUtil.concat(
-			_getLayoutClassedModelPageContentsJSONArray(
-				httpServletRequest, plid),
-			AssetListEntryUsagesUtil.getPageContentsJSONArray(
-				httpServletRequest, plid));
+		if (FFLayoutContentPageEditorConfigurationUtil.
+				contentBrowsingEnabled()) {
+
+			return JSONUtil.concat(
+				_getLayoutClassedModelPageContentsJSONArray(
+					httpServletRequest, plid),
+				AssetListEntryUsagesUtil.getPageContentsJSONArray(
+					httpServletRequest, plid));
+		}
+
+		return _getLayoutClassedModelPageContentsJSONArray(
+			httpServletRequest, plid);
 	}
 
 	private static String _generateUniqueLayoutClassedModelUsageKey(
@@ -396,6 +404,15 @@ public class ContentUtil {
 				if (fragmentEntryLink == null) {
 					LayoutClassedModelUsageLocalServiceUtil.
 						deleteLayoutClassedModelUsage(layoutClassedModelUsage);
+
+					continue;
+				}
+
+				if (!Objects.equals(
+						fragmentEntryLink.getSegmentsExperienceId(),
+						ParamUtil.getLong(
+							httpServletRequest, "segmentExperienceId",
+							SegmentsExperienceConstants.ID_DEFAULT))) {
 
 					continue;
 				}

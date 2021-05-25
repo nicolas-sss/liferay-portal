@@ -276,10 +276,6 @@ definition {
 		Navigator.openSpecificURL(url = "${baseURL}/web/organization-name-2");
 
 		Page.viewInactiveRequestMessage(resource = "site");
-
-		User.firstLoginPG(
-			password = "test",
-			userEmailAddress = "test@liferay.com");
 	}
 
 	@priority = "3"
@@ -447,18 +443,14 @@ definition {
 			siteName = "${siteName}",
 			userScreenName = "usersn");
 
-		User.firstLoginPG(
-			password = "test",
+		User.firstLoginUI(
+			specificURL = "http://www.able.com:8080/test-private-page",
 			userEmailAddress = "userea@liferay.com",
-			virtualHostsURL = "http://www.able.com:8080/test-private-page");
+			userPassword = "test");
 
 		Navigator.openSpecificURL(url = "http://www.able.com:8080/test-private-page");
 
 		AssertLocation(value1 = "http://www.able.com:8080/test-private-page");
-
-		User.firstLoginPG(
-			password = "test",
-			userEmailAddress = "test@liferay.com");
 	}
 
 	@priority = "3"
@@ -561,9 +553,7 @@ definition {
 			emailVerification = "${emailVerification}",
 			userEmailAddress = PropsUtil.get("email.address.3"));
 
-		User.firstLoginPG(
-			password = "test",
-			userEmailAddress = "test@liferay.com");
+		User.firstLoginUI(specificURL = "http://www.able.com:8080/");
 
 		PortalSettings.gotoConfiguration(
 			configurationCategory = "Email",
@@ -749,10 +739,6 @@ definition {
 		Navigator.openSpecificURL(url = "${baseURL}/web/site1-name");
 
 		Page.viewInactiveRequestMessage(resource = "site");
-
-		User.firstLoginPG(
-			password = "test",
-			userEmailAddress = "test@liferay.com");
 	}
 
 	@priority = "4"
@@ -880,17 +866,21 @@ definition {
 			siteRoleName = "Site Administrator",
 			userScreenName = "usersn");
 
-		User.firstLoginPG(
-			password = "test",
-			samlEnabled = "true",
-			userEmailAddress = "userea@liferay.com",
-			virtualHostsURL = "www.baker.com:8080/group/russia2018");
+		User.logoutPG();
 
-		Navigator.openSpecificURL(url = "http://www.baker.com:8080/group/russia2018");
+		User.viewLoggedOutPG();
+
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "http://www.baker.com:8080/group/russia2018",
+			userEmailAddress = "userea@liferay.com");
 
 		Page.viewSpecificPG(pageNameList = "Accomodations,Maps");
 
-		Navigator.openSpecificURL(url = "${portalURL}/web/russia2018");
+		User.firstLoginUI(
+			password = "test",
+			specificURL = "${portalURL}/web/russia2018",
+			userEmailAddress = "userea@liferay.com");
 
 		ProductMenu.gotoPortlet(
 			category = "Publishing",

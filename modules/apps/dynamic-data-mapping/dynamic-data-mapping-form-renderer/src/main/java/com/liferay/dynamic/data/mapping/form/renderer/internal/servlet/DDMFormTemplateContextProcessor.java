@@ -68,6 +68,10 @@ public class DDMFormTemplateContextProcessor {
 		return _ddmForm;
 	}
 
+	public long getDDMFormInstanceId() {
+		return _ddmFormInstanceId;
+	}
+
 	public DDMFormLayout getDDMFormLayout() {
 		return _ddmFormLayout;
 	}
@@ -133,6 +137,9 @@ public class DDMFormTemplateContextProcessor {
 			jsonObject.getBoolean("repeatable", false), ddmFormField);
 		setDDMFormFieldRequired(
 			jsonObject.getBoolean("required", false), ddmFormField);
+		setDDMFormFieldRequiredErrorMessage(
+			getLocalizedValue(jsonObject.getString("requiredErrorMessage")),
+			ddmFormField);
 		setDDMFormFieldText(jsonObject.getString("text"), ddmFormField);
 		setDDMFormFieldTooltip(jsonObject.getString("tooltip"), ddmFormField);
 		setDDMFormFieldValid(
@@ -224,12 +231,11 @@ public class DDMFormTemplateContextProcessor {
 	}
 
 	protected void initModels() {
-		setDDMFormRules();
-
 		setDDMFormDefaultLocale();
-		setDDMFormValuesDefaultLocale();
+		setDDMFormInstanceId();
+		setDDMFormRules();
 		setDDMFormValuesAvailableLocales();
-
+		setDDMFormValuesDefaultLocale();
 		setGroupId();
 	}
 
@@ -433,6 +439,12 @@ public class DDMFormTemplateContextProcessor {
 		ddmFormField.setRequired(required);
 	}
 
+	protected void setDDMFormFieldRequiredErrorMessage(
+		LocalizedValue requiredErrorMessage, DDMFormField ddmFormField) {
+
+		ddmFormField.setRequiredErrorMessage(requiredErrorMessage);
+	}
+
 	protected void setDDMFormFieldText(String text, DDMFormField ddmFormField) {
 		ddmFormField.setProperty(
 			"text", getLocalizedValue(GetterUtil.getString(text)));
@@ -526,6 +538,10 @@ public class DDMFormTemplateContextProcessor {
 			GetterUtil.getString(visibilityExpression));
 	}
 
+	protected void setDDMFormInstanceId() {
+		_ddmFormInstanceId = _jsonObject.getLong("formId", 0);
+	}
+
 	protected void setDDMFormRules() {
 		List<DDMFormRule> ddmFormRules = getDDMFormRules(
 			_jsonObject.getJSONArray("rules"));
@@ -612,6 +628,7 @@ public class DDMFormTemplateContextProcessor {
 	}
 
 	private final DDMForm _ddmForm;
+	private long _ddmFormInstanceId;
 	private final DDMFormLayout _ddmFormLayout;
 	private final DDMFormValues _ddmFormValues;
 	private long _groupId;

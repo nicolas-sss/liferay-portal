@@ -31,6 +31,7 @@ export default function previousPage({
 			activePage,
 			defaultLanguageId,
 			editingLanguageId,
+			formId,
 			groupId,
 			nextPage: activePage - 1,
 			pages,
@@ -54,6 +55,11 @@ export default function previousPage({
 			dispatch({
 				payload: {activePage: activePageUpdated},
 				type: CORE_EVENT_TYPES.PAGE.CHANGE,
+			});
+
+			dispatch({
+				payload: evaluatedPages,
+				type: CORE_EVENT_TYPES.PAGE.UPDATE,
 			});
 
 			Liferay.fire('ddmFormPageShow', {

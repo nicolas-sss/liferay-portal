@@ -100,7 +100,9 @@ public class IdentityClientImpl implements IdentityClient {
 	private static final Log _log = LogFactoryUtil.getLog(
 		IdentityClientImpl.class);
 
-	@Reference(target = "(component.factory=JSONWebServiceClient)")
+	@Reference(
+		target = "(component.factory=com.liferay.petra.json.web.service.client.JSONWebServiceClient)"
+	)
 	private ComponentFactory _componentFactory;
 
 	private volatile IdentifyClientConfiguration _identifyClientConfiguration;

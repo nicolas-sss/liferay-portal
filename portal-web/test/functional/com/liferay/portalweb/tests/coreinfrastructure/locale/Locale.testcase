@@ -62,6 +62,38 @@ definition {
 		Form.save(localeSaveForm = "Guardar");
 	}
 
+	@priority = "3"
+	test CannotAccessDisabledLocale {
+		property custom.properties = "locales.enabled=en_US,zh_CN,es_ES,fr_FR";
+		property custom.system.properties = "user.country=US${line.separator}user.language=en";
+		property test.name.skip.portal.instance = "Locale#CannotAccessDisabledLocale";
+
+		User.firstLoginPG();
+
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "Navigation Menu Page");
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Guest",
+			layoutName = "Navigation Menu Page",
+			widgetName = "Navigation Menu");
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "fr/web/guest/navigation-menu-page");
+
+		task ("Assert preferred locale persists by asserting Widget name.") {
+			AssertElementPresent(
+				key_portletName = "Menu de Navigation",
+				locator1 = "Portlet#TITLE");
+		}
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "de/web/guest/navigation-menu-page");
+
+		AssertTextEquals(
+			locator1 = "Home#ERROR_MESSAGE_ALERT_ERROR",
+			value1 = "Not Found");
+	}
+
 	@priority = "4"
 	test ChangesToInstanceTimeZoneDoNotPropagateToExistingUsers {
 		property custom.properties = "company.default.time.zone=America/Los_Angeles";
@@ -115,6 +147,55 @@ definition {
 
 		task ("Assert current time displays in user's selected time zone by asserting time zone specific label") {
 			Calendar.viewSelectedTimeZone(timeZone = "(UTC -08:00) Pacific Standard Time");
+		}
+	}
+
+	@priority = "3"
+	test ConfigureURLToAlwaysShowLocale {
+		property custom.properties = "locales.enabled=fr_FR,en_US,zh_CN,es_ES${line.separator}locale.prepend.friendly.url.style=2";
+		property custom.system.properties = "user.country=FR${line.separator}user.language=fr";
+		property test.name.skip.portal.instance = "Locale#ConfigureURLToAlwaysShowLocale";
+
+		User.firstLoginPG();
+
+		AssertLocation(value1 = "http://localhost:8080/fr/web/guest?SM_USER=test@liferay.com");
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/guest");
+
+		AssertLocation(value1 = "http://localhost:8080/en/web/guest");
+	}
+
+	@priority = "4"
+	test EnableRedirectToDefaultLocale {
+		property custom.properties = "locales.enabled=en_US,zh_CN,fr_FR${line.separator}locale.use.default.if.not.available=true";
+		property custom.system.properties = "user.country=US${line.separator}user.language=en";
+		property test.name.skip.portal.instance = "Locale#EnableRedirectToDefaultLocale";
+
+		User.firstLoginPG();
+
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "Navigation Menu Page");
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Guest",
+			layoutName = "Navigation Menu Page",
+			widgetName = "Navigation Menu");
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "fr/web/guest/navigation-menu-page");
+
+		task ("Assert preferred locale persists by asserting Widget name.") {
+			AssertElementPresent(
+				key_portletName = "Menu de Navigation",
+				locator1 = "Portlet#TITLE");
+		}
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "es/web/guest/navigation-menu-page");
+
+		task ("Assert default locale returned by asserting Widget name.") {
+			AssertElementPresent(
+				key_portletName = "Navigation Menu",
+				locator1 = "Portlet#TITLE");
 		}
 	}
 
@@ -389,58 +470,17 @@ definition {
 
 		User.logoutPG();
 
-		var count = "0";
-
-		while ("${count}" != "3") {
-			User._login(
-				password = "INCORRECT",
-				userEmailAddress = "userea@liferay.com");
-
-			var count = ${count} + 1;
-		}
+		User.loginUserInvalidPG(
+			errorMessage = "This account is locked until",
+			loginAttempts = "3",
+			maximumFailure = "3",
+			password = "INVALID",
+			userEmailAddress = "userea@liferay.com");
 
 		task ("Assert Timezone is included with account lockout message.") {
 			AssertTextEquals.assertPartialText(
 				locator1 = "Message#ERROR_1",
-				value1 = "This account is locked until");
-
-			AssertTextEquals.assertPartialText(
-				locator1 = "Message#ERROR_1",
 				value1 = "CEST.");
-		}
-	}
-
-	@priority = "4"
-	test VerifyFriendlyURLRedirectToEnableDefualtLocale {
-		property custom.properties = "locales.enabled=en_US,zh_CN,fr_FR${line.separator}locale.use.default.if.not.available=true";
-		property custom.system.properties = "user.country=US${line.separator}user.language=en";
-		property test.name.skip.portal.instance = "Locale#VerifyFriendlyURLRedirectToEnableDefualtLocale";
-
-		User.firstLoginPG();
-
-		JSONLayout.addPublicLayout(
-			groupName = "Guest",
-			layoutName = "Navigation Menu Page");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Guest",
-			layoutName = "Navigation Menu Page",
-			widgetName = "Navigation Menu");
-
-		Navigator.openWithAppendToBaseURL(urlAppend = "fr/web/guest/navigation-menu-page");
-
-		task ("Assert preferred locale persists by asserting Widget name.") {
-			AssertElementPresent(
-				key_portletName = "Menu de Navigation",
-				locator1 = "Portlet#TITLE");
-		}
-
-		Navigator.openWithAppendToBaseURL(urlAppend = "es/web/guest/navigation-menu-page");
-
-		task ("Assert default locale returned by asserting Widget name.") {
-			AssertElementPresent(
-				key_portletName = "Navigation Menu",
-				locator1 = "Portlet#TITLE");
 		}
 	}
 
@@ -488,8 +528,8 @@ definition {
 		Site.openSiteSettingsAdmin(siteURLKey = "guest");
 
 		Click(
-			key_url = "site-configuration-languages",
-			locator1 = "ListGroupItem#CONFIGURATION_ITEM_LINK");
+			key_itemName = "Localization",
+			locator1 = "ListGroupItem#ITEM_TEXT");
 
 		task ("Assert the default language options radio box is checked") {
 			AssertChecked.assertCheckedNotVisible(
@@ -622,6 +662,8 @@ definition {
 		User.editDisplaySettingsCP(
 			languageName = "中文 (中国)",
 			userScreenName = "usersn");
+
+		User.logoutPG();
 
 		User.firstLoginPG(
 			password = "test",

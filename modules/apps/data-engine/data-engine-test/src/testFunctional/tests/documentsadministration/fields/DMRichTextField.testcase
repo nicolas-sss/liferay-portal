@@ -112,7 +112,7 @@ definition {
 	test RepeatRichTextOnUpload {
 		property portal.acceptance = "false";
 
-		DataEngine.editFieldRepeatable(fieldFieldLabel = "Rich Text");
+		DataEngine.toggleFieldRepeatable(fieldFieldLabel = "Rich Text");
 
 		DDLDataDefinition.save();
 
@@ -122,7 +122,7 @@ definition {
 
 		PortletEntry.inputTitle(title = "DM Document Type");
 
-		DataEngine.addRepeatableField(fieldName = "Rich Text");
+		DataEngine.addRepeatableField(fieldLabel = "Rich Text");
 
 		PortletEntry.publish();
 

@@ -60,20 +60,24 @@ const getSerializedFormBuilderContext = (state, defaultLanguageId) => {
 
 	return JSON.stringify({
 		...state,
-		pages: visitor.mapFields((field) => {
-			return {
-				...field,
-				settingsContext: {
-					...field.settingsContext,
-					availableLanguageIds: state.availableLanguageIds,
-					defaultLanguageId: state.defaultLanguageId,
-					pages: getSerializedSettingsContextPages(
-						field.settingsContext.pages,
-						defaultLanguageId
-					),
-				},
-			};
-		}),
+		pages: visitor.mapFields(
+			(field) => {
+				return {
+					...field,
+					settingsContext: {
+						...field.settingsContext,
+						availableLanguageIds: state.availableLanguageIds,
+						defaultLanguageId: state.defaultLanguageId,
+						pages: getSerializedSettingsContextPages(
+							field.settingsContext.pages,
+							defaultLanguageId
+						),
+					},
+				};
+			},
+			true,
+			true
+		),
 	});
 };
 
@@ -82,7 +86,7 @@ const getSerializedFormBuilderContext = (state, defaultLanguageId) => {
  * to make the submit, this is the same implementation of StateSyncronizer.
  */
 export const useStateSync = () => {
-	const {portletNamespace} = useConfig();
+	const {portletNamespace, sidebarPanels} = useConfig();
 	const {
 		availableLanguageIds,
 		defaultLanguageId,
@@ -115,6 +119,7 @@ export const useStateSync = () => {
 			pages,
 			paginationMode,
 			rules,
+			sidebarPanels,
 			successPageSettings,
 		};
 
@@ -156,6 +161,7 @@ export const useStateSync = () => {
 		paginationMode,
 		portletNamespace,
 		rules,
+		sidebarPanels,
 		successPageSettings,
 	]);
 };

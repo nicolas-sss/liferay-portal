@@ -32,13 +32,8 @@ public class ItemListBuilderCheck extends BaseBuilderCheck {
 	}
 
 	@Override
-	protected String getAssignClassName(DetailAST assignDetailAST) {
-		return getNewInstanceTypeName(assignDetailAST);
-	}
-
-	@Override
 	protected List<BaseBuilderCheck.BuilderInformation>
-		getBuilderInformationList() {
+		doGetBuilderInformationList() {
 
 		return ListUtil.fromArray(
 			new BaseBuilderCheck.BuilderInformation(
@@ -48,6 +43,11 @@ public class ItemListBuilderCheck extends BaseBuilderCheck {
 				"LabelItemList", "LabelItemListBuilder", "add"),
 			new BaseBuilderCheck.BuilderInformation(
 				"NavigationItemList", "NavigationItemListBuilder", "add"));
+	}
+
+	@Override
+	protected String getAssignClassName(DetailAST assignDetailAST) {
+		return getNewInstanceTypeName(assignDetailAST);
 	}
 
 	@Override

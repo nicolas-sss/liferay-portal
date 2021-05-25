@@ -37,10 +37,9 @@ definition {
 		}
 	}
 
+	@ignore = "true"
 	@priority = "5"
 	test ConfigureAutocompleteWithTextField {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
 		property test.name.skip.portal.instance = "FormsDataProvider#ConfigureAutocompleteWithTextField";
 
 		var portalURL = PropsUtil.get("portal.url");
@@ -83,7 +82,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameTextFieldAuto = FormFields.getFieldName();
 
@@ -249,7 +248,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Select from List");
 
 		var fieldNameDataProvider = FormFields.getFieldName();
@@ -355,7 +354,7 @@ definition {
 		Form.editDescription();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Select from List");
 
 		var fieldNameCountries = FormFields.getFieldName();

@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.DocumentBuilder;
@@ -62,6 +63,7 @@ import java.io.Serializable;
 
 import java.lang.reflect.Method;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +76,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import org.junit.Assert;
 
@@ -356,7 +359,10 @@ public class WorkflowMetricsRESTTestHelper {
 					companyId, instance,
 					new SLAResult() {
 						{
-							dateOverdue = null;
+							dateModified = DateUtils.truncate(
+								RandomTestUtil.nextDate(), Calendar.SECOND);
+							dateOverdue = DateUtils.truncate(
+								RandomTestUtil.nextDate(), Calendar.SECOND);
 							id = RandomTestUtil.randomLong();
 							name = null;
 							onTime = true;
@@ -372,7 +378,10 @@ public class WorkflowMetricsRESTTestHelper {
 					companyId, instance,
 					new SLAResult() {
 						{
-							dateOverdue = null;
+							dateModified = DateUtils.truncate(
+								RandomTestUtil.nextDate(), Calendar.SECOND);
+							dateOverdue = DateUtils.truncate(
+								RandomTestUtil.nextDate(), Calendar.SECOND);
 							id = RandomTestUtil.randomLong();
 							name = null;
 							onTime = false;
@@ -435,6 +444,8 @@ public class WorkflowMetricsRESTTestHelper {
 				slaResult.getRemainingTime(), "slaDefinitionId",
 				slaResult.getId());
 		}
+
+		_updateInstance(companyId, instance, slaResults);
 	}
 
 	public void addSLATaskResult(
@@ -726,20 +737,6 @@ public class WorkflowMetricsRESTTestHelper {
 			"version", version);
 	}
 
-	protected String getDate(Date date) {
-		try {
-			return DateUtil.getDate(
-				date, "yyyyMMddHHmmss", LocaleUtil.getDefault());
-		}
-		catch (Exception exception) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(exception, exception);
-			}
-
-			return null;
-		}
-	}
-
 	private void _assertCount(
 			Consumer<BooleanQuery> booleanQueryConsumer, long expectedCount,
 			String indexName, Object... parameters)
@@ -822,7 +819,11 @@ public class WorkflowMetricsRESTTestHelper {
 		).setValue(
 			"instanceId", instance.getId()
 		).setValue(
+			"modifiedDate", _getDateString(slaResult.getDateModified())
+		).setValue(
 			"onTime", slaResult.getOnTime()
+		).setValue(
+			"overdueDate", _getDateString(slaResult.getDateOverdue())
 		).setValue(
 			"processId", instance.getProcessId()
 		).setValue(
@@ -870,7 +871,7 @@ public class WorkflowMetricsRESTTestHelper {
 
 		if (Objects.equals(status, "COMPLETED")) {
 			documentBuilder.setDate(
-				"completionDate", getDate(new Date())
+				"completionDate", _getDateString(new Date())
 			).setValue(
 				"completionUserId", assigneeId
 			);
@@ -983,6 +984,20 @@ public class WorkflowMetricsRESTTestHelper {
 		return indexNamePrefix + DigestUtils.sha256Hex(sb.toString());
 	}
 
+	private String _getDateString(Date date) {
+		try {
+			return DateUtil.getDate(
+				date, "yyyyMMddHHmmss", LocaleUtil.getDefault());
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(exception, exception);
+			}
+
+			return null;
+		}
+	}
+
 	private Object _getIndexer(String className) throws Exception {
 		if (_indexers.containsKey(className)) {
 			return _indexers.get(className);
@@ -1063,6 +1078,64 @@ public class WorkflowMetricsRESTTestHelper {
 			}
 
 			return new Date();
+		}
+	}
+
+	private void _updateInstance(
+			long companyId, Instance instance, SLAResult... slaResults)
+		throws Exception {
+
+		DocumentBuilder documentBuilder = _documentBuilderFactory.builder();
+
+		Document document = documentBuilder.setValue(
+			"slaResults",
+			Stream.of(
+				slaResults
+			).map(
+				slaResult -> HashMapBuilder.put(
+					"onTime", String.valueOf(slaResult.getOnTime())
+				).put(
+					"overdueDate", _getDateString(slaResult.getDateOverdue())
+				).put(
+					"remainingTime",
+					String.valueOf(slaResult.getRemainingTime())
+				).put(
+					"slaDefinitionId", String.valueOf(slaResult.getId())
+				).put(
+					"status", slaResult.getStatusAsString()
+				).build()
+			).toArray()
+		).setString(
+			"uid",
+			_digest("WorkflowMetricsInstance", companyId, instance.getId())
+		).build();
+
+		_searchEngineAdapter.execute(
+			new UpdateDocumentRequest(
+				_instanceWorkflowMetricsIndexNameBuilder.getIndexName(
+					companyId),
+				document.getString("uid"), document));
+
+		for (SLAResult slaResult : slaResults) {
+			IdempotentRetryAssert.retryAssert(
+				3, TimeUnit.SECONDS,
+				() -> {
+					_assertCount(
+						booleanQuery -> booleanQuery.addMustQueryClauses(
+							_queries.nested(
+								"slaResults",
+								_queries.term(
+									"slaResults.overdueDate",
+									_getDateString(
+										slaResult.getDateOverdue())))),
+						1,
+						_instanceWorkflowMetricsIndexNameBuilder.getIndexName(
+							companyId),
+						"companyId", companyId, "deleted", false, "instanceId",
+						instance.getId(), "processId", instance.getProcessId());
+
+					return null;
+				});
 		}
 	}
 

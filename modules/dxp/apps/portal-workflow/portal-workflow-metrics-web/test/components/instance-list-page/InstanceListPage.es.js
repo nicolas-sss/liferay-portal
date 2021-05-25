@@ -56,7 +56,7 @@ describe('The instance list card should', () => {
 			.fn()
 			.mockResolvedValue({data: {items, totalCount: items.length + 1}}),
 	};
-	let container, getByText;
+	let container, findByText, getByText;
 
 	beforeAll(() => {
 		const renderResult = render(
@@ -67,16 +67,18 @@ describe('The instance list card should', () => {
 		);
 
 		container = renderResult.container;
+		findByText = renderResult.findByText;
 		getByText = renderResult.getByText;
 	});
 
-	test('Be rendered with "sla-status", "process-status", "process-step" and "assignee" filters', () => {
+	test('Be rendered with "sla-status", "process-status", "completion-period", "process-step" and "assignee" filters', () => {
 		const filters = container.querySelectorAll('.dropdown-toggle');
 
 		expect(filters[0]).toHaveTextContent('sla-status');
 		expect(filters[1]).toHaveTextContent('process-status');
-		expect(filters[2]).toHaveTextContent('process-step');
-		expect(filters[3]).toHaveTextContent('assignee');
+		expect(filters[2]).toHaveTextContent('completion-period');
+		expect(filters[3]).toHaveTextContent('process-step');
+		expect(filters[4]).toHaveTextContent('assignee');
 	});
 
 	test('Select all page by clicking on check all button', () => {
@@ -163,5 +165,11 @@ describe('The instance list card should', () => {
 		label = getByText('all-selected');
 
 		expect(label).toBeTruthy();
+	});
+
+	test('Show last metrics calculated info', () => {
+		const metricsCalculated = findByText('Metrics calculated');
+
+		expect(metricsCalculated).toBeTruthy();
 	});
 });

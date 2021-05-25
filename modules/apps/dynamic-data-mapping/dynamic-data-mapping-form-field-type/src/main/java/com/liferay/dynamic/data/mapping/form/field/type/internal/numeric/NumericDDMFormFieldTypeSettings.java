@@ -41,10 +41,12 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 				"setDataType('predefinedValue', getValue('dataType'))",
 				"setValidationDataType('validation', getValue('dataType'))",
 				"setValidationFieldName('validation', getValue('name'))",
+				"setVisible('characterOptions', getValue('inputMask'))",
 				"setVisible('confirmationErrorMessage', getValue('requireConfirmation'))",
 				"setVisible('confirmationLabel', getValue('requireConfirmation'))",
 				"setVisible('direction', getValue('requireConfirmation'))",
 				"setVisible('inputMaskFormat', getValue('inputMask'))",
+				"setVisible('requiredErrorMessage', false)",
 				"setVisible('tooltip', false)"
 			},
 			condition = "TRUE"
@@ -63,7 +65,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 							size = 12,
 							value = {
 								"label", "placeholder", "tip", "dataType",
-								"required"
+								"required", "requiredErrorMessage"
 							}
 						)
 					}
@@ -86,7 +88,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 								"requireConfirmation", "direction",
 								"confirmationLabel", "confirmationErrorMessage",
 								"validation", "tooltip", "inputMask",
-								"inputMaskFormat"
+								"inputMaskFormat", "characterOptions"
 							}
 						)
 					}
@@ -98,15 +100,19 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 public interface NumericDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
 
+	@DDMFormField(label = "%character-options", type = "help_text")
+	public boolean characterOptions();
+
 	@DDMFormField(
 		dataType = "string", label = "%error-message",
-		predefinedValue = "%the-information-does-not-match", type = "text"
+		properties = "initialValue=%the-information-does-not-match",
+		type = "text"
 	)
 	public LocalizedValue confirmationErrorMessage();
 
 	@DDMFormField(
-		dataType = "string", label = "%label", predefinedValue = "%confirm",
-		type = "text"
+		dataType = "string", label = "%label",
+		properties = "initialValue=%confirm", type = "text"
 	)
 	public LocalizedValue confirmationLabel();
 
@@ -126,10 +132,7 @@ public interface NumericDDMFormFieldTypeSettings
 	)
 	public String direction();
 
-	@DDMFormField(
-		label = "%input-mask", properties = "showAsSwitcher=true",
-		visibilityExpression = "FALSE"
-	)
+	@DDMFormField(label = "%input-mask", properties = "showAsSwitcher=true")
 	public boolean inputMask();
 
 	@DDMFormField(

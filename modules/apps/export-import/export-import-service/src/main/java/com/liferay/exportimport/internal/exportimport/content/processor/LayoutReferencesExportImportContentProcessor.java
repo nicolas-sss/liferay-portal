@@ -56,6 +56,7 @@ import com.liferay.staging.StagingGroupHelper;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 
 import java.util.Locale;
 import java.util.Map;
@@ -1028,6 +1029,14 @@ public class LayoutReferencesExportImportContentProcessor
 				sb.append(uri.getPort());
 
 				return sb.toString();
+			}
+		}
+		catch (UnknownHostException unknownHostException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(unknownHostException, unknownHostException);
+			}
+			else if (_log.isWarnEnabled()) {
+				_log.warn(unknownHostException.getMessage());
 			}
 		}
 		catch (Exception exception) {

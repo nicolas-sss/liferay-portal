@@ -13,17 +13,28 @@
  */
 
 import {useEventListener} from '@liferay/frontend-js-react-web';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 import LayoutReports from './components/LayoutReports';
+import {
+	StoreContextProvider,
+	StoreDispatchContext,
+	StoreStateContext,
+} from './context/StoreContext';
 
 import '../css/main.scss';
 
-export default function ({
-	isPanelStateOpen,
-	layoutReportsDataURL,
-	portletNamespace,
-}) {
+import {ClayButtonWithIcon} from '@clayui/button';
+
+import {
+	ConstantsContext,
+	ConstantsContextProvider,
+} from './context/ConstantsContext';
+import loadIssues from './utils/loadIssues';
+
+export default function (props) {
+	const {portletNamespace} = props;
+
 	const layoutReportsPanelToggle = document.getElementById(
 		`${portletNamespace}layoutReportsPanelToggleId`
 	);
@@ -69,10 +80,59 @@ export default function ({
 	);
 
 	return (
-		<LayoutReports
-			eventTriggered={eventTriggered}
-			isPanelStateOpen={isPanelStateOpen}
-			layoutReportsDataURL={layoutReportsDataURL}
-		/>
+		<ConstantsContextProvider constants={props}>
+			<StoreContextProvider>
+				<SidebarHeader />
+				<SidebarBody>
+					<LayoutReports eventTriggered={eventTriggered} />
+				</SidebarBody>
+			</StoreContextProvider>
+		</ConstantsContextProvider>
 	);
 }
+
+const SidebarHeader = () => {
+	const {data, languageId, loading} = useContext(StoreStateContext);
+	const {portletNamespace} = useContext(ConstantsContext);
+	const dispatch = useContext(StoreDispatchContext);
+
+	return (
+		<div className="d-flex justify-content-between sidebar-header">
+			<span>{Liferay.Language.get('page-audit')}</span>
+			<div>
+				{data?.validConnection && (
+					<ClayButtonWithIcon
+						className="sidenav-relaunch"
+						disabled={loading}
+						displayType="unstyled"
+						onClick={() => {
+							const url = data.pageURLs.find(
+								(pagelURL) =>
+									pagelURL.languageId ===
+									(languageId || data.defaultLanguageId)
+							);
+
+							loadIssues({
+								dispatch,
+								portletNamespace,
+								url,
+							});
+						}}
+						symbol="reload"
+						title={Liferay.Language.get('relaunch')}
+					/>
+				)}
+				<ClayButtonWithIcon
+					className="sidenav-close"
+					displayType="unstyled"
+					symbol="times"
+					title={Liferay.Language.get('close')}
+				/>
+			</div>
+		</div>
+	);
+};
+
+const SidebarBody = ({children}) => (
+	<div className="sidebar-body">{children}</div>
+);

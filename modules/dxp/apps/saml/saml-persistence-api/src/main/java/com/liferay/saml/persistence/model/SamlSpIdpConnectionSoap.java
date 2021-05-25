@@ -41,7 +41,6 @@ public class SamlSpIdpConnectionSoap implements Serializable {
 		soapModel.setUserName(model.getUserName());
 		soapModel.setCreateDate(model.getCreateDate());
 		soapModel.setModifiedDate(model.getModifiedDate());
-		soapModel.setSamlIdpEntityId(model.getSamlIdpEntityId());
 		soapModel.setAssertionSignatureRequired(
 			model.isAssertionSignatureRequired());
 		soapModel.setClockSkew(model.getClockSkew());
@@ -53,10 +52,13 @@ public class SamlSpIdpConnectionSoap implements Serializable {
 		soapModel.setMetadataXml(model.getMetadataXml());
 		soapModel.setName(model.getName());
 		soapModel.setNameIdFormat(model.getNameIdFormat());
+		soapModel.setSamlIdpEntityId(model.getSamlIdpEntityId());
 		soapModel.setSignAuthnRequest(model.isSignAuthnRequest());
 		soapModel.setUnknownUsersAreStrangers(
 			model.isUnknownUsersAreStrangers());
 		soapModel.setUserAttributeMappings(model.getUserAttributeMappings());
+		soapModel.setUserIdentifierExpression(
+			model.getUserIdentifierExpression());
 
 		return soapModel;
 	}
@@ -167,14 +169,6 @@ public class SamlSpIdpConnectionSoap implements Serializable {
 		_modifiedDate = modifiedDate;
 	}
 
-	public String getSamlIdpEntityId() {
-		return _samlIdpEntityId;
-	}
-
-	public void setSamlIdpEntityId(String samlIdpEntityId) {
-		_samlIdpEntityId = samlIdpEntityId;
-	}
-
 	public boolean getAssertionSignatureRequired() {
 		return _assertionSignatureRequired;
 	}
@@ -273,6 +267,14 @@ public class SamlSpIdpConnectionSoap implements Serializable {
 		_nameIdFormat = nameIdFormat;
 	}
 
+	public String getSamlIdpEntityId() {
+		return _samlIdpEntityId;
+	}
+
+	public void setSamlIdpEntityId(String samlIdpEntityId) {
+		_samlIdpEntityId = samlIdpEntityId;
+	}
+
 	public boolean getSignAuthnRequest() {
 		return _signAuthnRequest;
 	}
@@ -305,13 +307,20 @@ public class SamlSpIdpConnectionSoap implements Serializable {
 		_userAttributeMappings = userAttributeMappings;
 	}
 
+	public String getUserIdentifierExpression() {
+		return _userIdentifierExpression;
+	}
+
+	public void setUserIdentifierExpression(String userIdentifierExpression) {
+		_userIdentifierExpression = userIdentifierExpression;
+	}
+
 	private long _samlSpIdpConnectionId;
 	private long _companyId;
 	private long _userId;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
-	private String _samlIdpEntityId;
 	private boolean _assertionSignatureRequired;
 	private long _clockSkew;
 	private boolean _enabled;
@@ -322,8 +331,10 @@ public class SamlSpIdpConnectionSoap implements Serializable {
 	private String _metadataXml;
 	private String _name;
 	private String _nameIdFormat;
+	private String _samlIdpEntityId;
 	private boolean _signAuthnRequest;
 	private boolean _unknownUsersAreStrangers;
 	private String _userAttributeMappings;
+	private String _userIdentifierExpression;
 
 }

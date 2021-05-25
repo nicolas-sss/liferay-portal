@@ -36,11 +36,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-80771."
+	@ignore = "true"
 	@priority = "5"
 	test ChangeFieldTypeThatBelongsToARule {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
-
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -51,7 +49,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameTextField = FormFields.getFieldName();
 
@@ -59,7 +57,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field 2");
 
@@ -101,11 +99,9 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-80771."
+	@ignore = "true"
 	@priority = "5"
 	test ChangeFieldTypeThatBelongsToCalculatorExpression {
-		property portal.acceptance = "true";
-		property portal.upstream = "true";
-
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -117,7 +113,7 @@ definition {
 		Form.editName();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Numeric");
 
 		var fieldNameNumericField = FormFields.getFieldName();
@@ -127,7 +123,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Numeric");
 
 		Form.editFieldLabelMetal(fieldValue = "Numeric Field 2");
@@ -135,7 +131,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Numeric");
 
 		Form.editFieldLabelMetal(fieldValue = "Total");
@@ -228,7 +224,7 @@ definition {
 
 		Form.editDescription();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameTextField = FormFields.getFieldName();
 
@@ -237,7 +233,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Select from List");
 
 		var fieldNameCountries = FormFields.getFieldName();
@@ -324,7 +320,7 @@ definition {
 		Form.editName();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Numeric");
 
 		var fieldNameQuantity = FormFields.getFieldName();
@@ -334,7 +330,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Numeric");
 
 		var fieldNameValue = FormFields.getFieldName();
@@ -344,7 +340,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Numeric");
 
 		var fieldNameTotal = FormFields.getFieldName();
@@ -437,7 +433,7 @@ definition {
 		Form.editName();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "1",
+			fieldPositionNumber = "0",
 			fieldType = "Numeric");
 
 		var fieldNameQuantity = FormFields.getFieldName();
@@ -451,7 +447,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Numeric");
 
 		var fieldNameValue = FormFields.getFieldName();
@@ -465,7 +461,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Numeric");
 
 		var fieldNameTotal = FormFields.getFieldName();
@@ -527,7 +523,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameTextField = FormFields.getFieldName();
 
@@ -536,7 +532,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Date");
 
 		Form.editFieldLabelMetal(fieldValue = "Date Field");
@@ -618,7 +614,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameTextField1 = FormFields.getFieldName();
 
@@ -626,7 +622,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		var fieldNameTextField2 = FormFields.getFieldName();
 
@@ -635,7 +631,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Date");
 
 		var fieldNameDateField = FormFields.getFieldName();
@@ -750,7 +746,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNamePublic = FormFields.getFieldName();
 
@@ -758,7 +754,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameManager = FormFields.getFieldName();
 
@@ -912,7 +908,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
@@ -920,7 +916,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field 2");
 
@@ -974,13 +970,13 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field 2");
 
@@ -1004,7 +1000,7 @@ definition {
 
 		FormsAdminNavigator.gotoFormBuilder();
 
-		AssertVisible(locator1 = "Form#ADD_FIELD");
+		AssertVisible(locator1 = "Form#BUILDER_SIDEBAR_PANEL");
 
 		FormsAdminNavigator.gotoRules();
 
@@ -1056,7 +1052,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameTextField = FormFields.getFieldName();
 
@@ -1065,7 +1061,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "2",
+			fieldPositionNumber = "1",
 			fieldType = "Date");
 
 		var fieldNameDateField = FormFields.getFieldName();
@@ -1157,13 +1153,13 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field 1");
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field 2");
 
@@ -1219,7 +1215,7 @@ definition {
 
 		Form.editName(formName = "Test Form");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameTextField1 = FormFields.getFieldName();
 
@@ -1233,7 +1229,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		var fieldNameTextField2 = FormFields.getFieldName();
 
@@ -1311,13 +1307,13 @@ definition {
 
 		Form.editName(formName = "Test Form");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field 1");
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field 2");
 
@@ -1383,7 +1379,7 @@ definition {
 
 		Form.editName();
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		Form.editFieldLabelMetal(fieldValue = "Text Field");
 
@@ -1419,7 +1415,7 @@ definition {
 
 		Form.editName(formName = "Test Form");
 
-		Form.addTextField(fieldPositionNumber = "1");
+		Form.addTextField(fieldPositionNumber = "0");
 
 		var fieldNameTextField1 = FormFields.getFieldName();
 
@@ -1427,7 +1423,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
+		Form.addTextField(fieldPositionNumber = "1");
 
 		var fieldNameTextField2 = FormFields.getFieldName();
 
@@ -1436,7 +1432,7 @@ definition {
 		Form.closeSidebar();
 
 		Form.gotoAddField(
-			fieldPositionNumber = "3",
+			fieldPositionNumber = "2",
 			fieldType = "Date");
 
 		var fieldNameDateField = FormFields.getFieldName();

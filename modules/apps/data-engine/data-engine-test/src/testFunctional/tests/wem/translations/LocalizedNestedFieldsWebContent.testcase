@@ -42,7 +42,7 @@ definition {
 			fieldName = "Numeric",
 			targetFieldLabel = "Text");
 
-		DataEngine.editFieldsGroupRepeatable();
+		DataEngine.toggleFieldRepeatable(fieldsGroupLabel = "Fields Group");
 
 		PortletEntry.changeLocale(locale = "pt-BR");
 
@@ -68,7 +68,7 @@ definition {
 
 		PortletEntry.changeLocale(locale = "pt-BR");
 
-		DataEngine.addRepeatableFieldsGroup(fieldsGroupLabel = "Grupo de Campos");
+		DataEngine.addRepeatableField(fieldLabel = "Grupo de Campos");
 
 		PortletEntry.publish();
 

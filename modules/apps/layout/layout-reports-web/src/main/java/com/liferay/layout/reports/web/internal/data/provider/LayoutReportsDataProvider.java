@@ -29,7 +29,7 @@ import com.liferay.portal.kernel.util.Validator;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
+import java.util.Objects;
 
 /**
  * @author Cristina González
@@ -86,6 +86,13 @@ public class LayoutReportsDataProvider {
 			}
 		}
 
+		if (Objects.equals(
+				lighthouseAuditResultV5.getScoreDisplayMode(),
+				"notApplicable")) {
+
+			return 0;
+		}
+
 		float score = GetterUtil.getFloat(lighthouseAuditResultV5.getScore());
 
 		if (score == 0) {
@@ -93,6 +100,14 @@ public class LayoutReportsDataProvider {
 		}
 
 		return 0;
+	}
+
+	private LayoutReportsIssue.Detail _getDetail(
+		String googlePageSpeedKey, LayoutReportsIssue.Detail.Key key,
+		Map<String, LighthouseAuditResultV5> lighthouseAuditResultV5s) {
+
+		return new LayoutReportsIssue.Detail(
+			key, _getCount(lighthouseAuditResultV5s.get(googlePageSpeedKey)));
 	}
 
 	private List<LayoutReportsIssue> _getLayoutReportsIssues(String url)
@@ -105,7 +120,10 @@ public class LayoutReportsDataProvider {
 		PagespeedInsights pagespeedInsights = new PagespeedInsights.Builder(
 			GoogleNetHttpTransport.newTrustedTransport(),
 			JacksonFactory.getDefaultInstance(),
-			request -> request.setConnectTimeout(_TIMEOUT)
+			request -> {
+				request.setConnectTimeout(_CONNECT_TIMEOUT);
+				request.setReadTimeout(_READ_TIMEOUT);
+			}
 		).build();
 
 		PagespeedInsights.Pagespeedapi pagespeedapi =
@@ -129,32 +147,76 @@ public class LayoutReportsDataProvider {
 
 		return Arrays.asList(
 			new LayoutReportsIssue(
-				"accessibility",
-				IntStream.of(
-					_getCount(lighthouseAuditResultV5s.get("color-contrast")),
-					_getCount(lighthouseAuditResultV5s.get("image-alt")),
-					_getCount(lighthouseAuditResultV5s.get("input-image-alt")),
-					_getCount(lighthouseAuditResultV5s.get("video-caption"))
-				).sum()),
+				Arrays.asList(
+					_getDetail(
+						"color-contrast",
+						LayoutReportsIssue.Detail.Key.LOW_CONTRAST_RATIO,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"image-alt",
+						LayoutReportsIssue.Detail.Key.
+							MISSING_IMG_ALT_ATTRIBUTES,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"input-image-alt",
+						LayoutReportsIssue.Detail.Key.
+							MISSING_INPUT_ALT_ATTRIBUTES,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"video-caption",
+						LayoutReportsIssue.Detail.Key.MISSING_VIDEO_CAPTION,
+						lighthouseAuditResultV5s)),
+				LayoutReportsIssue.Key.ACCESSIBILITY),
 			new LayoutReportsIssue(
-				"seo",
-				IntStream.of(
-					_getCount(lighthouseAuditResultV5s.get("canonical")),
-					_getCount(
-						lighthouseAuditResultV5s.get("crawlable-anchors")),
-					_getCount(lighthouseAuditResultV5s.get("document-title")),
-					_getCount(lighthouseAuditResultV5s.get("font-size")),
-					_getCount(lighthouseAuditResultV5s.get("hreflang")),
-					_getCount(
-						lighthouseAuditResultV5s.get("image-aspect-ratio")),
-					_getCount(lighthouseAuditResultV5s.get("is-crawlable")),
-					_getCount(lighthouseAuditResultV5s.get("link-text")),
-					_getCount(lighthouseAuditResultV5s.get("meta-description")),
-					_getCount(lighthouseAuditResultV5s.get("tap-targets"))
-				).sum()));
+				Arrays.asList(
+					_getDetail(
+						"canonical",
+						LayoutReportsIssue.Detail.Key.INVALID_CANONICAL_URL,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"crawlable-anchors",
+						LayoutReportsIssue.Detail.Key.
+							NOT_ALL_LINKS_ARE_CRAWLABLE,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"is-crawlable",
+						LayoutReportsIssue.Detail.Key.
+							PAGE_BLOCKED_FROM_INDEXING,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"font-size",
+						LayoutReportsIssue.Detail.Key.ILLEGIBLE_FONT_SIZES,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"hreflang",
+						LayoutReportsIssue.Detail.Key.INVALID_HREFLANG,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"image-aspect-ratio",
+						LayoutReportsIssue.Detail.Key.
+							INCORRECT_IMAGE_ASPECT_RATIOS,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"link-text", LayoutReportsIssue.Detail.Key.LINK_TEXTS,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"meta-description",
+						LayoutReportsIssue.Detail.Key.MISSING_META_DESCRIPTION,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"tap-targets",
+						LayoutReportsIssue.Detail.Key.SMALL_TAP_TARGETS,
+						lighthouseAuditResultV5s),
+					_getDetail(
+						"document-title",
+						LayoutReportsIssue.Detail.Key.MISSING_TITLE_ELEMENT,
+						lighthouseAuditResultV5s)),
+				LayoutReportsIssue.Key.SEO));
 	}
 
-	private static final int _TIMEOUT = 30000;
+	private static final int _CONNECT_TIMEOUT = 30000;
+
+	private static final int _READ_TIMEOUT = 120000;
 
 	private final String _apiKey;
 

@@ -12,8 +12,8 @@
  * details.
  */
 
-import {useQuery} from '@apollo/client';
 import ClayEmptyState from '@clayui/empty-state';
+import {useQuery} from 'graphql-hooks';
 import React, {useContext, useEffect, useState} from 'react';
 import {withRouter} from 'react-router-dom';
 
@@ -55,6 +55,10 @@ export default withRouter(
 		useEffect(() => {
 			setPageSize(queryParams.get('pagesize') || 20);
 		}, [queryParams]);
+
+		useEffect(() => {
+			document.title = creatorId;
+		}, [creatorId]);
 
 		const {data, loading} = useQuery(getUserActivityQuery, {
 			onCompleted(data) {

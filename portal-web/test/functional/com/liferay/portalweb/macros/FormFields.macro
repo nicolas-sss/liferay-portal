@@ -11,6 +11,13 @@ definition {
 			locator1 = "FormFields#FIELD_ADD_SPECIFIC");
 	}
 
+	macro addSingleSelectionOption {
+		Type(
+			key_rowNumber = "${optionValue}",
+			locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD",
+			value1 = "${optionName}");
+	}
+
 	macro assertFieldsNotVisibleInFieldGroup {
 		for (var fieldFieldLabel : list "${fieldGroupLabelList}") {
 			AssertNotVisible(
@@ -84,7 +91,7 @@ definition {
 
 		AssertClick(
 			locator1 = "Form#SIDEBAR_MENUITEM_DUPLICATE_FIELD",
-			value1 = "Duplicate Field");
+			value1 = "Duplicate");
 	}
 
 	macro editBlankMultiTextFieldWithEnterKey {
@@ -186,6 +193,26 @@ definition {
 			value1 = "${optionValue}");
 	}
 
+	macro editOptionsRowValueOrFieldReference {
+		var key_rowNumber = "${rowNumber}";
+
+		WaitForElementPresent(
+			locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD",
+			value1 = "${optionValue}");
+
+		Type(
+			locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD",
+			value1 = "${optionValue}");
+
+		if (isSet(fieldReference)) {
+			Type(
+				locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD_REFERENCE",
+				value1 = "${fieldReference}");
+		}
+
+		AssertElementPresent(locator1 = "FormFields#OPTIONS_OPTION_NAME_FIELD");
+	}
+
 	macro editParagraphBody {
 		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
 
@@ -244,6 +271,26 @@ definition {
 			key_fieldName = "${fieldName}",
 			locator1 = "FormFields#TEXT_FIELD_ALT",
 			value1 = "${fieldValue}");
+	}
+
+	macro editTextBodyToolBar {
+		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+
+		Type.clickAtType(
+			locator1 = "CKEditor#BODY",
+			value1 = "${content}");
+
+		SelectFieldText(locator1 = "CKEditor#BODY");
+
+		SelectFrame(value1 = "relative=top");
+
+		WaitForElementPresent(
+			key_titleName = "${optionTool}",
+			locator1 = "FormFields#TOOLBAR_ANY_ITEM_BUTTON");
+
+		Click(
+			key_titleName = "${optionTool}",
+			locator1 = "FormFields#TOOLBAR_ANY_ITEM_BUTTON");
 	}
 
 	macro editTextDescription {
@@ -611,6 +658,14 @@ definition {
 			value1 = "${fieldValue}");
 	}
 
+	macro viewDeletedFieldLabel {
+		key_fieldName = "${fieldName}";
+
+		AssertElementNotPresent(
+			key_name = "${fieldName}",
+			locator1 = "FormFields#FIELD_TARGET_LABEL");
+	}
+
 	macro viewDeletedSelectOptionsRowFieldValue {
 		var key_rowNumber = "${rowNumber}";
 
@@ -711,6 +766,26 @@ definition {
 		}
 	}
 
+	macro viewOptionsRowFieldValueOrFieldReference {
+		var key_rowNumber = "${rowNumber}";
+
+		if (IsVisible(locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD")) {
+			AssertTextEquals(
+				locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD",
+				value1 = "${fieldValue}");
+			if (isSet(fieldReference)) {
+				AssertTextEquals(
+					locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD_REFERENCE",
+					value1 = "${fieldReference}");
+			}
+		}
+		else {
+			AssertTextEquals(
+				locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD_VISIBLE",
+				value1 = "${fieldValue}");
+		}
+	}
+
 	macro viewParagraphField {
 		if (!(isSet(fieldName))) {
 			var key_fieldName = "${fieldTitle}";
@@ -729,9 +804,16 @@ definition {
 				value1 = "${fieldTitle}");
 		}
 
-		AssertTextEquals(
-			locator1 = "FormFields#PARAGRAPH_BODY_TEXT_CONTENT",
-			value1 = "${fieldValue}");
+		if (isSet(url)) {
+			AssertElementPresent(
+				key_url = "${url}",
+				locator1 = "FormFields#PARAGRAPH_LINK_TEXT_BODY");
+		}
+		else {
+			AssertTextEquals(
+				locator1 = "FormFields#PARAGRAPH_BODY_TEXT_CONTENT",
+				value1 = "${fieldValue}");
+		}
 	}
 
 	macro viewRadioLabel {
@@ -809,6 +891,12 @@ definition {
 
 	macro viewRequiredAsterisk {
 		AssertElementPresent.assertVisible(locator1 = "Icon#ASTERISK");
+	}
+
+	macro viewRequiredAsteriskDataField {
+		AssertElementPresent.assertVisible(
+			key_fieldFieldLabel = "${fieldFieldLabel}",
+			locator1 = "Icon#ASTERISK_DATE_FIELD");
 	}
 
 	macro viewRequiredAsteriskNotPresent {

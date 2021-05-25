@@ -14,16 +14,13 @@
 
 import ClayButton from '@clayui/button';
 import {Context as ModalContext} from '@clayui/modal';
-import {FieldStateless} from 'data-engine-js-components-web';
+import {FieldStateless, generateName} from 'data-engine-js-components-web';
+import {FieldSupport} from 'dynamic-data-mapping-form-builder';
 import React, {useContext, useMemo} from 'react';
 
 import Timeline from './Timeline.es';
 import {ACTIONS_TYPES} from './actionsTypes.es';
-import {
-	BINARY_OPERATOR,
-	OPERATOR_OPTIONS_TYPES,
-	RIGHT_OPERAND_TYPES,
-} from './config.es';
+import {OPERATOR_OPTIONS_TYPES, RIGHT_OPERAND_TYPES} from './config.es';
 
 function FieldOperator({
 	left,
@@ -48,16 +45,27 @@ function FieldOperator({
 		}));
 	}, [left, operatorsByType]);
 
+	const isBinaryOperator = (operator) => {
+		const option = options?.find(({value}) => value === operator);
+
+		return option?.parameterClassNames?.length === 2;
+	};
+
 	return (
 		<>
 			<Timeline.FormGroupItem>
 				<FieldStateless
-					onChange={(event) =>
+					onChange={(event) => {
+						const operator = event.value[0];
+
 						onChange({
-							payload: event.value[0],
+							payload: {
+								isBinaryOperator: isBinaryOperator(operator),
+								operator,
+							},
 							type: ACTIONS_TYPES.CHANGE_OPERATOR,
-						})
-					}
+						});
+					}}
 					options={options}
 					placeholder={Liferay.Language.get('choose-an-option')}
 					readOnly={readOnly}
@@ -66,7 +74,7 @@ function FieldOperator({
 					value={[operator]}
 				/>
 			</Timeline.FormGroupItem>
-			{BINARY_OPERATOR.includes(operator) && left.type !== 'user' && (
+			{isBinaryOperator(operator) && left.type !== 'user' && (
 				<Timeline.FormGroupItem>
 					<FieldStateless
 						onChange={(event) =>
@@ -150,10 +158,29 @@ function FieldRight({fields, left, right, roles, ...otherProps}) {
 					options: fields.filter(({type}) => type !== 'paragraph'),
 					value: [right.value],
 				};
-			default:
+			default: {
+				if (
+					left.field?.type === 'rich_text' &&
+					left.field?.editorConfig
+				) {
+					const instanceId = FieldSupport.generateInstanceId(8);
+
+					return {
+						editorConfig: FieldSupport.formatEditorConfig(
+							left.field.editorConfig,
+							instanceId
+						),
+						name: generateName(left.field.name, {
+							instanceId,
+						}),
+						value: right.value,
+					};
+				}
+
 				return {
 					value: right.value,
 				};
+			}
 		}
 	}, [left, right, roles, fields]);
 

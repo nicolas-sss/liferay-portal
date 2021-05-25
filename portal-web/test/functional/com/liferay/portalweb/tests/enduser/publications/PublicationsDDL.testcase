@@ -132,7 +132,7 @@ definition {
 		Publications.discardChanges(
 			changeCategory = "Dynamic Data Lists Record",
 			changeTitle = "${changeTitle}",
-			conflictingPublications = "true",
+			conflictingChanges = "true",
 			entryTitle = "Dynamic Data Lists Record");
 
 		JSONPublications.publishPublication(publicationName = "Publication Name 1");
@@ -257,30 +257,26 @@ definition {
 			changeSite = "Guest",
 			changeTitle = "${changeTitle}",
 			changeType = "Deleted",
-			changeUser = "Test Test",
-			showAllItems = "true");
+			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Lists Record Set",
 			changeSite = "Guest",
 			changeTitle = "List Name",
 			changeType = "Deleted",
-			changeUser = "Test Test",
-			showAllItems = "true");
+			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Mapping Structure",
 			changeSite = "Guest",
 			changeTitle = "Data Definition",
 			changeType = "Deleted",
-			changeUser = "Test Test",
-			showAllItems = "true");
+			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesViaContextStyle(
 			changeCategory = "Dynamic Data Lists Record",
 			changeDescription = "Test Test deleted a Dynamic Data Lists Record in Guest",
-			changeTitle = "${changeTitle}",
-			showAllItems = "true");
+			changeTitle = "${changeTitle}");
 
 		JSONPublications.publishPublication(publicationName = "Publication Name");
 
@@ -542,31 +538,19 @@ definition {
 			fieldValueInPublication = "3/30/21",
 			publicationName = "Publication Name");
 
-		// Workaround LPS-129885
-
-		/*PublicationsChanges.viewChangesViaChangesStyle(
-			changeCategory = "Asset",
-			changeSite = "Guest",
-			changeTitle = "New Data Definition for List: List Name",
-			changeType = "Modified",
-			changeUser = "Test Test",
-			showAllItems = "true");*/
-
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Lists Record Set",
 			changeSite = "Guest",
 			changeTitle = "List Name Edit",
 			changeType = "Modified",
-			changeUser = "Test Test",
-			showAllItems = "true");
+			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Mapping Structure",
 			changeSite = "Guest",
 			changeTitle = "Data Definition",
 			changeType = "Modified",
-			changeUser = "Test Test",
-			showAllItems = "true");
+			changeUser = "Test Test");
 
 		JSONPublications.publishPublication(publicationName = "Publication Name");
 
@@ -771,30 +755,26 @@ definition {
 			changeSite = "Guest",
 			changeTitle = "${changeTitle}",
 			changeType = "Added",
-			changeUser = "Test Test",
-			showAllItems = "true");
+			changeUser = "Test Test");
+
+		PublicationsChanges.viewChangesViaContextStyle(
+			changeCategory = "Dynamic Data Lists Record",
+			changeDescription = "Test Test added a Dynamic Data Lists Record in Guest",
+			changeTitle = "${changeTitle}");
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Lists Record Set",
 			changeSite = "Guest",
 			changeTitle = "List Name",
 			changeType = "Added",
-			changeUser = "Test Test",
-			showAllItems = "true");
+			changeUser = "Test Test");
 
 		PublicationsChanges.viewChangesViaChangesStyle(
 			changeCategory = "Dynamic Data Mapping Structure",
 			changeSite = "Guest",
 			changeTitle = "Data Definition",
 			changeType = "Added",
-			changeUser = "Test Test",
-			showAllItems = "true");
-
-		PublicationsChanges.viewChangesViaContextStyle(
-			changeCategory = "Dynamic Data Lists Record",
-			changeDescription = "Test Test added a Dynamic Data Lists Record in Guest",
-			changeTitle = "Dynamic Data Lists Record",
-			showAllItems = "true");
+			changeUser = "Test Test");
 
 		JSONPublications.publishPublication(publicationName = "Publication Name");
 

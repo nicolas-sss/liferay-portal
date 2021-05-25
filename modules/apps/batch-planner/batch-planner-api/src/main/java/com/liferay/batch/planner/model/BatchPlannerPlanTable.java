@@ -52,6 +52,16 @@ public class BatchPlannerPlanTable extends BaseTable<BatchPlannerPlanTable> {
 			"modifiedDate", Date.class, Types.TIMESTAMP, Column.FLAG_DEFAULT);
 	public final Column<BatchPlannerPlanTable, Boolean> active = createColumn(
 		"active_", Boolean.class, Types.BOOLEAN, Column.FLAG_DEFAULT);
+	public final Column<BatchPlannerPlanTable, String> externalType =
+		createColumn(
+			"externalType", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
+	public final Column<BatchPlannerPlanTable, String> externalURL =
+		createColumn(
+			"externalURL", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
+	public final Column<BatchPlannerPlanTable, String> internalClassName =
+		createColumn(
+			"internalClassName", String.class, Types.VARCHAR,
+			Column.FLAG_DEFAULT);
 	public final Column<BatchPlannerPlanTable, String> name = createColumn(
 		"name", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<BatchPlannerPlanTable, Boolean> export = createColumn(

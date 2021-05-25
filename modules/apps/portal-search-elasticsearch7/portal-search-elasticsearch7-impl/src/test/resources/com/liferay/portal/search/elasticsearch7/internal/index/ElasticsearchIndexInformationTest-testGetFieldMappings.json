@@ -671,11 +671,15 @@
 				},
 				"extension": {
 					"store": true,
-					"type": "text"
+					"type": "keyword"
 				},
 				"fileEntryTypeId": {
 					"store": true,
 					"type": "keyword"
+				},
+				"fileExtension": {
+					"store": true,
+					"type": "text"
 				},
 				"folderId": {
 					"store": true,
@@ -871,6 +875,11 @@
 					"type": "keyword"
 				},
 				"userName": {
+					"fields": {
+						"text": {
+							"type": "text"
+						}
+					},
 					"store": true,
 					"type": "keyword"
 				},

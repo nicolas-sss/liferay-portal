@@ -12,10 +12,6 @@ definition {
 	setUp {
 		SignIn.signIn();
 
-		var portalURL = PropsUtil.get("portal.url");
-
-		AssertLocation(value1 = "${portalURL}/web/guest/home");
-
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
@@ -49,6 +45,16 @@ definition {
 	test ViewSAMLConfigurationAfterUpgrade72101 {
 		property data.archive.type = "data-archive-saml";
 		property portal.version = "7.2.10.1";
+
+		Upgrade.viewSAMLGeneralConfiguration(samlRoleType = "Identity Provider");
+
+		Upgrade.viewSAMLSPConnectionConfiguration();
+	}
+
+	@priority = "5"
+	test ViewSAMLConfigurationAfterUpgrade701016 {
+		property data.archive.type = "data-archive-saml";
+		property portal.version = "7.0.10.16";
 
 		Upgrade.viewSAMLGeneralConfiguration(samlRoleType = "Identity Provider");
 

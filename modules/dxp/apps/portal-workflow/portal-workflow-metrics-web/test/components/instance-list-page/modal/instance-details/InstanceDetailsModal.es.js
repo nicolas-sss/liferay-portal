@@ -114,12 +114,12 @@ describe('The InstanceDetailsModal component should', () => {
 			expect(resultStatus[0]).toHaveTextContent(
 				'Jan 24, 2020, 10:08 AM (0d 03h 43min overdue)'
 			);
-			expect(resultIcons[0].children[0].classList).toContain(
+			expect(resultIcons[1].children[0].classList).toContain(
 				'lexicon-icon-exclamation-circle'
 			);
 			expect(getByText('RESOLVED (1)')).toBeTruthy();
 			expect(resultStatus[1]).toHaveTextContent('(resolved-on-time)');
-			expect(resultIcons[1].children[0].classList).toContain(
+			expect(resultIcons[2].children[0].classList).toContain(
 				'lexicon-icon-check-circle'
 			);
 		});
@@ -156,10 +156,33 @@ describe('The InstanceDetailsModal component should', () => {
 					data: {
 						...data,
 						completed: false,
+						slaResults: [
+							{...data.slaResults[0]},
+							{
+								...data.slaResults[1],
+								onTime: true,
+								status: 'NEW',
+							},
+						],
+						slaStatus: 'Untracked',
 						taskNames: ['Review'],
 					},
 				}),
 			});
+		});
+
+		test('Render details with slaStatus Untracked', () => {
+			const untrackedIcons = document.querySelectorAll(
+				'.lexicon-icon-hr'
+			);
+			const slaNotStartedElement = renderResult.getByText(
+				'NOT-STARTED (1)'
+			);
+			const slaResultLabelElement = renderResult.getByText('(untracked)');
+
+			expect(untrackedIcons.length).toBe(2);
+			expect(slaNotStartedElement).toBeTruthy();
+			expect(slaResultLabelElement).toBeTruthy();
 		});
 
 		test('Render Process details with correct infos', () => {

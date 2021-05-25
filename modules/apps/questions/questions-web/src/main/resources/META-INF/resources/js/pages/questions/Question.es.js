@@ -12,13 +12,15 @@
  * details.
  */
 
-import {useMutation, useQuery} from '@apollo/client';
 import ClayButton from '@clayui/button';
 import ClayForm from '@clayui/form';
 import ClayIcon from '@clayui/icon';
+import ClayLabel from '@clayui/label';
 import ClayNavigationBar from '@clayui/navigation-bar';
 import classNames from 'classnames';
+import {useMutation} from 'graphql-hooks';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {Helmet} from 'react-helmet';
 import {withRouter} from 'react-router-dom';
 
 import {AppContext} from '../../AppContext.es';
@@ -39,14 +41,15 @@ import TextLengthValidation from '../../components/TextLengthValidation.es';
 import useQueryParams from '../../hooks/useQueryParams.es';
 import {
 	createAnswerQuery,
-	getMessagesQuery,
-	getThreadQuery,
+	getMessages,
+	getThread,
 	markAsAnswerMessageBoardMessageQuery,
 } from '../../utils/client.es';
 import lang from '../../utils/lang.es';
 import {
 	dateToBriefInternationalHuman,
 	getContextLink,
+	getFullPath,
 	stripHTML,
 } from '../../utils/utils.es';
 
@@ -70,18 +73,66 @@ export default withRouter(
 		const [page, setPage] = useState(1);
 		const [pageSize, setPageSize] = useState(20);
 
-		const {
-			loading,
-			data: {messageBoardThreadByFriendlyUrlPath: question = {}} = {},
-		} = useQuery(getThreadQuery, {
-			context: {
-				uri: '/o/graphql?nestedFields=lastPostDate',
-			},
-			variables: {
-				friendlyUrlPath: questionId,
-				siteKey: context.siteKey,
-			},
-		});
+		const [loading, setLoading] = useState(true);
+		const [question, setQuestion] = useState({});
+		const [answers, setAnswers] = useState({});
+
+		const fetchMessages = useCallback(() => {
+			if (question && question.id) {
+				getMessages(question.id, sort, page, pageSize).then(
+					({data: {messageBoardThreadMessageBoardMessages}}) => {
+						if (messageBoardThreadMessageBoardMessages.totalCount) {
+							if (sort !== 'votes') {
+								setAnswers({
+									...messageBoardThreadMessageBoardMessages,
+								});
+							}
+							else {
+								const items = [
+									...[
+										...messageBoardThreadMessageBoardMessages.items,
+									].sort((answer1, answer2) => {
+										if (answer2.showAsAnswer) {
+											return 1;
+										}
+										if (answer1.showAsAnswer) {
+											return -1;
+										}
+
+										const ratingValue1 =
+											(answer1.aggregateRating &&
+												answer1.aggregateRating
+													.ratingValue) ||
+											0;
+										const ratingValue2 =
+											(answer2.aggregateRating &&
+												answer2.aggregateRating
+													.ratingValue) ||
+											0;
+
+										return ratingValue2 - ratingValue1;
+									}),
+								];
+
+								setAnswers({
+									...messageBoardThreadMessageBoardMessages,
+									items,
+								});
+							}
+						}
+					}
+				);
+			}
+		}, [question, page, pageSize, sort]);
+
+		useEffect(() => {
+			getThread(questionId, context.siteKey)
+				.then(({data: {messageBoardThreadByFriendlyUrlPath}}) => {
+					setQuestion(messageBoardThreadByFriendlyUrlPath);
+					setLoading(false);
+				})
+				.catch((_) => setLoading(false));
+		}, [questionId, context.siteKey]);
 
 		sectionTitle =
 			sectionTitle || sectionTitle === '0'
@@ -89,72 +140,15 @@ export default withRouter(
 				: question.messageBoardSection &&
 				  question.messageBoardSection.title;
 
-		const {
-			data: {messageBoardThreadMessageBoardMessages = {}} = {},
-			refetch,
-		} = useQuery(getMessagesQuery, {
-			context: {
-				uri: '/o/graphql?nestedFields=lastPostDate',
-			},
-			skip: !question || !question.id,
-			variables: {
-				messageBoardThreadId: question.id,
-				page: sort === 'votes' ? 1 : page,
-				pageSize: sort === 'votes' ? 100 : pageSize,
-				sort:
-					sort === 'votes' || sort === 'active'
-						? 'dateModified:desc'
-						: 'dateCreated:desc',
-			},
-		});
-
-		const [answers, setAnswers] = useState({});
+		useEffect(() => {
+			document.title = (question && question.title) || questionId;
+		}, [question, questionId]);
 
 		useEffect(() => {
-			if (messageBoardThreadMessageBoardMessages.totalCount) {
-				if (sort !== 'votes') {
-					setAnswers({...messageBoardThreadMessageBoardMessages});
-				}
-				else {
-					const items = [
-						...[
-							...messageBoardThreadMessageBoardMessages.items,
-						].sort((answer1, answer2) => {
-							if (answer2.showAsAnswer) {
-								return 1;
-							}
-							if (answer1.showAsAnswer) {
-								return -1;
-							}
+			fetchMessages();
+		}, [fetchMessages]);
 
-							const ratingValue1 =
-								(answer1.aggregateRating &&
-									answer1.aggregateRating.ratingValue) ||
-								0;
-							const ratingValue2 =
-								(answer2.aggregateRating &&
-									answer2.aggregateRating.ratingValue) ||
-								0;
-
-							return ratingValue2 - ratingValue1;
-						}),
-					];
-
-					setAnswers({
-						...messageBoardThreadMessageBoardMessages,
-						items,
-					});
-				}
-			}
-		}, [messageBoardThreadMessageBoardMessages, pageSize, sort]);
-
-		const [createAnswer] = useMutation(createAnswerQuery, {
-			context: getContextLink(`${sectionTitle}/${questionId}`),
-			onCompleted() {
-				setArticleBody('');
-				refetch();
-			},
-		});
+		const [createAnswer] = useMutation(createAnswerQuery);
 
 		const deleteAnswer = useCallback(
 			(answer) => {
@@ -172,12 +166,7 @@ export default withRouter(
 		);
 
 		const [markAsAnswerMessageBoardMessage] = useMutation(
-			markAsAnswerMessageBoardMessageQuery,
-			{
-				onCompleted() {
-					refetch();
-				},
-			}
+			markAsAnswerMessageBoardMessageQuery
 		);
 
 		const answerChange = useCallback(
@@ -192,10 +181,12 @@ export default withRouter(
 							messageBoardMessageId: answer.id,
 							showAsAnswer: false,
 						},
+					}).then(() => {
+						fetchMessages();
 					});
 				}
 			},
-			[markAsAnswerMessageBoardMessage, answers.items]
+			[markAsAnswerMessageBoardMessage, answers.items, fetchMessages]
 		);
 
 		return (
@@ -256,6 +247,16 @@ export default withRouter(
 											)}
 										>
 											{question.headline}
+
+											{question.status &&
+												question.status !==
+													'approved' && (
+													<span className="c-ml-2">
+														<ClayLabel displayType="info">
+															{question.status}
+														</ClayLabel>
+													</span>
+												)}
 
 											{!!question.locked && (
 												<span className="c-ml-2">
@@ -434,6 +435,7 @@ export default withRouter(
 								</div>
 
 								{question &&
+									question.status !== 'pending' &&
 									question.actions &&
 									question.actions['reply-to-thread'] && (
 										<div className="c-mt-5">
@@ -505,11 +507,17 @@ export default withRouter(
 													displayType="primary"
 													onClick={() => {
 														createAnswer({
+															fetchOptionsOverrides: getContextLink(
+																`${sectionTitle}/${questionId}`
+															),
 															variables: {
 																articleBody,
 																messageBoardThreadId:
 																	question.id,
 															},
+														}).then(() => {
+															setArticleBody('');
+															fetchMessages();
 														});
 													}}
 												>
@@ -527,6 +535,18 @@ export default withRouter(
 						<RelatedQuestions question={question} />
 					)}
 				</div>
+
+				{question && (
+					<Helmet>
+						<title>{question.headline}</title>
+						<link
+							href={`${getFullPath('questions')}${
+								context.historyRouterBasePath ? '' : '#/'
+							}questions/${sectionTitle}/${questionId}`}
+							rel="canonical"
+						/>
+					</Helmet>
+				)}
 			</section>
 		);
 	}

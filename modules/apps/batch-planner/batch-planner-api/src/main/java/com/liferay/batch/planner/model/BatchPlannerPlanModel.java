@@ -208,6 +208,51 @@ public interface BatchPlannerPlanModel
 	public void setActive(boolean active);
 
 	/**
+	 * Returns the external type of this batch planner plan.
+	 *
+	 * @return the external type of this batch planner plan
+	 */
+	@AutoEscape
+	public String getExternalType();
+
+	/**
+	 * Sets the external type of this batch planner plan.
+	 *
+	 * @param externalType the external type of this batch planner plan
+	 */
+	public void setExternalType(String externalType);
+
+	/**
+	 * Returns the external url of this batch planner plan.
+	 *
+	 * @return the external url of this batch planner plan
+	 */
+	@AutoEscape
+	public String getExternalURL();
+
+	/**
+	 * Sets the external url of this batch planner plan.
+	 *
+	 * @param externalURL the external url of this batch planner plan
+	 */
+	public void setExternalURL(String externalURL);
+
+	/**
+	 * Returns the internal class name of this batch planner plan.
+	 *
+	 * @return the internal class name of this batch planner plan
+	 */
+	@AutoEscape
+	public String getInternalClassName();
+
+	/**
+	 * Sets the internal class name of this batch planner plan.
+	 *
+	 * @param internalClassName the internal class name of this batch planner plan
+	 */
+	public void setInternalClassName(String internalClassName);
+
+	/**
 	 * Returns the name of this batch planner plan.
 	 *
 	 * @return the name of this batch planner plan

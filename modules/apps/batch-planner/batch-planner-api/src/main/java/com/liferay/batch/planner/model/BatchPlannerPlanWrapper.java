@@ -50,6 +50,9 @@ public class BatchPlannerPlanWrapper
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("active", isActive());
+		attributes.put("externalType", getExternalType());
+		attributes.put("externalURL", getExternalURL());
+		attributes.put("internalClassName", getInternalClassName());
 		attributes.put("name", getName());
 		attributes.put("export", isExport());
 
@@ -104,6 +107,24 @@ public class BatchPlannerPlanWrapper
 
 		if (active != null) {
 			setActive(active);
+		}
+
+		String externalType = (String)attributes.get("externalType");
+
+		if (externalType != null) {
+			setExternalType(externalType);
+		}
+
+		String externalURL = (String)attributes.get("externalURL");
+
+		if (externalURL != null) {
+			setExternalURL(externalURL);
+		}
+
+		String internalClassName = (String)attributes.get("internalClassName");
+
+		if (internalClassName != null) {
+			setInternalClassName(internalClassName);
 		}
 
 		String name = (String)attributes.get("name");
@@ -167,6 +188,36 @@ public class BatchPlannerPlanWrapper
 	@Override
 	public boolean getExport() {
 		return model.getExport();
+	}
+
+	/**
+	 * Returns the external type of this batch planner plan.
+	 *
+	 * @return the external type of this batch planner plan
+	 */
+	@Override
+	public String getExternalType() {
+		return model.getExternalType();
+	}
+
+	/**
+	 * Returns the external url of this batch planner plan.
+	 *
+	 * @return the external url of this batch planner plan
+	 */
+	@Override
+	public String getExternalURL() {
+		return model.getExternalURL();
+	}
+
+	/**
+	 * Returns the internal class name of this batch planner plan.
+	 *
+	 * @return the internal class name of this batch planner plan
+	 */
+	@Override
+	public String getInternalClassName() {
+		return model.getInternalClassName();
 	}
 
 	/**
@@ -312,6 +363,36 @@ public class BatchPlannerPlanWrapper
 	@Override
 	public void setExport(boolean export) {
 		model.setExport(export);
+	}
+
+	/**
+	 * Sets the external type of this batch planner plan.
+	 *
+	 * @param externalType the external type of this batch planner plan
+	 */
+	@Override
+	public void setExternalType(String externalType) {
+		model.setExternalType(externalType);
+	}
+
+	/**
+	 * Sets the external url of this batch planner plan.
+	 *
+	 * @param externalURL the external url of this batch planner plan
+	 */
+	@Override
+	public void setExternalURL(String externalURL) {
+		model.setExternalURL(externalURL);
+	}
+
+	/**
+	 * Sets the internal class name of this batch planner plan.
+	 *
+	 * @param internalClassName the internal class name of this batch planner plan
+	 */
+	@Override
+	public void setInternalClassName(String internalClassName) {
+		model.setInternalClassName(internalClassName);
 	}
 
 	/**

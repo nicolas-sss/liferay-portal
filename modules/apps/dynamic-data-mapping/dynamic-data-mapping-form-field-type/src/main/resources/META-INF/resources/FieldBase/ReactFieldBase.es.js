@@ -121,11 +121,8 @@ const FieldProperties = ({required, showPopover, tooltip}) => {
 					{showPopover ? (
 						<Popover tooltip={tooltip} />
 					) : (
-						<span className="ddm-tooltip">
-							<ClayIcon
-								symbol="question-circle-full"
-								title={tooltip}
-							/>
+						<span className="ddm-tooltip" title={tooltip}>
+							<ClayIcon symbol="question-circle-full" />
 						</span>
 					)}
 				</>
@@ -139,6 +136,7 @@ function FieldBase({
 	displayErrors,
 	errorMessage,
 	fieldName,
+	id,
 	label,
 	localizedValue = {},
 	name,
@@ -193,7 +191,7 @@ function FieldBase({
 			type === 'paragraph' ||
 			type === 'radio');
 
-	const fieldDetailsId = name + '_fieldDetails';
+	const fieldDetailsId = id ? id + '_fieldDetails' : name + '_fieldDetails';
 	const hasError = displayErrors && errorMessage && !valid;
 
 	let fieldDetails = '';

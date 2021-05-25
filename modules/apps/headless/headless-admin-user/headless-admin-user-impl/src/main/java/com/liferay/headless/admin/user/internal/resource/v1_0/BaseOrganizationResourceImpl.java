@@ -307,11 +307,6 @@ public abstract class BaseOrganizationResourceImpl
 				organization.getNumberOfOrganizations());
 		}
 
-		if (organization.getParentOrganization() != null) {
-			existingOrganization.setParentOrganization(
-				organization.getParentOrganization());
-		}
-
 		preparePatch(organization, existingOrganization);
 
 		return putOrganization(organizationId, existingOrganization);
@@ -461,8 +456,8 @@ public abstract class BaseOrganizationResourceImpl
 		throws Exception {
 
 		return getOrganizationsPage(
-			(Boolean)parameters.get("flatten"), search, filter, pagination,
-			sorts);
+			Boolean.parseBoolean((String)parameters.get("flatten")), search,
+			filter, pagination, sorts);
 	}
 
 	@Override

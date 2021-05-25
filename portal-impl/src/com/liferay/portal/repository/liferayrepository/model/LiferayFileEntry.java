@@ -173,8 +173,18 @@ public class LiferayFileEntry extends LiferayModel implements FileEntry {
 	}
 
 	@Override
+	public Date getExpirationDate() {
+		return _dlFileEntry.getExpirationDate();
+	}
+
+	@Override
 	public String getExtension() {
 		return _dlFileEntry.getExtension();
+	}
+
+	@Override
+	public String getExternalReferenceCode() {
+		return _dlFileEntry.getExternalReferenceCode();
 	}
 
 	@Override
@@ -347,6 +357,11 @@ public class LiferayFileEntry extends LiferayModel implements FileEntry {
 	@Override
 	public long getRepositoryId() {
 		return _dlFileEntry.getRepositoryId();
+	}
+
+	@Override
+	public Date getReviewDate() {
+		return _dlFileEntry.getReviewDate();
 	}
 
 	@Override

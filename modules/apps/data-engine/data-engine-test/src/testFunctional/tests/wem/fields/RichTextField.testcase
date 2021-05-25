@@ -79,7 +79,7 @@ definition {
 	@description = "This test verifies if the user can repeat and exclude a Rich Text Field."
 	@priority = "5"
 	test ExcludeRepeatedRichTextOnWebContent {
-		DataEngine.editFieldRepeatable(fieldFieldLabel = "Rich Text");
+		DataEngine.toggleFieldRepeatable(fieldFieldLabel = "Rich Text");
 
 		WebContentStructures.saveCP();
 
@@ -89,7 +89,7 @@ definition {
 
 		WebContent.addWithStructureCP(webContentTitle = "WC WebContent Title");
 
-		DataEngine.addRepeatableField(fieldName = "Rich Text");
+		DataEngine.addRepeatableField(fieldLabel = "Rich Text");
 
 		PortletEntry.publish();
 
@@ -206,7 +206,7 @@ definition {
 	@description = "This test ensure is possible to repeat a rich text on a Web Content."
 	@priority = "5"
 	test RepeatRichTextOnWebContent {
-		DataEngine.editFieldRepeatable(fieldFieldLabel = "Rich Text");
+		DataEngine.toggleFieldRepeatable(fieldFieldLabel = "Rich Text");
 
 		WebContentStructures.saveCP();
 
@@ -216,7 +216,7 @@ definition {
 
 		WebContent.addWithStructureCP(webContentTitle = "WC WebContent Title");
 
-		DataEngine.addRepeatableField(fieldName = "Rich Text");
+		DataEngine.addRepeatableField(fieldLabel = "Rich Text");
 
 		DataEngine.assertFieldRepeated(
 			fieldName = "RichText",

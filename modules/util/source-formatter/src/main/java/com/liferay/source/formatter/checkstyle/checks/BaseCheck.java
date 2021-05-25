@@ -194,14 +194,23 @@ public abstract class BaseCheck extends AbstractCheck {
 	protected List<DetailAST> getDependentIdentDetailASTList(
 		DetailAST variableDefinitionDetailAST, int lineNumber) {
 
-		List<Variable> variables = _getVariables(variableDefinitionDetailAST);
+		return getDependentIdentDetailASTList(
+			variableDefinitionDetailAST, lineNumber, false);
+	}
+
+	protected List<DetailAST> getDependentIdentDetailASTList(
+		DetailAST variableDefinitionDetailAST, int lineNumber,
+		boolean includeGetters) {
+
+		List<Variable> variables = _getVariables(
+			variableDefinitionDetailAST, includeGetters);
 
 		List<DetailAST> dependentIdentDetailASTList = new ArrayList<>();
 
 		return _addDependentIdentDetailASTList(
 			dependentIdentDetailASTList,
-			variableDefinitionDetailAST.getNextSibling(), variables,
-			lineNumber);
+			variableDefinitionDetailAST.getNextSibling(), variables, lineNumber,
+			includeGetters);
 	}
 
 	protected int getEndLineNumber(DetailAST detailAST) {
@@ -858,6 +867,35 @@ public abstract class BaseCheck extends AbstractCheck {
 		return false;
 	}
 
+	protected boolean hasPrecedingPlaceholder(DetailAST detailAST) {
+		CommonHiddenStreamToken commonHiddenStreamToken = getHiddenBefore(
+			detailAST);
+
+		if (commonHiddenStreamToken != null) {
+			String text = commonHiddenStreamToken.getText();
+
+			return text.contains("PLACEHOLDER");
+		}
+
+		DetailAST previousSiblingDetailAST = detailAST.getPreviousSibling();
+
+		while (true) {
+			if (previousSiblingDetailAST == null) {
+				return false;
+			}
+
+			commonHiddenStreamToken = getHiddenAfter(previousSiblingDetailAST);
+
+			if (commonHiddenStreamToken != null) {
+				String text = commonHiddenStreamToken.getText();
+
+				return text.contains("PLACEHOLDER");
+			}
+
+			previousSiblingDetailAST = previousSiblingDetailAST.getLastChild();
+		}
+	}
+
 	protected boolean isArray(DetailAST detailAST) {
 		if (detailAST.getType() != TokenTypes.TYPE) {
 			return false;
@@ -1010,7 +1048,7 @@ public abstract class BaseCheck extends AbstractCheck {
 
 	private List<DetailAST> _addDependentIdentDetailASTList(
 		List<DetailAST> dependentIdentDetailASTList, DetailAST detailAST,
-		List<Variable> variables, int lineNumber) {
+		List<Variable> variables, int lineNumber, boolean includeGetters) {
 
 		if (detailAST == null) {
 			return dependentIdentDetailASTList;
@@ -1035,7 +1073,7 @@ public abstract class BaseCheck extends AbstractCheck {
 					continue;
 				}
 
-				if (_hasPossibleValueChangeOperation(identDetailAST) ||
+				if (_hasPossibleValueChangeOperation(identDetailAST, false) ||
 					variable.hasPossibleValueChangeOperation()) {
 
 					dependentIdentDetailASTList.add(identDetailAST);
@@ -1047,13 +1085,13 @@ public abstract class BaseCheck extends AbstractCheck {
 			if ((detailAST.getLineNo() < lineNumber) &&
 				(count != dependentIdentDetailASTList.size())) {
 
-				variables.addAll(_getVariables(detailAST));
+				variables.addAll(_getVariables(detailAST, false));
 			}
 		}
 
 		return _addDependentIdentDetailASTList(
 			dependentIdentDetailASTList, detailAST.getNextSibling(), variables,
-			lineNumber);
+			lineNumber, includeGetters);
 	}
 
 	private List<String> _getJSPImportNames(String directoryName) {
@@ -1102,7 +1140,9 @@ public abstract class BaseCheck extends AbstractCheck {
 		return nameDetailAST.getText();
 	}
 
-	private List<Variable> _getVariables(DetailAST detailAST) {
+	private List<Variable> _getVariables(
+		DetailAST detailAST, boolean includeGetters) {
+
 		List<Variable> variables = new ArrayList<>();
 
 		List<DetailAST> identDetailASTList = getAllChildTokens(
@@ -1119,14 +1159,17 @@ public abstract class BaseCheck extends AbstractCheck {
 				variables.add(
 					new Variable(
 						name,
-						_hasPossibleValueChangeOperation(identDetailAST)));
+						_hasPossibleValueChangeOperation(
+							identDetailAST, includeGetters)));
 			}
 		}
 
 		return variables;
 	}
 
-	private boolean _hasPossibleValueChangeOperation(DetailAST identDetailAST) {
+	private boolean _hasPossibleValueChangeOperation(
+		DetailAST identDetailAST, boolean includeGetters) {
+
 		DetailAST parentDetailAST = identDetailAST.getParent();
 
 		if (parentDetailAST.getType() == TokenTypes.DOT) {
@@ -1138,6 +1181,10 @@ public abstract class BaseCheck extends AbstractCheck {
 
 				if (nextSiblingDetailAST == null) {
 					return false;
+				}
+
+				if (includeGetters) {
+					return true;
 				}
 
 				String methodName = nextSiblingDetailAST.getText();

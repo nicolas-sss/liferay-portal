@@ -30,4 +30,10 @@ public interface FFLayoutContentPageEditorConfiguration {
 	@Meta.AD(deflt = "false", required = false)
 	public boolean contentBrowsingEnabled();
 
+	@Meta.AD(deflt = "false", required = false)
+	public boolean dropdownWidgetTopperEnabled();
+
+	@Meta.AD(deflt = "false", required = false)
+	public boolean relatedItemCollectionProvidersEnabled();
+
 }

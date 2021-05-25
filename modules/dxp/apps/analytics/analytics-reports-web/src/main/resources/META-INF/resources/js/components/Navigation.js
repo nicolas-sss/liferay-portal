@@ -13,7 +13,7 @@ import ClayAlert from '@clayui/alert';
 import PropTypes from 'prop-types';
 import React, {useCallback, useContext, useState} from 'react';
 
-import {useChartState} from '../context/ChartStateContext';
+import {ChartStateContext} from '../context/ChartStateContext';
 import ConnectionContext from '../context/ConnectionContext';
 import {StoreStateContext} from '../context/StoreContext';
 import APIService from '../utils/APIService';
@@ -43,9 +43,7 @@ export default function Navigation({
 
 	const [trafficSourceName, setTrafficSourceName] = useState('');
 
-	const chartState = useChartState();
-
-	const {timeSpanKey, timeSpanOffset} = chartState;
+	const {timeSpanKey, timeSpanOffset} = useContext(ChartStateContext);
 
 	const handleCurrentPage = useCallback((currentPage) => {
 		setCurrentPage({view: currentPage.view});

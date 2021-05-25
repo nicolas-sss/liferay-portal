@@ -21,4 +21,7 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public interface DSDocumentManager {
+
+	public byte[] getDSDocumentsAsBytes(long groupId, String dsEnvelopeId);
+
 }

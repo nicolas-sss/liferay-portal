@@ -140,7 +140,7 @@
 		<field name="expirationDate" type="Date" />
 		<field name="mimeType" type="String" />
 		<field localized="true" name="title" type="String">
-			<hint name="max-length">4000</hint>
+			<hint-collection name="CLOB" />
 		</field>
 		<field localized="true" name="description" type="String">
 			<hint-collection name="CLOB" />
@@ -222,6 +222,7 @@
 		<field name="mvccVersion" type="long" />
 		<field name="ctCollectionId" type="long" />
 		<field name="uuid" type="String" />
+		<field name="externalReferenceCode" type="String" />
 		<field name="fileEntryId" type="long" />
 		<field name="groupId" type="long" />
 		<field name="companyId" type="long" />
@@ -261,6 +262,8 @@
 		<field name="custom1ImageId" type="long" />
 		<field name="custom2ImageId" type="long" />
 		<field name="manualCheckInRequired" type="boolean" />
+		<field name="expirationDate" type="Date" />
+		<field name="reviewDate" type="Date" />
 		<field name="lastPublishDate" type="Date" />
 	</model>
 	<model name="com.liferay.document.library.kernel.model.DLFileEntryMetadata">
@@ -358,6 +361,8 @@
 		<field name="version" type="String" />
 		<field name="size" type="long" />
 		<field name="checksum" type="String" />
+		<field name="expirationDate" type="Date" />
+		<field name="reviewDate" type="Date" />
 		<field name="lastPublishDate" type="Date" />
 		<field name="status" type="int" />
 		<field name="statusByUserId" type="long" />
@@ -1156,12 +1161,14 @@
 	<model name="com.liferay.portal.kernel.model.PortalPreferences">
 		<field name="mvccVersion" type="long" />
 		<field name="portalPreferencesId" type="long" />
+		<field name="companyId" type="long" />
 		<field name="ownerId" type="long" />
 		<field name="ownerType" type="int" />
 	</model>
 	<model name="com.liferay.portal.kernel.model.PortalPreferenceValue">
 		<field name="mvccVersion" type="long" />
 		<field name="portalPreferenceValueId" type="long" />
+		<field name="companyId" type="long" />
 		<field name="portalPreferencesId" type="long" />
 		<field name="index" type="int" />
 		<field name="key" type="String">

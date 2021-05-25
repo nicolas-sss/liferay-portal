@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.constants.DDMFormFieldTy
 import com.liferay.dynamic.data.mapping.form.field.type.internal.util.DDMFormFieldTypeUtil;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.util.NumericDDMFormFieldUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -135,21 +136,21 @@ public class NumericDDMFormFieldTemplateContextContributor
 		if (GetterUtil.getBoolean(
 				ddmFormFieldRenderingContext.getProperty("valueChanged"))) {
 
-			DecimalFormat numberFormat =
-				NumericDDMFormFieldUtil.getNumberFormat(locale);
+			DecimalFormat decimalFormat =
+				NumericDDMFormFieldUtil.getDecimalFormat(locale);
 
-			return numberFormat.format(GetterUtil.getNumber(value));
+			return decimalFormat.format(GetterUtil.getNumber(value));
 		}
 
 		return value;
 	}
 
 	protected Map<String, String> getSymbolsMap(Locale locale) {
-		DecimalFormat formatter = NumericDDMFormFieldUtil.getNumberFormat(
+		DecimalFormat decimalFormat = NumericDDMFormFieldUtil.getDecimalFormat(
 			locale);
 
 		DecimalFormatSymbols decimalFormatSymbols =
-			formatter.getDecimalFormatSymbols();
+			decimalFormat.getDecimalFormatSymbols();
 
 		return HashMapBuilder.put(
 			"decimalSymbol",

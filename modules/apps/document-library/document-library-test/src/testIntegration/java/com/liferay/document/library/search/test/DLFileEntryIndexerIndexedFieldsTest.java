@@ -218,8 +218,6 @@ public class DLFileEntryIndexerIndexedFieldsTest extends BaseDLIndexerTestCase {
 			Field.ENTRY_CLASS_PK, String.valueOf(fileEntry.getFileEntryId()));
 		map.put(Field.FOLDER_ID, String.valueOf(fileEntry.getFolderId()));
 		map.put(Field.GROUP_ID, String.valueOf(fileEntry.getGroupId()));
-		map.put(
-			Field.PROPERTIES, FileUtil.stripExtension(fileEntry.getTitle()));
 		map.put(Field.SCOPE_GROUP_ID, String.valueOf(fileEntry.getGroupId()));
 		map.put(Field.STAGING_GROUP, "false");
 		map.put(Field.STATUS, "0");
@@ -235,8 +233,9 @@ public class DLFileEntryIndexerIndexedFieldsTest extends BaseDLIndexerTestCase {
 			"dataRepositoryId", String.valueOf(fileEntry.getRepositoryId()));
 		map.put("ddmContent", "text/plain; charset=UTF-8 UTF-8");
 		map.put("extension", fileEntry.getExtension());
-		map.put("extension_String_sortable", fileEntry.getExtension());
 		map.put("fileEntryTypeId", "0");
+		map.put("fileExtension", fileEntry.getExtension());
+		map.put("fileExtension_String_sortable", fileEntry.getExtension());
 		map.put("fileName", fileEntry.getFileName());
 		map.put("hidden", "false");
 		map.put(

@@ -12,8 +12,10 @@
  * details.
  */
 
+import {ClayButtonWithIcon} from '@clayui/button';
 import React, {useMemo, useState} from 'react';
 
+import {FRAGMENTS_DISPLAY_STYLES} from '../../../app/config/constants/fragmentsDisplayStyles';
 import {LAYOUT_DATA_ITEM_TYPES} from '../../../app/config/constants/layoutDataItemTypes';
 import {useSelector} from '../../../app/contexts/StoreContext';
 import SearchForm from '../../../common/components/SearchForm';
@@ -22,7 +24,7 @@ import SidebarPanelHeader from '../../../common/components/SidebarPanelHeader';
 import SearchResultsPanel from './SearchResultsPanel';
 import TabsPanel from './TabsPanel';
 
-const BASIC_COMPONENT_COLLECTION = 'BASIC_COMPONENT';
+const FRAGMENTS_DISPLAY_STYLE_KEY = 'FRAGMENTS_DISPLAY_STYLE_KEY';
 
 const collectionFilter = (collections, searchValue) => {
 	const searchValueLowerCase = searchValue.toLowerCase();
@@ -97,7 +99,7 @@ const normalizeCollections = (collection) => {
 	return normalizedElement;
 };
 
-const normalizeFragmentEntry = (fragmentEntry, collectionId) => {
+const normalizeFragmentEntry = (fragmentEntry) => {
 	if (!fragmentEntry.fragmentEntryKey) {
 		return fragmentEntry;
 	}
@@ -111,10 +113,7 @@ const normalizeFragmentEntry = (fragmentEntry, collectionId) => {
 		icon: fragmentEntry.icon,
 		itemId: fragmentEntry.fragmentEntryKey,
 		label: fragmentEntry.name,
-		preview:
-			collectionId !== BASIC_COMPONENT_COLLECTION
-				? fragmentEntry.imagePreviewURL
-				: null,
+		preview: fragmentEntry.imagePreviewURL,
 		type: LAYOUT_DATA_ITEM_TYPES.fragment,
 	};
 };
@@ -123,6 +122,11 @@ export default function FragmentsSidebar() {
 	const fragments = useSelector((state) => state.fragments);
 	const widgets = useSelector((state) => state.widgets);
 
+	const [displayStyle, setDisplayStyle] = useState(
+		window.sessionStorage.getItem(FRAGMENTS_DISPLAY_STYLE_KEY) ||
+			FRAGMENTS_DISPLAY_STYLES.LIST
+	);
+
 	const [searchValue, setSearchValue] = useState('');
 
 	const tabs = useMemo(
@@ -130,10 +134,7 @@ export default function FragmentsSidebar() {
 			{
 				collections: fragments.map((collection) => ({
 					children: collection.fragmentEntries.map((fragmentEntry) =>
-						normalizeFragmentEntry(
-							fragmentEntry,
-							collection.fragmentCollectionId
-						)
+						normalizeFragmentEntry(fragmentEntry)
 					),
 					collectionId: collection.fragmentCollectionId,
 					label: collection.name,
@@ -173,11 +174,45 @@ export default function FragmentsSidebar() {
 			</SidebarPanelHeader>
 
 			<SidebarPanelContent className="page-editor__sidebar__fragments-widgets-panel">
-				<SearchForm className="mb-3" onChange={setSearchValue} />
+				<div className="align-items-center d-flex justify-content-between mb-3">
+					<SearchForm
+						className="flex-grow-1 mb-0"
+						onChange={setSearchValue}
+					/>
+
+					<ClayButtonWithIcon
+						borderless
+						className="lfr-portal-tooltip ml-2 mt-0"
+						displayType="secondary"
+						onClick={() => {
+							const nextDisplayStyle =
+								displayStyle === FRAGMENTS_DISPLAY_STYLES.LIST
+									? FRAGMENTS_DISPLAY_STYLES.CARDS
+									: FRAGMENTS_DISPLAY_STYLES.LIST;
+
+							setDisplayStyle(nextDisplayStyle);
+
+							window.sessionStorage.setItem(
+								FRAGMENTS_DISPLAY_STYLE_KEY,
+								nextDisplayStyle
+							);
+						}}
+						small
+						symbol={
+							displayStyle === FRAGMENTS_DISPLAY_STYLES.CARDS
+								? 'cards2'
+								: 'list'
+						}
+						title={Liferay.Language.get('change-view')}
+					/>
+				</div>
 				{searchValue ? (
-					<SearchResultsPanel filteredTabs={filteredTabs} />
+					<SearchResultsPanel
+						displayStyle={displayStyle}
+						filteredTabs={filteredTabs}
+					/>
 				) : (
-					<TabsPanel tabs={tabs} />
+					<TabsPanel displayStyle={displayStyle} tabs={tabs} />
 				)}
 			</SidebarPanelContent>
 		</>

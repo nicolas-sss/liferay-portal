@@ -132,7 +132,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.PageContext;
 
 /**
  * @author Brian Wing Shun Chan
@@ -1171,16 +1170,16 @@ public class MainServlet extends HttpServlet {
 
 			_log.error(exception, exception);
 
-			httpServletRequest.setAttribute(PageContext.EXCEPTION, exception);
+			httpServletRequest.setAttribute(StrutsUtil.EXCEPTION, exception);
 
 			StrutsUtil.forward(
 				PropsValues.SERVLET_SERVICE_EVENTS_PRE_ERROR_PAGE,
 				getServletContext(), httpServletRequest, httpServletResponse);
 
 			if (exception == httpServletRequest.getAttribute(
-					PageContext.EXCEPTION)) {
+					StrutsUtil.EXCEPTION)) {
 
-				httpServletRequest.removeAttribute(PageContext.EXCEPTION);
+				httpServletRequest.removeAttribute(StrutsUtil.EXCEPTION);
 				httpServletRequest.removeAttribute(
 					RequestDispatcher.ERROR_EXCEPTION);
 				httpServletRequest.removeAttribute(
@@ -1292,76 +1291,67 @@ public class MainServlet extends HttpServlet {
 	private void _registerPortalInitialized() {
 		Registry registry = RegistryUtil.getRegistry();
 
-		Map<String, Object> properties = HashMapBuilder.<String, Object>put(
-			"module.service.lifecycle", "portal.initialized"
-		).put(
-			"service.vendor", ReleaseInfo.getVendor()
-		).put(
-			"service.version", ReleaseInfo.getVersion()
-		).build();
-
 		_portalInitializedModuleServiceLifecycleServiceRegistration =
 			registry.registerService(
 				ModuleServiceLifecycle.class,
 				new ModuleServiceLifecycle() {
 				},
-				properties);
-
-		properties = HashMapBuilder.<String, Object>put(
-			"module.service.lifecycle", "portlets.initialized"
-		).put(
-			"service.vendor", ReleaseInfo.getVendor()
-		).put(
-			"service.version", ReleaseInfo.getVersion()
-		).build();
+				HashMapBuilder.<String, Object>put(
+					"module.service.lifecycle", "portal.initialized"
+				).put(
+					"service.vendor", ReleaseInfo.getVendor()
+				).put(
+					"service.version", ReleaseInfo.getVersion()
+				).build());
 
 		_portalPortletsInitializedModuleServiceLifecycleServiceRegistration =
 			registry.registerService(
 				ModuleServiceLifecycle.class,
 				new ModuleServiceLifecycle() {
 				},
-				properties);
-
-		properties = HashMapBuilder.<String, Object>put(
-			"bean.id", ServletContext.class.getName()
-		).put(
-			"original.bean", Boolean.TRUE
-		).put(
-			"service.vendor", ReleaseInfo.getVendor()
-		).build();
+				HashMapBuilder.<String, Object>put(
+					"module.service.lifecycle", "portlets.initialized"
+				).put(
+					"service.vendor", ReleaseInfo.getVendor()
+				).put(
+					"service.version", ReleaseInfo.getVersion()
+				).build());
 
 		_servletContextServiceRegistration = registry.registerService(
-			ServletContext.class, getServletContext(), properties);
-
-		properties = HashMapBuilder.<String, Object>put(
-			"module.service.lifecycle", "system.check"
-		).put(
-			"service.vendor", ReleaseInfo.getVendor()
-		).put(
-			"service.version", ReleaseInfo.getVersion()
-		).build();
+			ServletContext.class, getServletContext(),
+			HashMapBuilder.<String, Object>put(
+				"bean.id", ServletContext.class.getName()
+			).put(
+				"original.bean", Boolean.TRUE
+			).put(
+				"service.vendor", ReleaseInfo.getVendor()
+			).build());
 
 		_systemCheckModuleServiceLifecycleServiceRegistration =
 			registry.registerService(
 				ModuleServiceLifecycle.class,
 				new ModuleServiceLifecycle() {
 				},
-				properties);
-
-		properties = HashMapBuilder.<String, Object>put(
-			"module.service.lifecycle", "license.install"
-		).put(
-			"service.vendor", ReleaseInfo.getVendor()
-		).put(
-			"service.version", ReleaseInfo.getVersion()
-		).build();
+				HashMapBuilder.<String, Object>put(
+					"module.service.lifecycle", "system.check"
+				).put(
+					"service.vendor", ReleaseInfo.getVendor()
+				).put(
+					"service.version", ReleaseInfo.getVersion()
+				).build());
 
 		_licenseInstallModuleServiceLifecycleServiceRegistration =
 			registry.registerService(
 				ModuleServiceLifecycle.class,
 				new ModuleServiceLifecycle() {
 				},
-				properties);
+				HashMapBuilder.<String, Object>put(
+					"module.service.lifecycle", "license.install"
+				).put(
+					"service.vendor", ReleaseInfo.getVendor()
+				).put(
+					"service.version", ReleaseInfo.getVersion()
+				).build());
 	}
 
 	private static final boolean _HTTP_HEADER_VERSION_VERBOSITY_DEFAULT =

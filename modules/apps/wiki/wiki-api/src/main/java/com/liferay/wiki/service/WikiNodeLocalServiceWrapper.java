@@ -41,6 +41,11 @@ public class WikiNodeLocalServiceWrapper
 		return _wikiNodeLocalService.addDefaultNode(userId, serviceContext);
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #addNode(String, long, String, String, ServiceContext)}
+	 */
+	@Deprecated
 	@Override
 	public com.liferay.wiki.model.WikiNode addNode(
 			long userId, String name, String description,
@@ -49,6 +54,17 @@ public class WikiNodeLocalServiceWrapper
 
 		return _wikiNodeLocalService.addNode(
 			userId, name, description, serviceContext);
+	}
+
+	@Override
+	public com.liferay.wiki.model.WikiNode addNode(
+			String externalReferenceCode, long userId, String name,
+			String description,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _wikiNodeLocalService.addNode(
+			externalReferenceCode, userId, name, description, serviceContext);
 	}
 
 	@Override
@@ -193,6 +209,13 @@ public class WikiNodeLocalServiceWrapper
 	}
 
 	@Override
+	public int dslQueryCount(
+		com.liferay.petra.sql.dsl.query.DSLQuery dslQuery) {
+
+		return _wikiNodeLocalService.dslQueryCount(dslQuery);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
 		return _wikiNodeLocalService.dynamicQuery();
 	}
@@ -299,6 +322,33 @@ public class WikiNodeLocalServiceWrapper
 	@Override
 	public com.liferay.wiki.model.WikiNode fetchWikiNode(long nodeId) {
 		return _wikiNodeLocalService.fetchWikiNode(nodeId);
+	}
+
+	/**
+	 * Returns the wiki node with the matching external reference code and group.
+	 *
+	 * @param groupId the primary key of the group
+	 * @param externalReferenceCode the wiki node's external reference code
+	 * @return the matching wiki node, or <code>null</code> if a matching wiki node could not be found
+	 */
+	@Override
+	public com.liferay.wiki.model.WikiNode fetchWikiNodeByExternalReferenceCode(
+		long groupId, String externalReferenceCode) {
+
+		return _wikiNodeLocalService.fetchWikiNodeByExternalReferenceCode(
+			groupId, externalReferenceCode);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #fetchWikiNodeByExternalReferenceCode(long, String)}
+	 */
+	@Deprecated
+	@Override
+	public com.liferay.wiki.model.WikiNode fetchWikiNodeByReferenceCode(
+		long groupId, String externalReferenceCode) {
+
+		return _wikiNodeLocalService.fetchWikiNodeByReferenceCode(
+			groupId, externalReferenceCode);
 	}
 
 	/**
@@ -455,6 +505,23 @@ public class WikiNodeLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _wikiNodeLocalService.getWikiNode(nodeId);
+	}
+
+	/**
+	 * Returns the wiki node with the matching external reference code and group.
+	 *
+	 * @param groupId the primary key of the group
+	 * @param externalReferenceCode the wiki node's external reference code
+	 * @return the matching wiki node
+	 * @throws PortalException if a matching wiki node could not be found
+	 */
+	@Override
+	public com.liferay.wiki.model.WikiNode getWikiNodeByExternalReferenceCode(
+			long groupId, String externalReferenceCode)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _wikiNodeLocalService.getWikiNodeByExternalReferenceCode(
+			groupId, externalReferenceCode);
 	}
 
 	/**

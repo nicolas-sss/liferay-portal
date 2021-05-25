@@ -12,9 +12,9 @@
  * details.
  */
 
-import {useMutation} from '@apollo/client';
 import ClayButton from '@clayui/button';
 import ClayForm from '@clayui/form';
+import {useMutation} from 'graphql-hooks';
 import React, {useCallback, useState} from 'react';
 import {withRouter} from 'react-router-dom';
 
@@ -38,17 +38,7 @@ export default withRouter(
 	}) => {
 		const [comment, setComment] = useState('');
 
-		const [createComment] = useMutation(createCommentQuery, {
-			context: getContextLink(`${sectionTitle}/${questionId}`),
-			onCompleted(data) {
-				setComment('');
-				showNewCommentChange(false);
-				commentsChange([
-					...comments,
-					data.createMessageBoardMessageMessageBoardMessage,
-				]);
-			},
-		});
+		const [createComment] = useMutation(createCommentQuery);
 
 		const _commentChange = useCallback(
 			(comment) => {
@@ -92,10 +82,20 @@ export default withRouter(
 									displayType="primary"
 									onClick={() => {
 										createComment({
+											fetchOptionsOverrides: getContextLink(
+												`${sectionTitle}/${questionId}`
+											),
 											variables: {
 												articleBody: comment,
 												parentMessageBoardMessageId: entityId,
 											},
+										}).then(({data}) => {
+											setComment('');
+											showNewCommentChange(false);
+											commentsChange([
+												...comments,
+												data.createMessageBoardMessageMessageBoardMessage,
+											]);
 										});
 									}}
 								>

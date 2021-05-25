@@ -42,7 +42,7 @@ definition {
 			fieldFieldLabel = "Numeric",
 			fieldName = "Numeric");
 
-		DataEngine.editFieldRepeatable(fieldFieldLabel = "Numeric");
+		DataEngine.toggleFieldRepeatable(fieldFieldLabel = "Numeric");
 
 		DDLDataDefinition.save();
 
@@ -118,9 +118,7 @@ definition {
 
 		DMNavigator.gotoAddDocumentTypeCP(dmDocumentTypeName = "DM Document Type Name");
 
-		AssertElementPresent(
-			key_fieldFieldLabel = "Date",
-			locator1 = "Icon#ASTERISK_DATE_FIELD");
+		FormFields.viewRequiredAsteriskDataField(fieldFieldLabel = "Date");
 
 		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
 
@@ -810,9 +808,7 @@ definition {
 			key_fieldFieldLabel = "Photo",
 			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
 
-		AssertElementPresent(
-			key_fieldFieldLabel = "Photo",
-			locator1 = "Icon#ASTERISK_DATE_FIELD");
+		FormFields.viewRequiredAsteriskDataField(fieldFieldLabel = "Photo");
 
 		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
 
@@ -882,9 +878,7 @@ definition {
 			key_fieldFieldLabel = "Company",
 			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
 
-		AssertElementPresent(
-			key_fieldFieldLabel = "Company",
-			locator1 = "Icon#ASTERISK_DATE_FIELD");
+		FormFields.viewRequiredAsteriskDataField(fieldFieldLabel = "Company");
 
 		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
 
@@ -954,9 +948,7 @@ definition {
 			key_fieldFieldLabel = "Resume",
 			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
 
-		AssertElementPresent(
-			key_fieldFieldLabel = "Resume",
-			locator1 = "Icon#ASTERISK_DATE_FIELD");
+		FormFields.viewRequiredAsteriskDataField(fieldFieldLabel = "Resume");
 
 		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
 
@@ -991,7 +983,7 @@ definition {
 			fieldFieldLabel = "Image",
 			fieldName = "Image");
 
-		DataEngine.editFieldRepeatable(fieldFieldLabel = "Image");
+		DataEngine.toggleFieldRepeatable(fieldFieldLabel = "Image");
 
 		DDLDataDefinition.save();
 
@@ -1091,15 +1083,11 @@ definition {
 
 		Navigator.gotoPage(pageName = "Documents and Media Page");
 
-		Navigator.ensureLocaleURL(locale = "es");
-
-		AssertClick(
-			key_dmDocumentTitle = "DM Document Title",
-			locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE",
-			value1 = "DM Document Title");
+		DMNavigator.gotoDocumentPG(dmDocumentTitle = "DM Document Title");
 
 		DMDocument.viewDocumentTypePG(
 			fieldFieldLabel = "Text",
+			locale = "es",
 			textContent = "Texto de prueba");
 	}
 

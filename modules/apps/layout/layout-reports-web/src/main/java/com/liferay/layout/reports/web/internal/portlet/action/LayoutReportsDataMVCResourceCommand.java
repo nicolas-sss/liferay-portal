@@ -28,7 +28,6 @@ import com.liferay.layout.seo.kernel.LayoutSEOLink;
 import com.liferay.layout.seo.kernel.LayoutSEOLinkManager;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -37,8 +36,8 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
@@ -50,6 +49,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -60,19 +60,18 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.portlet.ResourceURL;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
  */
 @Component(
-	configurationPid = "com.liferay.layout.reports.web.internal.configuration.LayoutReportsGooglePageSpeedConfiguration",
 	immediate = true,
 	property = {
 		"javax.portlet.name=" + LayoutReportsPortletKeys.LAYOUT_REPORTS,
@@ -82,17 +81,6 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class LayoutReportsDataMVCResourceCommand
 	extends BaseMVCResourceCommand {
-
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		_layoutReportsGooglePageSpeedConfigurationProvider =
-			new LayoutReportsGooglePageSpeedConfigurationProvider(
-				_configurationProvider,
-				ConfigurableUtil.createConfigurable(
-					LayoutReportsGooglePageSpeedConfiguration.class,
-					properties));
-	}
 
 	@Override
 	protected void doServeResource(
@@ -113,17 +101,17 @@ public class LayoutReportsDataMVCResourceCommand
 		JSONPortletResponseUtil.writeJSON(
 			resourceRequest, resourceResponse,
 			JSONUtil.put(
-				"assetsPath",
-				_portal.getPathContext(resourceRequest) + "/assets/"
-			).put(
-				"canonicalURLs",
-				_getCanonicalURLsJSONArray(resourceRequest, layout)
-			).put(
 				"configureGooglePageSpeedURL",
 				_getConfigureGooglePageSpeedURL(resourceRequest)
 			).put(
 				"defaultLanguageId",
 				LocaleUtil.toW3cLanguageId(_getDefaultLocale(layout))
+			).put(
+				"imagesPath",
+				_portal.getPathContext(resourceRequest) + "/images/"
+			).put(
+				"pageURLs",
+				_getPageURLsJSONArray(resourceRequest, resourceResponse, layout)
 			).put(
 				"validConnection", layoutReportsDataProvider.isValidConnection()
 			));
@@ -144,6 +132,24 @@ public class LayoutReportsDataMVCResourceCommand
 	}
 
 	private String _getCanonicalURL(
+		Map<Locale, String> alternateURLs, String canonicalURL, Layout layout,
+		Locale locale) {
+
+		try {
+			LayoutSEOLink layoutSEOLink =
+				_layoutSEOLinkManager.getCanonicalLayoutSEOLink(
+					layout, locale, canonicalURL, alternateURLs);
+
+			return layoutSEOLink.getHref();
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException, portalException);
+
+			return canonicalURL;
+		}
+	}
+
+	private String _getCanonicalURL(
 		String currentCompleteURL, Layout layout, ThemeDisplay themeDisplay) {
 
 		try {
@@ -155,63 +161,6 @@ public class LayoutReportsDataMVCResourceCommand
 		}
 
 		return StringPool.BLANK;
-	}
-
-	private JSONArray _getCanonicalURLsJSONArray(
-		PortletRequest portletRequest, Layout layout) {
-
-		Locale defaultLocale = _getDefaultLocale(layout);
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		String canonicalURL = _getCanonicalURL(
-			_getCompleteURL(portletRequest), layout, themeDisplay);
-
-		Map<Locale, String> alternateURLs = _getAlternateURLs(
-			canonicalURL, layout, themeDisplay);
-
-		return JSONUtil.putAll(
-			Optional.ofNullable(
-				_groupLocalService.fetchGroup(layout.getGroupId())
-			).map(
-				Group::getGroupId
-			).map(
-				_language::getAvailableLocales
-			).orElseGet(
-				Collections::emptySet
-			).stream(
-			).sorted(
-				(locale1, locale2) -> {
-					if (Objects.equals(locale1, defaultLocale)) {
-						return -1;
-					}
-
-					if (Objects.equals(locale2, defaultLocale)) {
-						return 1;
-					}
-
-					String languageId1 = LocaleUtil.toW3cLanguageId(locale1);
-					String languageId2 = LocaleUtil.toW3cLanguageId(locale2);
-
-					return languageId1.compareToIgnoreCase(languageId2);
-				}
-			).map(
-				locale -> HashMapBuilder.<String, Object>put(
-					"canonicalURL",
-					() -> {
-						LayoutSEOLink layoutSEOLink =
-							_layoutSEOLinkManager.getCanonicalLayoutSEOLink(
-								layout, locale, canonicalURL, alternateURLs);
-
-						return layoutSEOLink.getHref();
-					}
-				).put(
-					"languageId", LocaleUtil.toW3cLanguageId(locale)
-				).put(
-					"title", _getTitle(portletRequest, layout, locale)
-				).build()
-			).toArray());
 	}
 
 	private String _getCompleteURL(PortletRequest portletRequest) {
@@ -304,6 +253,101 @@ public class LayoutReportsDataMVCResourceCommand
 		}
 	}
 
+	private String _getLocaleURL(
+		Map<Locale, String> alternateURLs, String canonicalURL,
+		Locale defaultLocale, Layout layout, Locale locale) {
+
+		if (defaultLocale.equals(locale)) {
+			return _getCanonicalURL(
+				alternateURLs, canonicalURL, layout, locale);
+		}
+
+		return alternateURLs.get(locale);
+	}
+
+	private JSONArray _getPageURLsJSONArray(
+		PortletRequest portletRequest, PortletResponse portletResponse,
+		Layout layout) {
+
+		Locale defaultLocale = _getDefaultLocale(layout);
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		String canonicalURL = _getCanonicalURL(
+			_getCompleteURL(portletRequest), layout, themeDisplay);
+
+		Map<Locale, String> alternateURLs = _getAlternateURLs(
+			canonicalURL, layout, themeDisplay);
+
+		return JSONUtil.putAll(
+			Optional.ofNullable(
+				_groupLocalService.fetchGroup(layout.getGroupId())
+			).map(
+				Group::getGroupId
+			).map(
+				_language::getAvailableLocales
+			).orElseGet(
+				Collections::emptySet
+			).stream(
+			).sorted(
+				(locale1, locale2) -> {
+					if (Objects.equals(locale1, defaultLocale)) {
+						return -1;
+					}
+
+					if (Objects.equals(locale2, defaultLocale)) {
+						return 1;
+					}
+
+					String languageId1 = LocaleUtil.toW3cLanguageId(locale1);
+					String languageId2 = LocaleUtil.toW3cLanguageId(locale2);
+
+					return languageId1.compareToIgnoreCase(languageId2);
+				}
+			).map(
+				locale -> {
+					String url = _getLocaleURL(
+						alternateURLs, canonicalURL, defaultLocale, layout,
+						locale);
+
+					return HashMapBuilder.<String, Object>put(
+						"languageId", LocaleUtil.toW3cLanguageId(locale)
+					).put(
+						"languageLabel",
+						StringBundler.concat(
+							locale.getDisplayLanguage(themeDisplay.getLocale()),
+							StringPool.SPACE, StringPool.OPEN_PARENTHESIS,
+							locale.getDisplayCountry(themeDisplay.getLocale()),
+							StringPool.CLOSE_PARENTHESIS)
+					).put(
+						"layoutReportsIssuesURL",
+						_getResourceURL(
+							layout.getGroupId(), url, portletResponse)
+					).put(
+						"title", _getTitle(portletRequest, layout, locale)
+					).put(
+						"url", url
+					).build();
+				}
+			).toArray());
+	}
+
+	private String _getResourceURL(
+		long groupId, String url, PortletResponse portletResponse) {
+
+		LiferayPortletResponse liferayPortletResponse =
+			_portal.getLiferayPortletResponse(portletResponse);
+
+		ResourceURL resourceURL = liferayPortletResponse.createResourceURL();
+
+		resourceURL.setParameter("groupId", String.valueOf(groupId));
+		resourceURL.setParameter("url", url);
+		resourceURL.setResourceID("/layout_reports/get_layout_reports_issues");
+
+		return resourceURL.toString();
+	}
+
 	private String _getTitle(
 		PortletRequest portletRequest, Layout layout, Locale locale) {
 
@@ -366,9 +410,6 @@ public class LayoutReportsDataMVCResourceCommand
 		LayoutReportsDataMVCResourceCommand.class);
 
 	@Reference
-	private ConfigurationProvider _configurationProvider;
-
-	@Reference
 	private GroupLocalService _groupLocalService;
 
 	@Reference
@@ -380,6 +421,7 @@ public class LayoutReportsDataMVCResourceCommand
 	@Reference
 	private LayoutLocalService _layoutLocalService;
 
+	@Reference
 	private LayoutReportsGooglePageSpeedConfigurationProvider
 		_layoutReportsGooglePageSpeedConfigurationProvider;
 

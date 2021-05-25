@@ -76,6 +76,10 @@ public interface BatchPlannerPlanLocalService
 	public BatchPlannerPlan addBatchPlannerPlan(
 		BatchPlannerPlan batchPlannerPlan);
 
+	public BatchPlannerPlan addBatchPlannerPlan(
+			long userId, String externalType, String name)
+		throws PortalException;
+
 	/**
 	 * Creates a new batch planner plan with the primary key. Does not add the batch planner plan to the database.
 	 *
@@ -129,6 +133,9 @@ public interface BatchPlannerPlanLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T dslQuery(DSLQuery dslQuery);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int dslQueryCount(DSLQuery dslQuery);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
@@ -266,5 +273,9 @@ public interface BatchPlannerPlanLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public BatchPlannerPlan updateBatchPlannerPlan(
 		BatchPlannerPlan batchPlannerPlan);
+
+	public BatchPlannerPlan updateBatchPlannerPlan(
+			long userId, long batchPlannerPlanId, String name)
+		throws PortalException;
 
 }

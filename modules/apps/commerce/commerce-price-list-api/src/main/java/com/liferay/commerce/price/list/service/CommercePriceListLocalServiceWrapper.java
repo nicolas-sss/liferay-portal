@@ -385,6 +385,13 @@ public class CommercePriceListLocalServiceWrapper
 	}
 
 	@Override
+	public int dslQueryCount(
+		com.liferay.petra.sql.dsl.query.DSLQuery dslQuery) {
+
+		return _commercePriceListLocalService.dslQueryCount(dslQuery);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
 		return _commercePriceListLocalService.dynamicQuery();
 	}
@@ -580,6 +587,17 @@ public class CommercePriceListLocalServiceWrapper
 
 		return _commercePriceListLocalService.
 			fetchCommercePriceListByUuidAndGroupId(uuid, groupId);
+	}
+
+	@Override
+	public com.liferay.commerce.price.list.model.CommercePriceList
+			forceDeleteCommercePriceList(
+				com.liferay.commerce.price.list.model.CommercePriceList
+					commercePriceList)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _commercePriceListLocalService.forceDeleteCommercePriceList(
+			commercePriceList);
 	}
 
 	@Override

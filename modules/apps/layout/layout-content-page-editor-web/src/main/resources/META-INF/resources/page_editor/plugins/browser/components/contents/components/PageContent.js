@@ -19,16 +19,21 @@ import ClayLayout from '@clayui/layout';
 import classNames from 'classnames';
 import {openModal} from 'frontend-js-web';
 import PropTypes from 'prop-types';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 
 import {EDITABLE_FRAGMENT_ENTRY_PROCESSOR} from '../../../../../app/config/constants/editableFragmentEntryProcessor';
 import {ITEM_ACTIVATION_ORIGINS} from '../../../../../app/config/constants/itemActivationOrigins';
 import {ITEM_TYPES} from '../../../../../app/config/constants/itemTypes';
+import {useToControlsId} from '../../../../../app/contexts/CollectionItemContext';
 import {
 	useHoverItem,
 	useHoveredItemId,
 	useSelectItem,
 } from '../../../../../app/contexts/ControlsContext';
+import {
+	useEditableProcessorUniqueId,
+	useSetEditableProcessorUniqueId,
+} from '../../../../../app/contexts/EditableProcessorContext';
 import {useSelector} from '../../../../../app/contexts/StoreContext';
 
 export default function PageContent({
@@ -42,11 +47,23 @@ export default function PageContent({
 	type,
 }) {
 	const [active, setActive] = useState(false);
+	const editableProcessorUniqueId = useEditableProcessorUniqueId();
 	const hoverItem = useHoverItem();
 	const hoveredItemId = useHoveredItemId();
 	const fragmentEntryLinks = useSelector((state) => state.fragmentEntryLinks);
 	const [isHovered, setIsHovered] = useState(false);
+	const [
+		nextEditbleProcessorUniqueId,
+		setEditableNextProcessorUniqueId,
+	] = useState(null);
 	const selectItem = useSelectItem();
+	const setEditableProcessorUniqueId = useSetEditableProcessorUniqueId();
+	const toControlsId = useToControlsId();
+
+	const isBeingEdited = useMemo(
+		() => toControlsId(editableId) === editableProcessorUniqueId,
+		[toControlsId, editableId, editableProcessorUniqueId]
+	);
 
 	let editURL = null;
 	let permissionsURL = null;
@@ -57,6 +74,19 @@ export default function PageContent({
 		permissionsURL = actions.permissionsURL;
 		viewUsagesURL = actions.viewUsagesURL;
 	}
+
+	useEffect(() => {
+		if (editableProcessorUniqueId || !nextEditbleProcessorUniqueId) {
+			return;
+		}
+
+		setEditableProcessorUniqueId(nextEditbleProcessorUniqueId);
+		setEditableNextProcessorUniqueId(null);
+	}, [
+		editableProcessorUniqueId,
+		nextEditbleProcessorUniqueId,
+		setEditableProcessorUniqueId,
+	]);
 
 	useEffect(() => {
 		if (hoveredItemId) {
@@ -115,10 +145,16 @@ export default function PageContent({
 	};
 
 	const onClickEditInlineText = () => {
+		if (isBeingEdited) {
+			return;
+		}
+
 		selectItem(`${editableId}`, {
 			itemType: ITEM_TYPES.editable,
 			origin: ITEM_ACTIVATION_ORIGINS.sidebar,
 		});
+
+		setEditableNextProcessorUniqueId(toControlsId(editableId));
 	};
 
 	return (
@@ -159,7 +195,7 @@ export default function PageContent({
 						onActiveChange={setActive}
 						trigger={
 							<ClayButton
-								className="btn-monospaced btn-sm text-secondary"
+								className="btn-sm mr-2 text-secondary"
 								displayType="unstyled"
 							>
 								<span className="sr-only">
@@ -211,7 +247,10 @@ export default function PageContent({
 					</ClayDropDown>
 				) : (
 					<ClayButton
-						className="btn-monospaced btn-sm text-secondary"
+						className={classNames('btn-sm mr-2 text-secondary', {
+							'not-allowed': isBeingEdited,
+						})}
+						disabled={isBeingEdited}
 						displayType="unstyled"
 						onClick={onClickEditInlineText}
 					>

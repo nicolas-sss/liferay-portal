@@ -56,7 +56,8 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 				"setVisible('ddmDataProviderInstanceId', equals(getValue('dataSourceType'), \"data-provider\") and getValue('autocomplete'))",
 				"setVisible('ddmDataProviderInstanceOutput', equals(getValue('dataSourceType'), \"data-provider\") and getValue('autocomplete'))",
 				"setVisible('direction', getValue('requireConfirmation'))",
-				"setVisible('options', contains(getValue('dataSourceType'), \"manual\") and getValue('autocomplete'))"
+				"setVisible('options', contains(getValue('dataSourceType'), \"manual\") and getValue('autocomplete'))",
+				"setVisible('requiredErrorMessage', false)"
 			},
 			condition = "TRUE"
 		),
@@ -81,7 +82,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 							size = 12,
 							value = {
 								"label", "placeholder", "tip", "displayStyle",
-								"required"
+								"required", "requiredErrorMessage"
 							}
 						)
 					}
@@ -137,13 +138,14 @@ public interface TextDDMFormFieldTypeSettings
 
 	@DDMFormField(
 		dataType = "string", label = "%error-message",
-		predefinedValue = "%the-information-does-not-match", type = "text"
+		properties = "initialValue=%the-information-does-not-match",
+		type = "text"
 	)
 	public LocalizedValue confirmationErrorMessage();
 
 	@DDMFormField(
-		dataType = "string", label = "%label", predefinedValue = "%confirm",
-		type = "text"
+		dataType = "string", label = "%label",
+		properties = "initialValue=%confirm", type = "text"
 	)
 	public LocalizedValue confirmationLabel();
 
