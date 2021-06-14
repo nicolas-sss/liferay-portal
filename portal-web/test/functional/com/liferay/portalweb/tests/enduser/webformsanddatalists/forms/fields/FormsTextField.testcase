@@ -683,7 +683,6 @@ definition {
 		FormPortlet.viewSuccessPage(
 			successPageDescription = "Your information was successfully received. Thank you for filling out the form.",
 			successPageTitle = "Thank you.");
-
 	}
 
 	@description = "Verify that a Help Text can be added to a Text Field"
