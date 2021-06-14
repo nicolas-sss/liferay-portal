@@ -86,7 +86,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Spliterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -582,10 +581,6 @@ public class DataLayoutTaglibUtil {
 		return _ddmFormBuilderSettingsRetrieverHelper.getDDMFunctionsURL();
 	}
 
-	private Spliterator<JSONObject> _getSpliterator(JSONArray jsonArray) {
-		return jsonArray.spliterator();
-	}
-
 	private boolean _hasJavascriptModule(String name) {
 		DDMFormFieldType ddmFormFieldType =
 			_ddmFormFieldTypeServicesTracker.getDDMFormFieldType(name);
@@ -629,12 +624,8 @@ public class DataLayoutTaglibUtil {
 		_stream(
 			"rows",
 			rowJSONObject -> _stream(
-				"fields", null,
-				StreamSupport.stream(
-					_getSpliterator(rowJSONObject.getJSONArray("columns")),
-					true)),
-			StreamSupport.stream(
-				_getSpliterator(jsonObject.getJSONArray("pages")), true)
+				"fields", null, _stream(rowJSONObject.getJSONArray("columns"))),
+			_stream(jsonObject.getJSONArray("pages"))
 		).filter(
 			fieldJSONObject -> Objects.equals(
 				fieldJSONObject.getString("fieldName"), "indexType")
@@ -644,14 +635,18 @@ public class DataLayoutTaglibUtil {
 		);
 	}
 
+	private Stream<JSONObject> _stream(JSONArray jsonArray) {
+		return StreamSupport.stream(jsonArray.spliterator(), true);
+	}
+
 	private Stream<JSONObject> _stream(
 		String key, Function<JSONObject, Stream<JSONObject>> function,
 		Stream<JSONObject> stream) {
 
 		return stream.flatMap(
 			jsonObject -> {
-				Stream<JSONObject> nestedStream = StreamSupport.stream(
-					_getSpliterator(jsonObject.getJSONArray(key)), true);
+				Stream<JSONObject> nestedStream = _stream(
+					jsonObject.getJSONArray(key));
 
 				if (function == null) {
 					return nestedStream;
