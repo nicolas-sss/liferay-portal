@@ -148,6 +148,27 @@ definition {
 			value1 = "${fieldValue}");
 	}
 
+	macro editRequireConfirmationField {
+		if (isSet(direction)) {
+			FormFields.selectSelectOption(
+				fieldName = "Direction",
+				selectOption = "${direction}");
+		}
+
+		if (isSet(confirmationLabel)) {
+			FormFields.editText(
+				fieldName = "confirmationLabel",
+				fieldValue = "${confirmationLabel}");
+		}
+
+		if (isSet(confirmationErrorMessage)) {
+			FormFields.editText(
+				fieldName = "confirmationErrorMessage",
+				fieldValue = "${confirmationErrorMessage}");
+		}
+
+	}
+
 	macro editConfirmationFieldText {
 		AssertElementPresent.assertVisible(
 			key_fieldName = "${fieldName}",
