@@ -17,10 +17,13 @@ import ClayForm, {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import React from 'react';
 
+import {errorToast} from '../../utils/toast';
 import {Input} from '../form/FormBase';
-import FormDocumentLibraryInput from './FormDocumentLibraryInput';
+import FileEntryList from './FileEntryList';
+import FileSelector from './FileSelector';
 
 const MAX_LENGTH = {
+	ATTACHMENTS: 10,
 	EMAIL_MESSAGE: 10000,
 	RECEIPTS: 10,
 };
@@ -34,6 +37,18 @@ const DigitalSignatureFormBase = ({
 	values,
 }) => {
 	const canAddMoreReceipt = values.recipients.length < MAX_LENGTH.RECEIPTS;
+
+	const onAddFileEntry = (fileEntry) => {
+		const fileEntryExist = values.fileEntries.find(
+			({fileEntryId}) => fileEntryId === fileEntry.fileEntryId
+		);
+
+		if (fileEntryExist) {
+			return errorToast(Liferay.Language.get('document-already-exist'));
+		}
+
+		setFieldValue('fileEntries', [...values.fileEntries, fileEntry]);
+	};
 
 	const onAddNewRecipient = () => {
 		if (MAX_LENGTH.RECEIPTS && canAddMoreReceipt) {
@@ -63,14 +78,21 @@ const DigitalSignatureFormBase = ({
 			/>
 
 			{showDocumentLibraryInput && (
-				<FormDocumentLibraryInput
-					error={errors.fileEntryId}
-					onChange={(_, value) => {
-						const fileEntryId = JSON.parse(value).fileEntryId;
-						setFieldValue('fileEntryIds', [fileEntryId]);
-					}}
+				<FileSelector
+					disabled={
+						values.fileEntries.length === MAX_LENGTH.ATTACHMENTS
+					}
+					onChange={(_, fileEntry) =>
+						onAddFileEntry(JSON.parse(fileEntry))
+					}
 				/>
 			)}
+
+			<FileEntryList
+				errors={errors.fileEntries}
+				fileEntries={values.fileEntries}
+				setFieldValue={setFieldValue}
+			/>
 
 			{values.recipients.map((recipient, index) => (
 				<ClayForm.Group className="recipient" key={index}>
