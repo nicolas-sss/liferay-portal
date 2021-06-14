@@ -155,4 +155,18 @@
 			max-height: 100%;
 		}
 	}
+
+	.file-entries-list .has-error {
+		background-color: #feefef;
+		border: 1px solid #f48989;
+
+		.quick-action-menu {
+			background-color: #feefef;
+		}
+
+		.text-error {
+			color: #da1414;
+			margin-top: 3px;
+		}
+	}
 }
