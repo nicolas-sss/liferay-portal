@@ -39,12 +39,97 @@ definition {
 	}
 
 	@description = "LPS-88573 - Verify that is possible to order the table items by clicking on the table header Overdue"
-	@ignore = "Test Stub"
 	@priority = "3"
 	test CanOrderByOverdueItems {
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Process Builder");
 
-		// TODO LRQA-67510 CanOrderByOverdueItems pending implementation
+		Workflow.duplicateSingleApproverWorkflow(workflowName = "Single Approver 2");
 
+		for (var workflowName : list "Single Approver,Single Approver 2") {
+			WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "${workflowName}");
+
+			Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
+
+			WorkflowMetrics.fillSLAForm(
+				slaDefinitionDays = "0",
+				slaDefinitionDescription = "SLA Description",
+				slaDefinitionEnd = "Process Ends: Approved",
+				slaDefinitionHours = "00:01",
+				slaDefinitionName = "Test",
+				slaDefinitionStart = "Process Begins");
+
+			Button.clickSave();
+		}
+
+		for (var workflowName : list "Single Approver,Single Approver 2") {
+			ApplicationsMenu.gotoPortlet(
+				category = "Workflow",
+				panel = "Applications",
+				portlet = "Process Builder");
+
+			Navigator.gotoNavItem(navItem = "Configuration");
+
+			Workflow.configureWorkflow(
+				workflowDefinition = "${workflowName}",
+				workflowResourceValue = "Blogs Entry");
+
+			Navigator.openURL();
+
+			ProductMenu.gotoPortlet(
+				category = "Content &amp; Data",
+				panel = "Site Administration",
+				portlet = "Blogs");
+
+			Blogs.addWithWorkflow(
+				entryContent = "Blogs Entry Content",
+				entrySubtitle = "Subtitle",
+				entryTitle = "Blogs Entry Title");
+		}
+
+		Blogs.addWithWorkflow(
+			entryContent = "Blogs Entry Content",
+			entrySubtitle = "Subtitle",
+			entryTitle = "Blogs Entry Title");
+
+		Pause(locator1 = "100000");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		Click(
+			key_assigneeName = "Overdue",
+			locator1 = "WorkflowMetrics#METRICS_WORKLOAD_BY_ASSIGNEE_NAME_TABLE");
+
+		AssertTextEquals(
+			key_rowNumber = "3",
+			locator1 = "WorkflowAllItems#METRICS_OVERDUE_ITEMS_TABLE_ROW",
+			value1 = "2");
+
+		AssertTextEquals(
+			key_rowNumber = "2",
+			locator1 = "WorkflowAllItems#METRICS_OVERDUE_ITEMS_TABLE_ROW",
+			value1 = "1");
+
+		Click(
+			key_assigneeName = "Overdue",
+			locator1 = "WorkflowMetrics#METRICS_WORKLOAD_BY_ASSIGNEE_NAME_TABLE");
+
+		AssertTextEquals(
+			key_rowNumber = "1",
+			locator1 = "WorkflowAllItems#METRICS_OVERDUE_ITEMS_TABLE_ROW",
+			value1 = "2");
+
+		AssertTextEquals(
+			key_rowNumber = "2",
+			locator1 = "WorkflowAllItems#METRICS_OVERDUE_ITEMS_TABLE_ROW",
+			value1 = "1");
+
+			
 	}
 
 	@description = "LPS-88573 - Verify that is possible to order the table items by clicking on the table header Process Name"
