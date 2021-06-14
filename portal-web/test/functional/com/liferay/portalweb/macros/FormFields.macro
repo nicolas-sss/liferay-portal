@@ -148,27 +148,6 @@ definition {
 			value1 = "${fieldValue}");
 	}
 
-	macro editRequireConfirmationField {
-		if (isSet(direction)) {
-			FormFields.selectSelectOption(
-				fieldName = "Direction",
-				selectOption = "${direction}");
-		}
-
-		if (isSet(confirmationLabel)) {
-			FormFields.editText(
-				fieldName = "confirmationLabel",
-				fieldValue = "${confirmationLabel}");
-		}
-
-		if (isSet(confirmationErrorMessage)) {
-			FormFields.editText(
-				fieldName = "confirmationErrorMessage",
-				fieldValue = "${confirmationErrorMessage}");
-		}
-		
-	}
-
 	macro editConfirmationFieldText {
 		AssertElementPresent.assertVisible(
 			key_fieldName = "${fieldName}",
@@ -890,16 +869,16 @@ definition {
 	}
 
 	macro viewConfirmationFieldDirection {
-
-		if("${direction}" == "vertical"){
+		if ("${direction}" == "vertical") {
 			direction = "col-md-12";
-		}else if("${direction}" == "horizontal"){
+		}
+		else if ("${direction}" == "horizontal") {
 			direction = "col-md-6";
 		}
 
 		AssertElementPresent(
-			key_fieldName = "${fieldName}",
 			key_direction = "${direction}",
+			key_fieldName = "${fieldName}",
 			locator1 = "FormFields#TEXT_CONFIRMATION_FIELD_DIRECTION");
 	}
 
