@@ -18,6 +18,18 @@ const required = (value) => {
 	}
 };
 
+const withInvalidExtension = (fileEntries, availableExtensions) => {
+	const fileEntriesError = fileEntries.filter(({title}) =>
+		availableExtensions.every(
+			(availableExtension) => !title.endsWith(availableExtension)
+		)
+	);
+
+	if (fileEntriesError.length) {
+		return fileEntriesError;
+	}
+};
+
 const maxLength = (value, max) => {
 	if (value.length > max) {
 		return Liferay.Util.sub(
@@ -50,4 +62,4 @@ const validate = (fields, values) => {
 	return errors;
 };
 
-export {isEmail, maxLength, required, validate};
+export {isEmail, maxLength, required, validate, withInvalidExtension};
