@@ -128,8 +128,6 @@ definition {
 			key_rowNumber = "2",
 			locator1 = "WorkflowAllItems#METRICS_OVERDUE_ITEMS_TABLE_ROW",
 			value1 = "1");
-
-			
 	}
 
 	@description = "LPS-88573 - Verify that is possible to order the table items by clicking on the table header Process Name"
