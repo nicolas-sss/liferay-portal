@@ -112,6 +112,7 @@ const Main = ({
 		elementId: `${name}#place`,
 		googlePlacesAPIKey,
 		isReadOnly: readOnly,
+		onChange,
 	});
 
 	const [availableLabels, setAvailableLabels] = useState();
