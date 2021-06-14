@@ -551,27 +551,25 @@ public class JournalDisplayContext {
 		ResourceURL exportTranslationURL =
 			_liferayPortletResponse.createResourceURL();
 
-		exportTranslationURL.setResourceID("/journal/export_translation");
-
 		exportTranslationURL.setParameter(
 			"groupId", String.valueOf(_themeDisplay.getScopeGroupId()));
 		exportTranslationURL.setParameter(
 			"classNameId",
 			String.valueOf(
 				PortalUtil.getClassNameId(JournalArticle.class.getName())));
+		exportTranslationURL.setResourceID("/journal/export_translation");
 
 		ResourceURL getExportTranslationAvailableLocalesURL =
 			_liferayPortletResponse.createResourceURL();
 
-		getExportTranslationAvailableLocalesURL.setResourceID(
-			"/journal/get_export_translation_available_locales");
-
 		getExportTranslationAvailableLocalesURL.setParameter(
 			"groupId", String.valueOf(_themeDisplay.getScopeGroupId()));
 		getExportTranslationAvailableLocalesURL.setParameter(
 			"classNameId",
 			String.valueOf(
 				PortalUtil.getClassNameId(JournalArticle.class.getName())));
+		getExportTranslationAvailableLocalesURL.setResourceID(
+			"/journal/get_export_translation_available_locales");
 
 		return HashMapBuilder.<String, Object>put(
 			"context",
