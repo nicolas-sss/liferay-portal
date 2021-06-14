@@ -519,14 +519,59 @@ definition {
 	}
 
 	@description = "Verify that the Confirmation Error Message can be edited"
-	@ignore = "Test Stub"
 	@priority = "5"
 	test ConfirmationErrorMessageCanBeEdited {
 		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-133014 ConfirmationErrorMessageCanBeEdited pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
 
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		Form.gotoAddField(fieldType = "Text");
+
+		var fieldTextField = FormFields.getFieldName();
+
+		Form.gotoAdvancedTab();
+
+		FormFields.enableSwitcher(fieldName = "Require Confirmation");
+
+		FormFields.editRequireConfirmationField(confirmationErrorMessage = "Confirm Text Error");
+
+		FormFields.enableSwitcher(fieldName = "Validation");
+
+		FormFields.editValidation(
+			validationArgument = "Contains",
+			validationErrorMessage = "",
+			validationInput = "Test Text");
+
+		Form.save();
+
+		Form.publishForm();
+
+		FormsAdminNavigator.gotoPublishedForm();
+
+		FormFields.editText(
+			fieldName = "${fieldTextField}",
+			fieldValue = "Test Text");
+
+		FormPortlet.viewValidationErrorMessage(validationErrorMessage = "Confirm Text Error");
+
+		FormFields.editConfirmationFieldText(
+			fieldName = "${fieldTextField}",
+			fieldValue = "Test Text");
+
+		FormPortlet.waitForValidationErrorNotPresent(validationErrorMessage = "Confirm Text Error");
+
+		FormPortlet.submitSuccessfully();
+
+		FormPortlet.viewSuccessPage(
+			successPageDescription = "Your information was successfully received. Thank you for filling out the form.",
+			successPageTitle = "Thank you.");
 	}
 
 	@description = "Verify that the Confirmation Label can be edited"
