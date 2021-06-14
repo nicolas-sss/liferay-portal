@@ -23,6 +23,8 @@
 		module="js/pages/DigitalSignature"
 		props='<%=
 			HashMapBuilder.<String, Object>put(
+				"allowedFileExtension", StringUtil.merge(DigitalSignatureConstants.ALLOWED_FILE_EXTENSIONS)
+			).put(
 				"baseResourceURL", String.valueOf(baseResourceURL)
 			).build()
 		%>'
