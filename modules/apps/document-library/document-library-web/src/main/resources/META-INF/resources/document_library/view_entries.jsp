@@ -69,6 +69,8 @@ if (portletTitleBasedNavigation && !dlViewEntriesDisplayContext.isRootFolder() &
 					String thumbnailSrc = dlViewEntriesDisplayContext.getThumbnailSrc(latestFileVersion);
 					%>
 
+					<div class="d-none digital-signature-file-extensions"><%= fileEntry.getFileEntryId() %>-<%= fileEntry.getExtension() %></div>
+
 					<c:choose>
 						<c:when test="<%= dlViewEntriesDisplayContext.isDescriptiveDisplayStyle() %>">
 							<c:choose>
