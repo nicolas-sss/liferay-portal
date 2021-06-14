@@ -645,7 +645,7 @@ public class DataLayoutTaglibUtil {
 	}
 
 	private Stream<JSONObject> _stream(
-		String key, Function<JSONObject, Stream<JSONObject>> mapper,
+		String key, Function<JSONObject, Stream<JSONObject>> function,
 		Stream<JSONObject> stream) {
 
 		return stream.flatMap(
@@ -653,11 +653,11 @@ public class DataLayoutTaglibUtil {
 				Stream<JSONObject> nestedStream = StreamSupport.stream(
 					_getSpliterator(jsonObject.getJSONArray(key)), true);
 
-				if (mapper == null) {
+				if (function == null) {
 					return nestedStream;
 				}
 
-				return nestedStream.flatMap(mapper);
+				return nestedStream.flatMap(function);
 			});
 	}
 
