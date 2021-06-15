@@ -27,10 +27,10 @@ public interface CTConstants {
 
 	public static final long CT_COLLECTION_ID_PRODUCTION = 0;
 
+	public static final String RESOURCE_NAME = "com.liferay.change.tracking";
+
 	public static final String ROLE_NAME_PUBLICATIONS_USER =
 		"Publications User";
-
-	public static final String RESOURCE_NAME = "com.liferay.change.tracking";
 
 	public static final String TYPE_AFTER = "after";
 
