@@ -31,7 +31,7 @@ import {
 	maxLength,
 	required,
 	validate,
-	withInvalidExtension,
+	withInvalidExtensions,
 } from '../form/FormValidation';
 import DigitalSignatureFormBase from './DigitalSignatureFormBase';
 
@@ -46,7 +46,7 @@ const DigitalSignatureForm = ({
 	showDocumentLibraryInput,
 }) => {
 	const {
-		allowedFileExtension,
+		allowedFileExtensions,
 		baseResourceURL,
 		portletNamespace,
 	} = useContext(AppContext);
@@ -120,7 +120,7 @@ const DigitalSignatureForm = ({
 					emailSubject: [(v) => maxLength(v, 100), required],
 					envelopeName: [(v) => maxLength(v, 100), required],
 					fileEntries: [
-						(v) => withInvalidExtension(v, allowedFileExtension),
+						(v) => withInvalidExtensions(v, allowedFileExtensions),
 					],
 				},
 				values

@@ -17,7 +17,7 @@ import React, {createContext} from 'react';
 const AppContext = createContext();
 
 const AppContextProvider = ({
-	allowedFileExtension,
+	allowedFileExtensions,
 	baseResourceURL,
 	children,
 	portletNamespace,
@@ -25,7 +25,7 @@ const AppContextProvider = ({
 }) => (
 	<AppContext.Provider
 		value={{
-			allowedFileExtension: allowedFileExtension.split(','),
+			allowedFileExtensions: allowedFileExtensions.split(','),
 			baseResourceURL,
 			portletNamespace,
 			...otherProps,

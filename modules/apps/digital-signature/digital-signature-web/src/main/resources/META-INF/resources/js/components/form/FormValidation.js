@@ -18,7 +18,7 @@ const required = (value) => {
 	}
 };
 
-const withInvalidExtension = (fileEntries, availableExtensions) => {
+const withInvalidExtensions = (fileEntries, availableExtensions) => {
 	const fileEntriesError = fileEntries.filter(({title}) =>
 		availableExtensions.every(
 			(availableExtension) => !title.endsWith(availableExtension)
@@ -62,4 +62,4 @@ const validate = (fields, values) => {
 	return errors;
 };
 
-export {isEmail, maxLength, required, validate, withInvalidExtension};
+export {isEmail, maxLength, required, validate, withInvalidExtensions};

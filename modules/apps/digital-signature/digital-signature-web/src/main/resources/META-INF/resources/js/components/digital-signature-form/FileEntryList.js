@@ -39,7 +39,7 @@ const FileEntryList = ({errors, fileEntries = [], setFieldValue}) => {
 	return (
 		<ClayList className="file-entries-list mt-1">
 			<ClayList.Header>
-				{Liferay.Language.get('added-documents')}
+				{Liferay.Language.get('documents-added')}
 			</ClayList.Header>
 
 			{fileEntries.map(({fileEntryId, title, type}, index) => (
