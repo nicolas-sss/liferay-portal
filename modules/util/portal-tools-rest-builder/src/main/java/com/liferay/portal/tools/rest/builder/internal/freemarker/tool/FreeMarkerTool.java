@@ -140,7 +140,7 @@ public class FreeMarkerTool {
 		for (JavaMethodParameter javaMethodParameter :
 				javaMethodSignature.getJavaMethodParameters()) {
 
-			boolean notFound = true;
+			boolean exists = false;
 
 			for (JavaMethodParameter pathJavaMethodParameter :
 					javaMethodSignature.getPathJavaMethodParameters()) {
@@ -152,13 +152,13 @@ public class FreeMarkerTool {
 						pathJavaMethodParameter.getParameterType(),
 						javaMethodParameter.getParameterType())) {
 
-					notFound = false;
+					exists = true;
 
 					break;
 				}
 			}
 
-			if (notFound) {
+			if (!exists) {
 				javaMethodParameters.add(javaMethodParameter);
 			}
 		}
