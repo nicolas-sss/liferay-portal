@@ -210,13 +210,13 @@ public interface ${schemaName}Resource {
 						}
 					<#else>
 						<#assign
-							bodyParameters = freeMarkerTool.getBodyParameters(javaMethodSignature)
+							bodyJavaMethodParameters = freeMarkerTool.getBodyJavaMethodParameters(javaMethodSignature)
 						/>
 
-						<#if bodyParameters?has_content>
+						<#if bodyJavaMethodParameters?has_content>
 
 							httpInvoker.body(
-							<#list bodyParameters as javaMethodParameter>
+							<#list bodyJavaMethodParameters as javaMethodParameter>
 								<#if javaMethodParameter?is_last>
 									<#if javaMethodParameter.parameterType?starts_with("[L")>
 										Stream.of(

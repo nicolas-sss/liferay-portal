@@ -132,7 +132,7 @@ public class FreeMarkerTool {
 		return schemas;
 	}
 
-	public List<JavaMethodParameter> getBodyParameters(
+	public List<JavaMethodParameter> getBodyJavaMethodParameters(
 		JavaMethodSignature javaMethodSignature) {
 
 		List<JavaMethodParameter> javaMethodParameters = new ArrayList<>();
