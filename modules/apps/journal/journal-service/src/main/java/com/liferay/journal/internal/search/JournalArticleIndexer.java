@@ -838,14 +838,13 @@ public class JournalArticleIndexer extends BaseIndexer<JournalArticle> {
 
 			indexableActionableDynamicQuery.setAddCriteriaMethod(
 				dynamicQuery -> {
-					Property classNameIdProperty = PropertyFactoryUtil.forName(
+					Property property = PropertyFactoryUtil.forName(
 						"classNameId");
 
 					dynamicQuery.add(
-						classNameIdProperty.ne(
+						property.ne(
 							_portal.getClassNameId(DDMStructure.class)));
 				});
-
 			indexableActionableDynamicQuery.setInterval(
 				_batchIndexingHelper.getBulkSize(
 					JournalArticle.class.getName()));
