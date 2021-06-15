@@ -28,7 +28,7 @@
 		<implicit-parameter name="p_p_state">maximized</implicit-parameter>
 	</route>
 	<route>
-		<pattern>/vocabulary/{vocabularyId:\d+}/set-category-display-page-template</pattern>
+		<pattern>/vocabulary/{vocabularyId:\d+}/set_category_display_page_template</pattern>
 		<implicit-parameter name="mvcPath">/set_category_display_page_template.jsp</implicit-parameter>
 		<implicit-parameter name="p_p_state">maximized</implicit-parameter>
 	</route>
