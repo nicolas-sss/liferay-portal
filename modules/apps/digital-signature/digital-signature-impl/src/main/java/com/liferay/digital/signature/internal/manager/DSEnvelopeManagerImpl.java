@@ -37,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.service.component.annotations.Component;
@@ -110,7 +111,9 @@ public class DSEnvelopeManagerImpl implements DSEnvelopeManager {
 		long companyId, long groupId, String fromDateString, String keywords,
 		String order, Pagination pagination, String status) {
 
-		if (Pattern.matches(_UUID_PATTERN, keywords)) {
+		Matcher matcher = _pattern.matcher(keywords);
+
+		if (matcher.matches()) {
 			DSEnvelope dsEnvelope = getDSEnvelope(companyId, groupId, keywords);
 
 			if (Validator.isNull(dsEnvelope.getDSEnvelopeId())) {
@@ -245,12 +248,12 @@ public class DSEnvelopeManagerImpl implements DSEnvelopeManager {
 		}
 	}
 
-	private static final String _UUID_PATTERN =
-		"[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}" +
-			"\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}";
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		DSEnvelopeManagerImpl.class);
+
+	private static final Pattern _pattern = Pattern.compile(
+		"[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}" +
+			"\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}");
 
 	@Reference
 	private DSCustomFieldManager _dsCustomFieldManager;
