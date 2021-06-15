@@ -214,30 +214,30 @@ public interface ${schemaName}Resource {
 						/>
 
 						<#if bodyJavaMethodParameters?has_content>
-
 							httpInvoker.body(
-							<#list bodyJavaMethodParameters as javaMethodParameter>
-								<#if javaMethodParameter?is_last>
-									<#if javaMethodParameter.parameterType?starts_with("[L")>
-										Stream.of(
-											${javaMethodParameter.parameterName}
-										).map(
-											value ->
-											<#if javaMethodParameter.parameterType?contains("String")>
-												"\"" + String.valueOf(value) + "\""
-											<#else>
-												String.valueOf(value)
-											</#if>
-										).collect(
-											Collectors.toList()
-										).toString()
-									<#else>
-										${javaMethodParameter.parameterName}.toString()
-									</#if>
-								</#if>
-							</#list>
+								<#list bodyJavaMethodParameters as javaMethodParameter>
+									<#if javaMethodParameter?is_last>
+										<#if javaMethodParameter.parameterType?starts_with("[L")>
+											Stream.of(
+												${javaMethodParameter.parameterName}
+											).map(
+												value ->
 
-							, "application/json");
+												<#if javaMethodParameter.parameterType?contains("String")>
+													"\"" + String.valueOf(value) + "\""
+												<#else>
+													String.valueOf(value)
+												</#if>
+											).collect(
+												Collectors.toList()
+											).toString()
+										<#else>
+											${javaMethodParameter.parameterName}.toString()
+										</#if>
+									</#if>
+								</#list>
+
+								, "application/json");
 						</#if>
 					</#if>
 				</#if>
