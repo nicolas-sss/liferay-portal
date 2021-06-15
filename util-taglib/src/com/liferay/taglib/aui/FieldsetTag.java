@@ -101,11 +101,8 @@ public class FieldsetTag extends BaseFieldsetTag {
 
 		jspWriter.write(
 			InlineUtil.buildDynamicAttributes(getDynamicAttributes()));
-
-		jspWriter.write(StringPool.GREATER_THAN);
-
 		jspWriter.write(
-			"<legend class=\"fieldset-legend\"><span class=\"legend\">");
+			"><legend class=\"fieldset-legend\"><span class=\"legend\">");
 
 		String label = getLabel();
 
