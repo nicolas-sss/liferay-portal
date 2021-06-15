@@ -67,20 +67,20 @@ public class FilterUtil {
 	private static class DDMFilterVisitor implements FilterVisitor<Filter> {
 
 		@Override
-		public Filter visit(BooleanFilter booleanFilter) {
-			BooleanFilter filter = new BooleanFilter();
+		public Filter visit(BooleanFilter booleanFilter1) {
+			BooleanFilter booleanFilter2 = new BooleanFilter();
 
 			_addBooleanClauses(
-				booleanFilter.getMustBooleanClauses(), BooleanClauseOccur.MUST,
-				filter);
+				booleanFilter1.getMustBooleanClauses(), BooleanClauseOccur.MUST,
+				booleanFilter2);
 			_addBooleanClauses(
-				booleanFilter.getMustNotBooleanClauses(),
-				BooleanClauseOccur.MUST_NOT, filter);
+				booleanFilter1.getMustNotBooleanClauses(),
+				BooleanClauseOccur.MUST_NOT, booleanFilter2);
 			_addBooleanClauses(
-				booleanFilter.getShouldBooleanClauses(),
-				BooleanClauseOccur.SHOULD, filter);
+				booleanFilter1.getShouldBooleanClauses(),
+				BooleanClauseOccur.SHOULD, booleanFilter2);
 
-			return filter;
+			return booleanFilter2;
 		}
 
 		@Override
@@ -186,22 +186,21 @@ public class FilterUtil {
 			}
 
 			try {
-				DDMStructureField ddmStructureField = DDMStructureField.from(
-					fieldName);
-
 				BooleanQuery booleanQuery = new BooleanQueryImpl();
 
-				booleanQuery.addRequiredTerm(
-					StringBundler.concat(
-						DDMIndexer.DDM_FIELD_ARRAY, StringPool.PERIOD,
-						DDMIndexer.DDM_FIELD_NAME),
-					ddmStructureField.getDDMStructureFieldName());
+				DDMStructureField ddmStructureField = DDMStructureField.from(
+					fieldName);
 
 				booleanQuery.add(
 					queryFunction.apply(
 						ddmStructureField.
 							getDDMStructureNestedTypeSortableFieldName()),
 					BooleanClauseOccur.MUST);
+				booleanQuery.addRequiredTerm(
+					StringBundler.concat(
+						DDMIndexer.DDM_FIELD_ARRAY, StringPool.PERIOD,
+						DDMIndexer.DDM_FIELD_NAME),
+					ddmStructureField.getDDMStructureFieldName());
 
 				return new QueryFilter(
 					new NestedQuery(DDMIndexer.DDM_FIELD_ARRAY, booleanQuery));
