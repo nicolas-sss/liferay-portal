@@ -41,10 +41,10 @@ public class UpgradeLookAndFeel extends BasePortletPreferencesUpgradeProcess {
 			String portletId, String xml)
 		throws Exception {
 
+		PortletPreferences portletPreferences = new PortletPreferencesImpl();
+
 		Map<String, Preference> preferencesMap =
 			PortletPreferencesFactoryImpl.createPreferencesMap(xml);
-
-		PortletPreferences portletPreferences = new PortletPreferencesImpl();
 
 		for (Map.Entry<String, Preference> entry : preferencesMap.entrySet()) {
 			String key = entry.getKey();
