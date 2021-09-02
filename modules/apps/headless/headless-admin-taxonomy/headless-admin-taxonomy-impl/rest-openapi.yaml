@@ -229,6 +229,78 @@ components:
             required:
                 - name
             type: object
+        TaxonomyCategoryProperty:
+            description:
+                bla bla bla
+            properties:
+                actions:
+                    additionalProperties:
+                        additionalProperties:
+                            type: string
+                        type: object
+                    readOnly: true
+                    type: object
+                availableLanguages:
+                    description:
+                        A list of languages the category has a translation for.
+                    items:
+                        type: string
+                    readOnly: true
+                    type: array
+                creator:
+                    allOf:
+                        - $ref: "#/components/schemas/Creator"
+                    description:
+                        The category's creator.
+                    readOnly: true
+                dateCreated:
+                    description:
+                        The category's creation date.
+                    format: date-time
+                    readOnly: true
+                    type: string
+                dateModified:
+                    description:
+                        The category's most recent modification date.
+                    format: date-time
+                    readOnly: true
+                    type: string
+                description:
+                    description:
+                        The category's text description.
+                    type: string
+                description_i18n:
+                    additionalProperties:
+                        type: string
+                    type: object
+                externalReferenceCode:
+                    type: string
+                id:
+                    description:
+                        The category's ID.
+                    readOnly: true
+                    type: string
+                name:
+                    description:
+                        The property's name.
+                    type: string
+                name_i18n:
+                    additionalProperties:
+                        type: string
+                    type: object
+                value:
+                    description:
+                        The property's value.
+                    type: string
+                viewableBy:
+                    description:
+                        A write-only property that specifies the category's default permissions.
+                    enum: [Anyone, Members, Owner]
+                    type: string
+                    writeOnly: true
+            required:
+                - name
+            type: object
         TaxonomyVocabulary:
             description:
                 Represents a vocabulary, which is a grouping of categories for a specific purpose (e.g., classification,
@@ -1128,6 +1200,31 @@ paths:
                         application/json: {}
                         application/xml: {}
             tags: ["TaxonomyCategory"]
+    "/taxonomy-categories/{taxonomyCategoryId}/properties":
+        get:
+            description:
+                blab bla bla
+            operationId: getTaxonomyCategoryPropertiesPage
+            parameters:
+                - in: path
+                  name: taxonomyCategoryId
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/TaxonomyCategoryProperty"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/TaxonomyCategoryProperty"
+                                type: array
+            tags: ["TaxonomyCategoryProperty"]
     "/taxonomy-vocabularies/{taxonomyVocabularyId}":
         delete:
             description:
