@@ -16,8 +16,10 @@ package com.liferay.headless.admin.taxonomy.internal.graphql.query.v1_0;
 
 import com.liferay.headless.admin.taxonomy.dto.v1_0.Keyword;
 import com.liferay.headless.admin.taxonomy.dto.v1_0.TaxonomyCategory;
+import com.liferay.headless.admin.taxonomy.dto.v1_0.TaxonomyCategoryProperty;
 import com.liferay.headless.admin.taxonomy.dto.v1_0.TaxonomyVocabulary;
 import com.liferay.headless.admin.taxonomy.resource.v1_0.KeywordResource;
+import com.liferay.headless.admin.taxonomy.resource.v1_0.TaxonomyCategoryPropertyResource;
 import com.liferay.headless.admin.taxonomy.resource.v1_0.TaxonomyCategoryResource;
 import com.liferay.headless.admin.taxonomy.resource.v1_0.TaxonomyVocabularyResource;
 import com.liferay.petra.function.UnsafeConsumer;
@@ -68,6 +70,15 @@ public class Query {
 
 		_taxonomyCategoryResourceComponentServiceObjects =
 			taxonomyCategoryResourceComponentServiceObjects;
+	}
+
+	public static void
+		setTaxonomyCategoryPropertyResourceComponentServiceObjects(
+			ComponentServiceObjects<TaxonomyCategoryPropertyResource>
+				taxonomyCategoryPropertyResourceComponentServiceObjects) {
+
+		_taxonomyCategoryPropertyResourceComponentServiceObjects =
+			taxonomyCategoryPropertyResourceComponentServiceObjects;
 	}
 
 	public static void setTaxonomyVocabularyResourceComponentServiceObjects(
@@ -325,6 +336,25 @@ public class Query {
 						Pagination.of(page, pageSize),
 						_sortsBiFunction.apply(
 							taxonomyCategoryResource, sortsString))));
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {taxonomyCategoryProperties(taxonomyCategoryId: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField(description = "blab bla bla")
+	public TaxonomyCategoryPropertyPage taxonomyCategoryProperties(
+			@GraphQLName("taxonomyCategoryId") String taxonomyCategoryId)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_taxonomyCategoryPropertyResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			taxonomyCategoryPropertyResource ->
+				new TaxonomyCategoryPropertyPage(
+					taxonomyCategoryPropertyResource.
+						getTaxonomyCategoryPropertiesPage(taxonomyCategoryId)));
 	}
 
 	/**
@@ -592,6 +622,31 @@ public class Query {
 
 	}
 
+	@GraphQLTypeExtension(TaxonomyCategory.class)
+	public class GetTaxonomyCategoryPropertiesPageTypeExtension {
+
+		public GetTaxonomyCategoryPropertiesPageTypeExtension(
+			TaxonomyCategory taxonomyCategory) {
+
+			_taxonomyCategory = taxonomyCategory;
+		}
+
+		@GraphQLField(description = "blab bla bla")
+		public TaxonomyCategoryPropertyPage properties() throws Exception {
+			return _applyComponentServiceObjects(
+				_taxonomyCategoryPropertyResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				taxonomyCategoryPropertyResource ->
+					new TaxonomyCategoryPropertyPage(
+						taxonomyCategoryPropertyResource.
+							getTaxonomyCategoryPropertiesPage(
+								_taxonomyCategory.getId())));
+		}
+
+		private TaxonomyCategory _taxonomyCategory;
+
+	}
+
 	@GraphQLName("KeywordPage")
 	public class KeywordPage {
 
@@ -643,6 +698,39 @@ public class Query {
 
 		@GraphQLField
 		protected java.util.Collection<TaxonomyCategory> items;
+
+		@GraphQLField
+		protected long lastPage;
+
+		@GraphQLField
+		protected long page;
+
+		@GraphQLField
+		protected long pageSize;
+
+		@GraphQLField
+		protected long totalCount;
+
+	}
+
+	@GraphQLName("TaxonomyCategoryPropertyPage")
+	public class TaxonomyCategoryPropertyPage {
+
+		public TaxonomyCategoryPropertyPage(Page taxonomyCategoryPropertyPage) {
+			actions = taxonomyCategoryPropertyPage.getActions();
+
+			items = taxonomyCategoryPropertyPage.getItems();
+			lastPage = taxonomyCategoryPropertyPage.getLastPage();
+			page = taxonomyCategoryPropertyPage.getPage();
+			pageSize = taxonomyCategoryPropertyPage.getPageSize();
+			totalCount = taxonomyCategoryPropertyPage.getTotalCount();
+		}
+
+		@GraphQLField
+		protected Map<String, Map> actions;
+
+		@GraphQLField
+		protected java.util.Collection<TaxonomyCategoryProperty> items;
 
 		@GraphQLField
 		protected long lastPage;
@@ -740,6 +828,24 @@ public class Query {
 	}
 
 	private void _populateResourceContext(
+			TaxonomyCategoryPropertyResource taxonomyCategoryPropertyResource)
+		throws Exception {
+
+		taxonomyCategoryPropertyResource.setContextAcceptLanguage(
+			_acceptLanguage);
+		taxonomyCategoryPropertyResource.setContextCompany(_company);
+		taxonomyCategoryPropertyResource.setContextHttpServletRequest(
+			_httpServletRequest);
+		taxonomyCategoryPropertyResource.setContextHttpServletResponse(
+			_httpServletResponse);
+		taxonomyCategoryPropertyResource.setContextUriInfo(_uriInfo);
+		taxonomyCategoryPropertyResource.setContextUser(_user);
+		taxonomyCategoryPropertyResource.setGroupLocalService(
+			_groupLocalService);
+		taxonomyCategoryPropertyResource.setRoleLocalService(_roleLocalService);
+	}
+
+	private void _populateResourceContext(
 			TaxonomyVocabularyResource taxonomyVocabularyResource)
 		throws Exception {
 
@@ -759,6 +865,8 @@ public class Query {
 		_keywordResourceComponentServiceObjects;
 	private static ComponentServiceObjects<TaxonomyCategoryResource>
 		_taxonomyCategoryResourceComponentServiceObjects;
+	private static ComponentServiceObjects<TaxonomyCategoryPropertyResource>
+		_taxonomyCategoryPropertyResourceComponentServiceObjects;
 	private static ComponentServiceObjects<TaxonomyVocabularyResource>
 		_taxonomyVocabularyResourceComponentServiceObjects;
 

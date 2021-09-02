@@ -84,6 +84,8 @@ public class OpenAPIResourceImpl {
 
 			add(TaxonomyCategoryResourceImpl.class);
 
+			add(TaxonomyCategoryPropertyResourceImpl.class);
+
 			add(TaxonomyVocabularyResourceImpl.class);
 
 			add(OpenAPIResourceImpl.class);

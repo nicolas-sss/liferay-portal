@@ -17,6 +17,7 @@ package com.liferay.headless.admin.taxonomy.internal.graphql.servlet.v1_0;
 import com.liferay.headless.admin.taxonomy.internal.graphql.mutation.v1_0.Mutation;
 import com.liferay.headless.admin.taxonomy.internal.graphql.query.v1_0.Query;
 import com.liferay.headless.admin.taxonomy.resource.v1_0.KeywordResource;
+import com.liferay.headless.admin.taxonomy.resource.v1_0.TaxonomyCategoryPropertyResource;
 import com.liferay.headless.admin.taxonomy.resource.v1_0.TaxonomyCategoryResource;
 import com.liferay.headless.admin.taxonomy.resource.v1_0.TaxonomyVocabularyResource;
 import com.liferay.portal.vulcan.graphql.servlet.ServletData;
@@ -51,6 +52,8 @@ public class ServletDataImpl implements ServletData {
 			_keywordResourceComponentServiceObjects);
 		Query.setTaxonomyCategoryResourceComponentServiceObjects(
 			_taxonomyCategoryResourceComponentServiceObjects);
+		Query.setTaxonomyCategoryPropertyResourceComponentServiceObjects(
+			_taxonomyCategoryPropertyResourceComponentServiceObjects);
 		Query.setTaxonomyVocabularyResourceComponentServiceObjects(
 			_taxonomyVocabularyResourceComponentServiceObjects);
 	}
@@ -81,5 +84,9 @@ public class ServletDataImpl implements ServletData {
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
 	private ComponentServiceObjects<TaxonomyVocabularyResource>
 		_taxonomyVocabularyResourceComponentServiceObjects;
+
+	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+	private ComponentServiceObjects<TaxonomyCategoryPropertyResource>
+		_taxonomyCategoryPropertyResourceComponentServiceObjects;
 
 }
