@@ -15,6 +15,20 @@ definition {
 		JSONLayout.addPublicLayout(
 			groupName = "Site Name",
 			layoutName = "Page Name");
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Page Name",
+			widgetName = "Search Bar");
+
+		JSONLayout.addWidgetToPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Page Name",
+			widgetName = "Search Results");
+
+		JSONDepot.addDepot(
+			depotDescription = "This is the description of a depot",
+			depotName = "Test Depot Name");
 	}
 
 	tearDown {
@@ -36,24 +50,28 @@ definition {
 		}
 	}
 
+	@description = "This ensures that a depot document cannot be searched from the disconnected site."
+	@priority = "5"
+	@@refactordone
+	test CanNotSearchForDocumentFromDisconnectedSite {
+		JSONDocument.addFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "DM Document Title",
+			groupName = "Test Depot Name");
+
+		Navigator.openSitePage(
+			pageName = "Page Name",
+			siteName = "Site Name");
+
+		Search.searchCP(searchTerm = "DM Document Title");
+
+		SearchResultPortlet.viewNoSearchResults(searchTerm = "DM Document Title");
+	}
+
 	@description = "This ensures that a depot web content can be searched on a connected site when searching is reenabled."
 	@priority = "5"
-	@refactorneeded
-	test ReenableSearchability {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
+	@@refactordone
+	test CanReenableSearchability {
 		JSONWebcontent.addWebContent(
 			content = "WC WebContent Content",
 			groupName = "Test Depot Name",
@@ -97,22 +115,8 @@ definition {
 
 	@description = "This ensures that users can search for depot document from connected site."
 	@priority = "5"
-	@refactorneeded
-	test SearchForDocument {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
+	@@refactordone
+	test CanSearchForDocument {
 		JSONDocument.addFile(
 			dmDocumentDescription = "DM Document Description",
 			dmDocumentTitle = "DM Document Title",
@@ -137,65 +141,17 @@ definition {
 		SearchPortlets.viewResultDetails(searchAssetTitle = "DM Document Title");
 	}
 
-	@description = "This ensures that a depot document cannot be searched from the disconnected site."
-	@priority = "5"
-	@refactorneeded
-	test SearchForDocumentFromDisconnectedSite {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
-		JSONDocument.addFile(
-			dmDocumentDescription = "DM Document Description",
-			dmDocumentTitle = "DM Document Title",
-			groupName = "Test Depot Name");
-
-		Navigator.openSitePage(
-			pageName = "Page Name",
-			siteName = "Site Name");
-
-		Search.searchCP(searchTerm = "DM Document Title");
-
-		SearchResultPortlet.viewNoSearchResults(searchTerm = "DM Document Title");
-	}
-
 	@description = "This ensures that a depot document associated with a tag can be searched from the connected site."
 	@priority = "5"
-	@refactorneeded
-	test SearchForTag {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		Pause(locator1 = "3000");
-
-		DMDocument.addCP(
+	@@refactordone
+	test CanSearchForTag {
+		JSONDocument.addFileWithUploadedFile(
+			assetTagNames = "depot",
 			dmDocumentDescription = "DM Document Description",
-			dmDocumentFile = "Document_1.doc",
 			dmDocumentTitle = "DM Document Title",
-			tagNameList = "depot");
+			groupName = "Test Depot Name",
+			mimeType = "image/jpeg",
+			sourceFileName = "Document_4.jpg");
 
 		JSONDepot.connectSite(
 			depotName = "Test Depot Name",
@@ -216,24 +172,75 @@ definition {
 		SearchPortlets.viewResultDetails(searchAssetTitle = "DM Document Title");
 	}
 
+	@description = "This ensures that a depot content associated with the user can be searched with from the connected site."
+	@priority = "5"
+	@@refactordone
+	test CanSearchForUser {
+		JSONDocument.addFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "DM Document Title",
+			groupName = "Test Depot Name");
+
+		JSONWebcontent.addWebContent(
+			content = "WC WebContent Content",
+			groupName = "Test Depot Name",
+			site = "false",
+			title = "WC WebContent Title");
+
+		JSONDepot.connectSite(
+			depotName = "Test Depot Name",
+			groupName = "Site Name");
+
+		Navigator.openSitePage(
+			pageName = "Page Name",
+			siteName = "Site Name");
+
+		Search.searchCP(searchTerm = "TEST TEST");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "DM Document Title",
+			searchAssetType = "Document");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "WC WebContent Title",
+			searchAssetType = "Web Content Article");
+	}
+
+	@description = "This ensures that a depot web content can be searched from the connected site."
+	@priority = "5"
+	@@refactordone
+	test CanSearchForWC {
+		property portal.acceptance = "true";
+
+		JSONWebcontent.addWebContent(
+			content = "WC WebContent Content",
+			groupName = "Test Depot Name",
+			site = "false",
+			title = "WC WebContent Title");
+
+		JSONDepot.connectSite(
+			depotName = "Test Depot Name",
+			groupName = "Site Name");
+
+		Navigator.openSitePage(
+			pageName = "Page Name",
+			siteName = "Site Name");
+
+		Search.searchCP(searchTerm = "WC WebContent Title");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "WC WebContent Title",
+			searchAssetType = "Web Content Article");
+
+		SearchPortlets.gotoResultDetails(searchAssetTitle = "WC WebContent Title");
+
+		SearchPortlets.viewResultDetails(searchAssetTitle = "WC WebContent Title");
+	}
+
 	@description = "This ensures that a depot document cannot be searched on a connected site when searching is disabled."
 	@priority = "5"
-	@refactorneeded
-	test SearchForUnsearchableDocument {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
+	@@refactordone
+	test DocumentCanNotBeSearchedWhenDisabled {
 		JSONDocument.addFile(
 			dmDocumentDescription = "DM Document Description",
 			dmDocumentTitle = "DM Document Title",
@@ -262,29 +269,15 @@ definition {
 
 	@description = "This ensures that a depot document associated with a tag cannot be searched on a connected site when searching is disabled."
 	@priority = "5"
-	@refactorneeded
-	test SearchForUnsearchableTag {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
-		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
-
-		DMDocument.addCP(
+	@@refactordone
+	test TagCanNotBeSearchedWhenDisabled {
+		JSONDocument.addFileWithUploadedFile(
+			assetTagNames = "depot",
 			dmDocumentDescription = "DM Document Description",
-			dmDocumentFile = "Document_1.doc",
 			dmDocumentTitle = "Document_1.doc",
-			tagNameList = "depot");
+			groupName = "Test Depot Name",
+			mimeType = "application/msword",
+			sourceFileName = "Document_1.doc");
 
 		JSONDepot.connectSite(
 			depotName = "Test Depot Name",
@@ -309,22 +302,8 @@ definition {
 
 	@description = "This ensures that a depot content associated with the user cannot be searched on a connected site when searching is disabled."
 	@priority = "5"
-	@refactorneeded
-	test SearchForUnsearchableUser {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
+	@@refactordone
+	test UserCanNotBeSearchedWhenDisabled {
 		JSONDocument.addFile(
 			dmDocumentDescription = "DM Document Description",
 			dmDocumentTitle = "DM Document Title",
@@ -367,22 +346,8 @@ definition {
 
 	@description = "This ensures that a depot web content cannot be searched on a connected site when searching is disabled."
 	@priority = "5"
-	@refactorneeded
-	test SearchForUnsearchableWC {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
+	@@refactordone
+	test WCCanNotBeSearchedWhenDisabled {
 		JSONWebcontent.addWebContent(
 			content = "WC WebContent Content",
 			groupName = "Test Depot Name",
@@ -408,99 +373,6 @@ definition {
 		Search.searchCP(searchTerm = "WC WebContent Title");
 
 		SearchResultPortlet.viewNoSearchResults(searchTerm = "WC WebContent Title");
-	}
-
-	@description = "This ensures that a depot content associated with the user can be searched with from the connected site."
-	@priority = "5"
-	@refactorneeded
-	test SearchForUser {
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
-		JSONDocument.addFile(
-			dmDocumentDescription = "DM Document Description",
-			dmDocumentTitle = "DM Document Title",
-			groupName = "Test Depot Name");
-
-		JSONWebcontent.addWebContent(
-			content = "WC WebContent Content",
-			groupName = "Test Depot Name",
-			site = "false",
-			title = "WC WebContent Title");
-
-		JSONDepot.connectSite(
-			depotName = "Test Depot Name",
-			groupName = "Site Name");
-
-		Navigator.openSitePage(
-			pageName = "Page Name",
-			siteName = "Site Name");
-
-		Search.searchCP(searchTerm = "TEST TEST");
-
-		SearchResultPortlet.viewSearchResults(
-			searchAssetTitle = "DM Document Title",
-			searchAssetType = "Document");
-
-		SearchResultPortlet.viewSearchResults(
-			searchAssetTitle = "WC WebContent Title",
-			searchAssetType = "Web Content Article");
-	}
-
-	@description = "This ensures that a depot web content can be searched from the connected site."
-	@priority = "5"
-	@refactorneeded
-	test SearchForWebContent {
-		property portal.acceptance = "true";
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Bar");
-
-		JSONLayout.addWidgetToPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Page Name",
-			widgetName = "Search Results");
-
-		JSONDepot.addDepot(
-			depotDescription = "This is the description of a depot",
-			depotName = "Test Depot Name");
-
-		JSONWebcontent.addWebContent(
-			content = "WC WebContent Content",
-			groupName = "Test Depot Name",
-			site = "false",
-			title = "WC WebContent Title");
-
-		JSONDepot.connectSite(
-			depotName = "Test Depot Name",
-			groupName = "Site Name");
-
-		Navigator.openSitePage(
-			pageName = "Page Name",
-			siteName = "Site Name");
-
-		Search.searchCP(searchTerm = "WC WebContent Title");
-
-		SearchResultPortlet.viewSearchResults(
-			searchAssetTitle = "WC WebContent Title",
-			searchAssetType = "Web Content Article");
-
-		SearchPortlets.gotoResultDetails(searchAssetTitle = "WC WebContent Title");
-
-		SearchPortlets.viewResultDetails(searchAssetTitle = "WC WebContent Title");
 	}
 
 }

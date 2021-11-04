@@ -256,7 +256,7 @@ definition {
 	test CanFormsListSearchable {
 		var formNameList = "Created Form Name,Created Form Name 1";
 
-		ACUtils.addSiteAndPage(layoutName = "AC Page 1");
+		ACUtils.addPage(layoutName = "AC Page 1");
 
 		ACUtils.createFormAndAddToPage(
 			formACTitle = "Created Form Name 1",
@@ -470,7 +470,7 @@ definition {
 		ACCards.viewMetricValue(
 			cardTitle = "Visitors Behavior",
 			metricName = "Abandonment",
-			metricValue = "66.7%");
+			metricValue = "66.7");
 	}
 
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8426 | Test Summary: Forms submissions by location card shows expected views by location"
@@ -676,7 +676,7 @@ definition {
 		var formNameList = "Created Form Name,Created Form Name 1,Created Form Name 2,Created Form Name 3";
 
 		for (var n : list "1,2,3") {
-			ACUtils.addSiteAndPage(layoutName = "AC Page ${n}");
+			ACUtils.addPage(layoutName = "AC Page ${n}");
 		}
 
 		for (var n : list "1,2,3") {

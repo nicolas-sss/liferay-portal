@@ -29,11 +29,9 @@ import java.util.List;
 public class ConvertProcessUtil {
 
 	public static Collection<ConvertProcess> getConvertProcesses() {
-		Iterator<ConvertProcess> iterator = _convertProcesses.iterator();
-
 		List<ConvertProcess> convertProcesses = new ArrayList<>();
 
-		iterator.forEachRemaining(convertProcesses::add);
+		_convertProcesses.forEach(convertProcesses::add);
 
 		return convertProcesses;
 	}
@@ -55,8 +53,8 @@ public class ConvertProcessUtil {
 		return convertProcesses;
 	}
 
-	private static final ServiceTrackerList<ConvertProcess, ConvertProcess>
-		_convertProcesses = ServiceTrackerListFactory.open(
+	private static final ServiceTrackerList<ConvertProcess> _convertProcesses =
+		ServiceTrackerListFactory.open(
 			SystemBundleUtil.getBundleContext(), ConvertProcess.class);
 
 }

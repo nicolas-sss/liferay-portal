@@ -1,6 +1,6 @@
 Bundle-Name: Liferay Commerce API
 Bundle-SymbolicName: com.liferay.commerce.api
-Bundle-Version: 27.0.2
+Bundle-Version: 27.1.0
 Export-Package:\
 	com.liferay.commerce.address,\
 	com.liferay.commerce.checkout.helper,\
@@ -16,6 +16,8 @@ Export-Package:\
 	com.liferay.commerce.model,\
 	com.liferay.commerce.order,\
 	com.liferay.commerce.order.engine,\
+	com.liferay.commerce.order.importer.item,\
+	com.liferay.commerce.order.importer.type,\
 	com.liferay.commerce.order.status,\
 	com.liferay.commerce.payment.engine,\
 	com.liferay.commerce.payment.method,\

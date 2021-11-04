@@ -23,35 +23,17 @@ definition {
 			ACUtils.addSiteAndPage();
 		}
 
-		JSONLayout.addPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Blogs Page");
+		task ("Add specific pages and web contents to Site as interest topics") {
+			var pageNameList = "sports,technology,science";
 
-		Navigator.gotoSitePage(
-			pageName = "Blogs Page",
-			siteName = "Site Name");
+			for (var layoutName : list "${pageNameList}") {
+				ACUtils.addPage(layoutName = "${layoutName}");
 
-		ACUtils.createBlogsAndAddToPage(layoutName = "Blogs Page");
-
-		JSONLayout.addPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Documents Page");
-
-		Navigator.gotoSitePage(
-			pageName = "Documents Page",
-			siteName = "Site Name");
-
-		ACUtils.createDMAndAddToPage(layoutName = "Documents Page");
-
-		JSONLayout.addPublicLayout(
-			groupName = "Site Name",
-			layoutName = "Web Content Page");
-
-		Navigator.gotoSitePage(
-			pageName = "Web Content Page",
-			siteName = "Site Name");
-
-		ACUtils.createWCAndAddToPage(layoutName = "Web Content Page");
+				ACUtils.createWCAndAddToPage(
+					layoutName = "${layoutName}",
+					webContentTitle = "Web Content AC Title ${layoutName}");
+			}
+		}
 
 		task ("Connect the DXP to AC") {
 			ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
@@ -59,15 +41,15 @@ definition {
 
 		task ("Add a new user") {
 			JSONUser.addUser(
-				userEmailAddress = "userea@liferay.com",
-				userFirstName = "userfn",
-				userLastName = "userln",
-				userScreenName = "usersn");
+				userEmailAddress = "ac@liferay.com",
+				userFirstName = "ac",
+				userLastName = "ac",
+				userScreenName = "ac");
 
 			JSONUser.setFirstPassword(
 				agreeToTermsAndAnswerReminderQuery = "true",
 				requireReset = "false",
-				userEmailAddress = "userea@liferay.com");
+				userEmailAddress = "ac@liferay.com");
 		}
 
 		task ("Sync the Contact Data") {
@@ -97,74 +79,32 @@ definition {
 	test InterestCanBeAggregatedFromMultiplePages {
 		property portal.upstream = "quarantine";
 
-		// AC Refactor: Test was written in a local to UAT test environment where data took hours to process and will need to be revisited.
+		// AC Refactor: Interests in the segment take time to appear.
 		// AC Refactor ticket: LRAC-9168
 
-		var usernameList = "user1,user2,user3,user4,user5";
+		var usernameList = "ac";
 
-		task ("Add 5 more new users") {
-			for (var name : list "${usernameList}") {
-				JSONUser.addUser(
-					userEmailAddress = "${name}@liferay.com",
-					userFirstName = "${name}",
-					userLastName = "${name}",
-					userScreenName = "${name}");
-
-				JSONUser.setFirstPassword(
-					agreeToTermsAndAnswerReminderQuery = "true",
-					requireReset = "false",
-					userEmailAddress = "${name}@liferay.com");
-			}
-		}
-
-		task ("Sync the Contact Data") {
-			ACDXPSettings.syncNewContactData();
-		}
+		var pageNameList = "sports,technology,science";
 
 		task ("Get site assigned property name") {
 			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
 		}
 
-		task ("View the blogs page as different users") {
-			ACUtils.navigateToSitePageWithUser(
-				actionType = "View Blog",
-				documentTitleList = "Blogs AC Title",
-				emailList = "userea@liferay.com,user1@liferay.com",
-				pageName = "Blogs Page",
-				siteName = "Site Name");
+		task ("View new pages in site as new user") {
+			User.logoutAndLoginPG(
+				userLoginEmailAddress = "${usernameList}@liferay.com",
+				userLoginFullName = "${usernameList} ${usernameList}");
 
-			ACUtils.closeAllSessions();
+			for (var pageName : list "${pageNameList}") {
+				ACUtils.navigateToSitePage(
+					pageName = "${pageName}",
+					siteName = "Site Name");
+			}
 		}
-
-		task ("View the documents page as different users") {
-			ACUtils.navigateToSitePageWithUser(
-				actionType = "View DM",
-				documentTitleList = "DM AC Title",
-				emailList = "user2@liferay.com,user3@liferay.com",
-				pageName = "Documents Page",
-				siteName = "Site Name");
-
-			ACUtils.closeAllSessions();
-		}
-
-		task ("View the web content page as different users") {
-			ACUtils.navigateToSitePageWithUser(
-				emailList = "user4@liferay.com,user5@liferay.com",
-				pageName = "Web Content Page",
-				siteName = "Site Name");
-
-			ACUtils.closeAllSessions();
-		}
-
-		User.logoutPG();
-
-		Navigator.gotoSitePage(
-			pageName = "AC Page",
-			siteName = "Site Name");
-
-		ACUtils.closeAllSessions();
 
 		task ("Switch to new property in AC") {
+			ACUtils.closeAllSessionsAndWait();
+
 			ACUtils.launchAC();
 
 			ACProperties.switchProperty(propertyName = "${propertyName}");
@@ -180,52 +120,24 @@ definition {
 			ACSegments.nameSegment(segmentName = "Static Segment Test");
 		}
 
-		task ("Select the 5 items in Add Members modal") {
-			Click(locator1 = "ACSegments#ADD_MEMBERS_BUTTON");
-
-			ACUtils.changePagination(itemsPerPage = "5");
-		}
-
-		task ("Add the user1 user1 as member") {
-			Click(
-				key_TableMember = "user1 user1",
-				locator1 = "ACSegments#TABLE_CHECKBOX");
-
-			Click(locator1 = "ACSegments#ADD_BUTTON");
-		}
-
-		task ("Select the 5 items in Add Members modal") {
-			Click(locator1 = "ACSegments#ADD_MEMBERS_BUTTON");
-
-			ACUtils.changePagination(itemsPerPage = "5");
-		}
-
-		task ("Navigate to page 2") {
-			ACUtils.checkAnyPage(pageNumber = "2");
-		}
-
-		task ("Add the userfn userln as member") {
-			Click(
-				key_TableMember = "userfn userln",
-				locator1 = "ACSegments#TABLE_CHECKBOX");
-
-			Click(locator1 = "ACSegments#ADD_BUTTON");
+		task ("Add the new user as member") {
+			ACSegments.addStaticMember(tableMember = "${usernameList} ${usernameList}");
 		}
 
 		task ("Create the segment") {
 			ACSegments.saveSegment();
 		}
 
-		task ("View various segment interests under the top interests card") {
-			ACInterests.viewInterest(interestTopic = "liferay dxp");
+		// AC Refactor: Interests in the segment take time to appear.
 
+		task ("View various segment interests under the top interests card") {
 			ACInterests.viewInterest(interestTopic = "site");
 
-			ACInterests.viewInterest(interestTopic = "ac");
+			ACInterests.viewInterest(interestTopic = "sports");
 
-			ACInterests.viewInterest(interestTopic = "ac title");
+			ACInterests.viewInterest(interestTopic = "science");
 
-			ACInterests.viewInterest(interestTopic = "blog test");
+			ACInterests.viewInterest(interestTopic = "technology");
 		}
 	}
 
@@ -234,13 +146,15 @@ definition {
 	test SearchDetailsOfSegmentsInterest {
 		property portal.upstream = "quarantine";
 
-		// AC Refactor: Test was written in a local to UAT test environment where data took hours to process and will need to be revisited.
+		// AC Refactor: Interests in the segment take time to appear.
 		// AC Refactor ticket: LRAC-9169
 
-		var usernameList = "user1,user2,user3,user4,user5";
+		var nameList = "ac ac,ac2 ac2,ac3 ac3";
 
-		task ("Add 5 more new users") {
-			for (var name : list "${usernameList}") {
+		var newUser = "ac2,ac3";
+
+		task ("Add 2 more new users") {
+			for (var name : list "${newUser}") {
 				JSONUser.addUser(
 					userEmailAddress = "${name}@liferay.com",
 					userFirstName = "${name}",
@@ -262,46 +176,26 @@ definition {
 			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
 		}
 
-		task ("View the blogs page as different users") {
+		task ("View new pages in site as different users") {
 			ACUtils.navigateToSitePageWithUser(
-				actionType = "View Blog",
-				documentTitleList = "Blogs AC Title",
-				emailList = "userea@liferay.com,user1@liferay.com",
-				pageName = "Blogs Page",
+				emailList = "ac@liferay.com",
+				pageName = "sports",
 				siteName = "Site Name");
 
-			ACUtils.closeAllSessions();
-		}
-
-		task ("View the documents page as different users") {
 			ACUtils.navigateToSitePageWithUser(
-				actionType = "View DM",
-				documentTitleList = "DM AC Title",
-				emailList = "user2@liferay.com,user3@liferay.com",
-				pageName = "Documents Page",
+				emailList = "ac2@liferay.com",
+				pageName = "technology",
 				siteName = "Site Name");
 
-			ACUtils.closeAllSessions();
-		}
-
-		task ("View the web content page as different users") {
 			ACUtils.navigateToSitePageWithUser(
-				emailList = "user4@liferay.com,user5@liferay.com",
-				pageName = "Web Content Page",
+				emailList = "ac3@liferay.com",
+				pageName = "science",
 				siteName = "Site Name");
-
-			ACUtils.closeAllSessions();
 		}
-
-		User.logoutPG();
-
-		Navigator.gotoSitePage(
-			pageName = "AC Page",
-			siteName = "Site Name");
-
-		ACUtils.closeAllSessions();
 
 		task ("Switch to new property in AC") {
+			ACUtils.closeAllSessionsAndWait();
+
 			ACUtils.launchAC();
 
 			ACProperties.switchProperty(propertyName = "${propertyName}");
@@ -317,74 +211,34 @@ definition {
 			ACSegments.nameSegment(segmentName = "Static Segment Test");
 		}
 
-		task ("Select the 5 items in Add Members modal") {
-			Click(locator1 = "ACSegments#ADD_MEMBERS_BUTTON");
-
-			ACUtils.changePagination(itemsPerPage = "5");
-		}
-
-		task ("Add the user1 user1 as member") {
-			Click(
-				key_TableMember = "user1 user1",
-				locator1 = "ACSegments#TABLE_CHECKBOX");
-
-			Click(locator1 = "ACSegments#ADD_BUTTON");
-		}
-
-		task ("Select the 5 items in Add Members modal") {
-			Click(locator1 = "ACSegments#ADD_MEMBERS_BUTTON");
-
-			ACUtils.changePagination(itemsPerPage = "5");
-		}
-
-		task ("Navigate to page 2") {
-			ACUtils.checkAnyPage(pageNumber = "2");
-		}
-
-		task ("Add the userfn userln as member") {
-			Click(
-				key_TableMember = "userfn userln",
-				locator1 = "ACSegments#TABLE_CHECKBOX");
-
-			Click(locator1 = "ACSegments#ADD_BUTTON");
+		task ("Add the new user as member") {
+			ACSegments.addStaticMultiMember(tableMember = "${nameList}");
 		}
 
 		task ("Create the segment") {
 			ACSegments.saveSegment();
 		}
 
+		// AC Refactor: Interests in the segment take time to appear.
+
 		task ("Go to a segment interest details page") {
-			ACInterests.clickInterest(interestTopic = "liferay dxp");
+			ACInterests.clickInterest(interestTopic = "site");
 		}
 
 		task ("Search Individual tab") {
-			ACUtils.searchBar(searchItem = "user");
+			ACUtils.searchBar(searchItem = "@liferay.com");
 		}
 
 		task ("View individuals") {
-			ACInterests.viewInterestUser(userName = "userfn userln");
-
-			ACInterests.viewInterestUser(userName = "user1 user1");
-
-			ACInterests.viewInterestUser(userName = "user2 user2");
-
-			ACInterests.viewInterestUser(userName = "user3 user3");
+			ACUtils.viewNameList(nameList = "${nameList}");
 		}
 
 		task ("Search Individual tab") {
-			ACInterests.switchTab(tabName = "Active Pages");
+			ACUtils.searchBar(searchItem = "ac@liferay.com");
 		}
 
-		task ("Search Active Pages tab") {
-			ACUtils.searchBar(searchItem = "DXP");
-		}
-
-		task ("View pages") {
-			ACInterests.viewInterestPage(pageName = "Blogs AC Title - Site Name - Liferay DXP");
-
-			ACInterests.viewInterestPage(pageName = "Documents Page - Site Name - Liferay DXP");
-
-			ACInterests.viewInterestPage(pageName = "Documents Page - Site Name - Liferay DXP");
+		task ("View individuals") {
+			ACUtils.viewNameList(nameList = "ac ac");
 		}
 	}
 
@@ -393,24 +247,24 @@ definition {
 	test ViewListInterestsAppearsBarGraphsWithPercentage {
 		property portal.upstream = "quarantine";
 
-		// AC Refactor: Test was written in a local to UAT test environment where data took hours to process and will need to be revisited.
+		// AC Refactor: Interests in the segment take time to appear.
 		// AC Refactor ticket: LRAC-9167
 
-		var usernameList = "user1,user2,user3,user4,user5";
+		var nameList = "ac ac,ac2 ac2";
 
-		task ("Add 5 more new users") {
-			for (var name : list "${usernameList}") {
-				JSONUser.addUser(
-					userEmailAddress = "${name}@liferay.com",
-					userFirstName = "${name}",
-					userLastName = "${name}",
-					userScreenName = "${name}");
+		var emailList = "ac@liferay.com,ac2@liferay.com";
 
-				JSONUser.setFirstPassword(
-					agreeToTermsAndAnswerReminderQuery = "true",
-					requireReset = "false",
-					userEmailAddress = "${name}@liferay.com");
-			}
+		task ("Add a new users") {
+			JSONUser.addUser(
+				userEmailAddress = "ac2@liferay.com",
+				userFirstName = "ac2",
+				userLastName = "ac2",
+				userScreenName = "ac2");
+
+			JSONUser.setFirstPassword(
+				agreeToTermsAndAnswerReminderQuery = "true",
+				requireReset = "false",
+				userEmailAddress = "ac2@liferay.com");
 		}
 
 		task ("Sync the Contact Data") {
@@ -421,46 +275,26 @@ definition {
 			var propertyName = ACDXPSettings.getAssignedPropertyName(siteName = "Site Name");
 		}
 
-		task ("View the blogs page as different users") {
+		task ("View new pages in site as new user") {
 			ACUtils.navigateToSitePageWithUser(
-				actionType = "View Blog",
-				documentTitleList = "Blogs AC Title",
-				emailList = "userea@liferay.com,user1@liferay.com",
-				pageName = "Blogs Page",
+				emailList = "${emailList}",
+				pageName = "sports",
 				siteName = "Site Name");
 
-			ACUtils.closeAllSessions();
-		}
-
-		task ("View the documents page as different users") {
 			ACUtils.navigateToSitePageWithUser(
-				actionType = "View DM",
-				documentTitleList = "DM AC Title",
-				emailList = "user2@liferay.com,user3@liferay.com",
-				pageName = "Documents Page",
+				emailList = "ac@liferay.com",
+				pageName = "technology",
 				siteName = "Site Name");
 
-			ACUtils.closeAllSessions();
-		}
-
-		task ("View the web content page as different users") {
 			ACUtils.navigateToSitePageWithUser(
-				emailList = "user4@liferay.com,user5@liferay.com",
-				pageName = "Web Content Page",
+				emailList = "ac2@liferay.com",
+				pageName = "science",
 				siteName = "Site Name");
-
-			ACUtils.closeAllSessions();
 		}
-
-		User.logoutPG();
-
-		Navigator.gotoSitePage(
-			pageName = "AC Page",
-			siteName = "Site Name");
-
-		ACUtils.closeAllSessions();
 
 		task ("Switch to new property in AC") {
+			ACUtils.closeAllSessionsAndWait();
+
 			ACUtils.launchAC();
 
 			ACProperties.switchProperty(propertyName = "${propertyName}");
@@ -476,67 +310,36 @@ definition {
 			ACSegments.nameSegment(segmentName = "Static Segment Test");
 		}
 
-		task ("Select the 5 items in Add Members modal") {
-			Click(locator1 = "ACSegments#ADD_MEMBERS_BUTTON");
-
-			ACUtils.changePagination(itemsPerPage = "5");
-		}
-
-		task ("Add the user1 user1 as member") {
-			Click(
-				key_TableMember = "user1 user1",
-				locator1 = "ACSegments#TABLE_CHECKBOX");
-
-			Click(locator1 = "ACSegments#ADD_BUTTON");
-		}
-
-		task ("Select the 5 items in Add Members modal") {
-			Click(locator1 = "ACSegments#ADD_MEMBERS_BUTTON");
-
-			ACUtils.changePagination(itemsPerPage = "5");
-		}
-
-		task ("Navigate to page 2") {
-			ACUtils.checkAnyPage(pageNumber = "2");
-		}
-
-		task ("Add the userfn userln as member") {
-			Click(
-				key_TableMember = "userfn userln",
-				locator1 = "ACSegments#TABLE_CHECKBOX");
-
-			Click(locator1 = "ACSegments#ADD_BUTTON");
+		task ("Add the new user as member") {
+			ACSegments.addStaticMultiMember(tableMember = "${nameList}");
 		}
 
 		task ("Create the segment") {
 			ACSegments.saveSegment();
 		}
 
+		// AC Refactor: Interests in the segment take time to appear.
+
 		task ("View various segment top interest numbers under the top interests card") {
 			ACInterests.viewInterest(
-				interestTopic = "liferay dxp",
-				membersCount = "4",
-				membersPercentage = "66.67%");
-
-			ACInterests.viewInterest(
 				interestTopic = "site",
-				membersCount = "4",
-				membersPercentage = "66.67%");
+				membersCount = "2",
+				membersPercentage = "25%");
 
 			ACInterests.viewInterest(
-				interestTopic = "ac",
+				interestTopic = "sports",
 				membersCount = "2",
-				membersPercentage = "33.33%");
+				membersPercentage = "25%");
 
 			ACInterests.viewInterest(
-				interestTopic = "ac title",
-				membersCount = "2",
-				membersPercentage = "33.33%");
+				interestTopic = "technology",
+				membersCount = "1",
+				membersPercentage = "25%");
 
 			ACInterests.viewInterest(
-				interestTopic = "blog test",
-				membersCount = "2",
-				membersPercentage = "33.33%");
+				interestTopic = "science",
+				membersCount = "1",
+				membersPercentage = "25%");
 		}
 	}
 

@@ -86,6 +86,12 @@ definition {
 
 		Click(locator1 = "ACSegments#ADD_MEMBERS_BUTTON");
 
+		while (IsElementNotPresent(locator1 = "ACSegments#TABLE_CHECKBOX") && (maxIterations = "50")) {
+			ACSegments.searchSegment(findSegment = "${tableMember}");
+
+			ACUtils.clearSearchBar();
+		}
+
 		Click(locator1 = "ACSegments#TABLE_CHECKBOX");
 
 		Click(locator1 = "ACSegments#ADD_BUTTON");
@@ -97,13 +103,13 @@ definition {
 		for (var tableMember : list "${tableMember}") {
 			var key_TableMember = "${tableMember}";
 
-			Type(
-				locator1 = "ACSegments#SEARCH_MEMBER",
-				value1 = "${tableMember}");
+			ACSegments.searchSegment(findSegment = "${tableMember}");
 
-			KeyPress(
-				locator1 = "Segmentation#SEARCH_FIELD",
-				value1 = "\ENTER");
+			while (IsElementNotPresent(locator1 = "ACSegments#TABLE_CHECKBOX") && (maxIterations = "50")) {
+				ACUtils.clearSearchBar();
+
+				ACSegments.searchSegment(findSegment = "${tableMember}");
+			}
 
 			Click(locator1 = "ACSegments#TABLE_CHECKBOX");
 		}
@@ -226,6 +232,8 @@ definition {
 
 	macro deleteSegmentViaSegmentListInlineButton {
 		var key_segmentName = "${segmentName}";
+
+		ACUtils.waitForLoading();
 
 		Click.javaScriptClick(locator1 = "ACSegments#DELETE_SEGMENT_INLINE_BUTTON");
 
@@ -664,30 +672,10 @@ definition {
 		AssertElementPresent(locator1 = "ACSegments#ANONYMOUS_LABEL");
 	}
 
-	macro viewKnownSegmentMemberNameLinksSpecificOrder {
-		var resultOrder = "0";
-
-		for (var username : list "${username}") {
-			var resultOrder = ${resultOrder} + 1;
-
-			AssertVisible(
-				key_userName = "${username}",
-				locator1 = "ACSegments#KNOWN_SEGMENT_MEMBERS_VIEW_SPECIFIC_ORDER",
-				resultOrder = "${resultOrder}");
-		}
-	}
-
-	macro viewKnownSegmentMembersSpecificOrder {
-		var resultOrder = "0";
-
-		for (var username : list "${username}") {
-			var resultOrder = ${resultOrder} + 1;
-
-			AssertVisible(
-				key_userName = "${username}",
-				locator1 = "ACSegments#KNOWN_SEGMENT_MEMBERS_VIEW_SPECIFIC_ORDER",
-				resultOrder = "${resultOrder}");
-		}
+	macro viewPreviewNumber {
+		AssertTextPresent(
+			locator1 = "ACLoading#PREVIEW_NUMBER",
+			value1 = "${previewNumber}");
 	}
 
 	macro viewSegmentComposition {

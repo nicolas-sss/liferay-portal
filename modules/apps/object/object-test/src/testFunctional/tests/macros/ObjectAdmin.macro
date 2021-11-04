@@ -29,6 +29,10 @@ definition {
 		}
 
 		Button.clickSave();
+
+		WaitForElementNotPresent(
+			key_text = "Save",
+			locator1 = "Button#ANY");
 	}
 
 	macro addObjectDoubleFieldEntryViaUI {
@@ -87,6 +91,14 @@ definition {
 		Button.clickSave();
 	}
 
+	macro addObjectLayoutViaAPI {
+		JSONObject.addObjectLayout(
+			layoutName = "${layoutName}",
+			objectName = "${objectName}",
+			userEmailAddress = "${userEmailAddress}",
+			userPassword = "${userPassword}");
+	}
+
 	macro addObjectPicklistFieldEntryViaUI {
 		LexiconEntry.gotoAdd();
 
@@ -97,6 +109,10 @@ definition {
 			locator1 = "ObjectAdmin#ENTRY_PICKLIST_OPTION");
 
 		Button.clickSave();
+
+		WaitForElementNotPresent(
+			key_text = "Save",
+			locator1 = "Button#ANY");
 	}
 
 	macro addObjectRelationshipViaAPI {
@@ -165,6 +181,14 @@ definition {
 			scope = "${scope}",
 			userEmailAddress = "${userEmailAddress}",
 			userPassword = "${userPassword}");
+	}
+
+	macro assertAddEntryModalIsNotPresent {
+		AssertElementNotPresent(locator1 = "ObjectAdmin#ENTRY_STRING_VALUE_FIELD");
+
+		AssertElementNotPresent(locator1 = "ObjectAdmin#ADD_ENTRY_SAVE_BUTTON");
+
+		AssertElementNotPresent(locator1 = "ObjectAdmin#ADD_ENTRY_CANCEL_BUTTON");
 	}
 
 	macro assertFieldsTableColumnsAreDisplayed {
@@ -263,6 +287,34 @@ definition {
 
 	macro assertTypeFieldRequired {
 		AssertElementPresent(locator1 = "ObjectAdmin#TYPE_FIELD_REQUIRED");
+	}
+
+	macro assertUpdateEntryModalIsNotPresent {
+		AssertElementNotPresent(
+			locator1 = "ObjectAdmin#ENTRY_STRING_VALUE_FIELD",
+			value1 = "${value}");
+
+		AssertElementNotPresent(locator1 = "ObjectAdmin#ADD_ENTRY_SAVE_BUTTON");
+
+		AssertElementNotPresent(locator1 = "ObjectAdmin#ADD_ENTRY_CANCEL_BUTTON");
+	}
+
+	macro cancelAddingObjectStringFieldEntryViaUI {
+		LexiconEntry.gotoAdd();
+
+		Type(
+			locator1 = "ObjectAdmin#ENTRY_STRING_VALUE_FIELD",
+			value1 = "${entryValue}");
+
+		Button.clickCancel();
+	}
+
+	macro cancelUpdatingObjectStringFieldEntryViaUI {
+		Type(
+			locator1 = "ObjectAdmin#ENTRY_STRING_VALUE_FIELD",
+			value1 = "${entryValue}");
+
+		Button.clickCancel();
 	}
 
 	macro changeLabelLanguage {

@@ -21,6 +21,7 @@ import EventMessageQueue from './queues/eventMessageQueue';
 import EventQueue from './queues/eventsQueue';
 import IdentityMessageQueue from './queues/identityMessageQueue';
 import {
+	ANALYTICS_CLIENT_VERSION,
 	FLUSH_INTERVAL,
 	QUEUE_PRIORITY_DEFAULT,
 	QUEUE_PRIORITY_IDENTITY,
@@ -74,6 +75,8 @@ class Analytics {
 			flushInterval: config.flushInterval || FLUSH_INTERVAL,
 			identityEndpoint: `${endpointUrl}/identity`,
 		});
+
+		instance.version = ANALYTICS_CLIENT_VERSION;
 
 		// Register initial middlewares
 
@@ -461,7 +464,7 @@ class Analytics {
 
 		expirationDate.setDate(expirationDate.getDate() + 365);
 
-		document.cookie = `${key}=${data}; expires= ${expirationDate.toUTCString()}; path=/`;
+		document.cookie = `${key}=${data}; expires=${expirationDate.toUTCString()}; path=/; Secure`;
 	}
 
 	/**

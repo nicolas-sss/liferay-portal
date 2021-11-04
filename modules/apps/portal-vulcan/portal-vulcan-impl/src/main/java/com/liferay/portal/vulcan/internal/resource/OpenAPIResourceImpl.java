@@ -40,6 +40,7 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
@@ -314,6 +315,16 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 				Map<String, String> cookies,
 				Map<String, List<String>> headers) {
 
+				if (schemaMappings.containsKey(schema.getName())) {
+					StringSchema stringSchema = new StringSchema();
+
+					stringSchema.readOnly(true);
+					stringSchema.setDefault(
+						schemaMappings.get(schema.getName()));
+
+					schema.addProperties("x-schema-name", stringSchema);
+				}
+
 				DTOProperty dtoProperty = openAPISchemaFilter.getDTOProperty();
 
 				if (Objects.equals(dtoProperty.getName(), schema.getName())) {
@@ -356,6 +367,7 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			private Schema<Object> _addSchema(DTOProperty dtoProperty) {
 				Schema<Object> schema = new Schema<>();
 
+				schema.setExtensions(dtoProperty.getExtensions());
 				schema.setName(dtoProperty.getName());
 
 				String type = dtoProperty.getType();

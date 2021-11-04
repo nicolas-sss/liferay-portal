@@ -27,73 +27,73 @@ definition {
 		}
 	}
 
-	@description = "Create a Site with the Bootcamp Site initializer"
+	@description = "Create a Site with the Masterclass Site initializer"
 	@ignore = "Test Stub"
 	@priority = "5"
-	test AddBootcampSite {
+	test AddMasterclassSite {
 
 		// TODO Create the automation about the LPS-137508.
 
 	}
 
-	@description = "View the Bootcamp Categories"
+	@description = "View the Masterclass Categories"
 	@ignore = "Test Stub"
 	@priority = "3"
-	test ViewBootcampCategories {
+	test ViewMasterclassCategories {
 
 		// TODO Create the automation about the LPS-137508.
 
 	}
 
-	@description = "View the Bootcamp Stylebook Classic Theme"
+	@description = "View the Masterclass Stylebook Classic Theme"
 	@ignore = "Test Stub"
 	@priority = "4"
-	test ViewBootcampClassicStylebook {
+	test ViewMasterclassClassicStylebook {
 
 		// TODO Create the automation about the LPS-137508.
 
 	}
 
-	@description = "View the Bootcamp Collections"
+	@description = "View the Masterclass Collections"
 	@ignore = "Test Stub"
 	@priority = "4"
-	test ViewBootcampCollections {
+	test ViewMasterclassCollections {
 
 		// TODO Create the automation about the LPS-137508.
 
 	}
 
-	@description = "View the Bootcamp Documents"
+	@description = "View the Masterclass Documents"
 	@ignore = "Test Stub"
 	@priority = "4"
-	test ViewBootcampDocuments {
+	test ViewMasterclassDocuments {
 
 		// TODO Create the automation about the LPS-137508.
 
 	}
 
-	@description = "View the Bootcamp Fragments Collections"
+	@description = "View the Masterclass Fragments Collections"
 	@ignore = "Test Stub"
 	@priority = "3"
-	test ViewBootcampFragmentsCollections {
+	test ViewMasterclassFragmentsCollections {
 
 		// TODO Create the automation about the LPS-137508.
 
 	}
 
-	@description = "View the Bootcamp Pages"
+	@description = "View the Masterclass Pages"
 	@ignore = "Test Stub"
 	@priority = "4"
-	test ViewBootcampPages {
+	test ViewMasterclassPages {
 
 		// TODO Create the automation about the LPS-137508.
 
 	}
 
-	@description = "View the Bootcamp Page Templates"
+	@description = "View the Masterclass Page Templates"
 	@ignore = "Test Stub"
 	@priority = "4"
-	test ViewBootcampPageTemplates {
+	test ViewMasterclassPageTemplates {
 
 		// TODO Create the automation about the LPS-137508.
 

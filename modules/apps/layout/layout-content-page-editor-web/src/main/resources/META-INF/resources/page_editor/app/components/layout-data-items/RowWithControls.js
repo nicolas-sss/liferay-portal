@@ -32,7 +32,7 @@ const ROW_SIZE = 12;
 
 const RowWithControls = React.forwardRef(({children, item}, ref) => {
 	const [resizing, setResizing] = useState(false);
-	const [updatedLayoutData, setUpdatedLayoutData] = useState(null);
+	const [nextColumnSizes, setNextColumnSizes] = useState(null);
 
 	const canUpdateItemConfiguration = useSelector(
 		selectCanUpdateItemConfiguration
@@ -85,7 +85,7 @@ const RowWithControls = React.forwardRef(({children, item}, ref) => {
 				className={classNames({
 					'align-bottom': verticalAlignment === 'bottom',
 					'align-middle': verticalAlignment === 'middle',
-					empty:
+					'empty':
 						isSomeRowEmpty(
 							item,
 							layoutData,
@@ -99,10 +99,10 @@ const RowWithControls = React.forwardRef(({children, item}, ref) => {
 			>
 				<ResizeContextProvider
 					value={{
+						nextColumnSizes,
 						resizing,
+						setNextColumnSizes,
 						setResizing,
-						setUpdatedLayoutData,
-						updatedLayoutData,
 					}}
 				>
 					{children}

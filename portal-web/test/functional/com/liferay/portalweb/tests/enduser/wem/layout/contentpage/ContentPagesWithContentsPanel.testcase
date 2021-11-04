@@ -806,11 +806,10 @@ definition {
 				pageName = "Test Page Name",
 				siteName = "Test Site Name");
 
-			AssertVisible(
+			ContentPages.viewFragmentText(
+				fragmentName = "heading",
 				id = "element-text",
-				key_position = "1",
-				key_text = "Banner Title Example",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE");
+				text = "Banner Title Example");
 
 			AssertVisible(
 				backgroundImageStyle = "version=2.0",
@@ -1153,9 +1152,10 @@ definition {
 				locator1 = "PageEditor#PAGE_CONTENTS_ITEM");
 
 			AssertCssValue(
+				fragmentName = "heading",
 				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				locator2 = "outline-style",
 				value1 = "dashed");
 
@@ -1168,9 +1168,10 @@ definition {
 				locator1 = "PageEditor#PAGE_CONTENTS_ITEM");
 
 			AssertCssValue(
+				fragmentName = "paragraph",
 				id = "element-text",
-				key_fragmentName = "Paragraph",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				locator2 = "outline-style",
 				value1 = "dashed");
 		}
@@ -1197,9 +1198,10 @@ definition {
 				locator1 = "PageEditor#PAGE_CONTENTS_ITEM");
 
 			AssertCssValue(
+				fragmentName = "heading",
 				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				locator2 = "outline-style",
 				value1 = "dashed");
 
@@ -1212,9 +1214,10 @@ definition {
 				locator1 = "PageEditor#PAGE_CONTENTS_ITEM");
 
 			AssertCssValue(
+				fragmentName = "paragraph",
 				id = "element-text",
-				key_fragmentName = "Paragraph",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				locator2 = "outline-style",
 				value1 = "dashed");
 		}
@@ -1306,9 +1309,10 @@ definition {
 				locator1 = "PageEditor#PAGE_CONTENTS_ITEM");
 
 			AssertCssValue(
+				fragmentName = "heading",
 				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				locator2 = "outline-style",
 				value1 = "dashed");
 
@@ -1321,9 +1325,10 @@ definition {
 				locator1 = "PageEditor#PAGE_CONTENTS_ITEM");
 
 			AssertCssValue(
+				fragmentName = "button",
 				id = "link",
-				key_fragmentName = "Button",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				locator2 = "outline-style",
 				value1 = "dashed");
 

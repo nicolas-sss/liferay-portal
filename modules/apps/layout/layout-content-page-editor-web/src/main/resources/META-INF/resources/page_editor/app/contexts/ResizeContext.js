@@ -15,38 +15,36 @@
 import React, {useContext} from 'react';
 
 const INITIAL_STATE = {
+	nextColumnSizes: {},
 	resizing: false,
-	setCustomRow: () => null,
+	setNextColumnSizes: () => {},
 	setResizing: () => null,
-	setUpdatedLayoutData: () => null,
-	updatedLayoutData: null,
 };
 
 const ResizeContext = React.createContext(INITIAL_STATE);
 
 const ResizeContextProvider = ResizeContext.Provider;
 
-const useResizeContext = () => {
+const useResizing = () => {
 	return useContext(ResizeContext).resizing;
 };
 
-const useSetResizeContext = () => {
+const useSetResizing = () => {
 	return useContext(ResizeContext).setResizing;
 };
 
-const useSetUpdatedLayoutDataContext = () => {
-	return useContext(ResizeContext).setUpdatedLayoutData;
+const useSetNextColumnSizes = () => {
+	return useContext(ResizeContext).setNextColumnSizes;
 };
 
-const useUpdatedLayoutDataContext = () => {
-	return useContext(ResizeContext).updatedLayoutData;
+const useNextColumnSizes = () => {
+	return useContext(ResizeContext).nextColumnSizes;
 };
 
 export {
-	ResizeContext,
 	ResizeContextProvider,
-	useResizeContext,
-	useSetResizeContext,
-	useSetUpdatedLayoutDataContext,
-	useUpdatedLayoutDataContext,
+	useResizing,
+	useSetResizing,
+	useNextColumnSizes,
+	useSetNextColumnSizes,
 };

@@ -288,44 +288,60 @@ public class PaginationBarTag extends BaseContainerTag {
 
 			int leftIndex = activeIndex - _ellipsisBuffer;
 
-			int[] leftItems = Arrays.copyOfRange(
-				pageNumberItems, 1, Math.max(leftIndex, 1));
+			int leftItemsStartIndex = 1;
+			int leftItemsEndIndex = Math.max(leftIndex, 1);
 
-			if (leftItems.length > 1) {
-				_processEllipsis(pageContext);
-			}
-			else if (leftItems.length == 1) {
-				int leftItem = leftItems[0];
+			if (leftItemsStartIndex < leftItemsEndIndex) {
+				int[] leftItems = Arrays.copyOfRange(
+					pageNumberItems, leftItemsStartIndex, leftItemsEndIndex);
 
-				_processItem(pageContext, leftItem);
+				if (leftItems.length > 1) {
+					_processEllipsis(pageContext);
+				}
+				else if (leftItems.length == 1) {
+					int leftItem = leftItems[0];
+
+					_processItem(pageContext, leftItem);
+				}
 			}
 
 			int lastIndex = pageNumberItems.length - 1;
 
-			int[] centerItems = Arrays.copyOfRange(
-				pageNumberItems, Math.max(activeIndex - _ellipsisBuffer, 1),
-				Math.min(activeIndex + _ellipsisBuffer + 1, lastIndex));
+			int centerItemsStartIndex = Math.max(
+				activeIndex - _ellipsisBuffer, 1);
+			int centerItemsEndIndex = Math.min(
+				activeIndex + _ellipsisBuffer + 1, lastIndex);
 
-			for (int centerItem : centerItems) {
-				_processItem(pageContext, centerItem);
+			if (centerItemsStartIndex < centerItemsEndIndex) {
+				int[] centerItems = Arrays.copyOfRange(
+					pageNumberItems, centerItemsStartIndex,
+					centerItemsEndIndex);
+
+				for (int centerItem : centerItems) {
+					_processItem(pageContext, centerItem);
+				}
 			}
 
-			int rightIndex = activeIndex + _ellipsisBuffer + 1;
+			int rightItemsStartIndex = activeIndex + _ellipsisBuffer + 1;
 
-			if (rightIndex > lastIndex) {
-				rightIndex = lastIndex;
+			if (rightItemsStartIndex > lastIndex) {
+				rightItemsStartIndex = lastIndex;
 			}
 
-			int[] rightItems = Arrays.copyOfRange(
-				pageNumberItems, rightIndex, Math.max(lastIndex, rightIndex));
+			int rightItemsEndIndex = Math.max(lastIndex, rightItemsStartIndex);
 
-			if (rightItems.length > 1) {
-				_processEllipsis(pageContext);
-			}
-			else if (rightItems.length == 1) {
-				int rightItem = rightItems[0];
+			if (rightItemsStartIndex < rightItemsEndIndex) {
+				int[] rightItems = Arrays.copyOfRange(
+					pageNumberItems, rightItemsStartIndex, rightItemsEndIndex);
 
-				_processItem(pageContext, rightItem);
+				if (rightItems.length > 1) {
+					_processEllipsis(pageContext);
+				}
+				else if (rightItems.length == 1) {
+					int rightItem = rightItems[0];
+
+					_processItem(pageContext, rightItem);
+				}
 			}
 
 			if (totalPages > 1) {

@@ -57,6 +57,7 @@ import com.liferay.commerce.service.CommerceShippingMethodLocalService;
 import com.liferay.commerce.subscription.CommerceSubscriptionEntryHelperUtil;
 import com.liferay.commerce.util.CommerceShippingHelper;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.Message;
@@ -75,6 +76,9 @@ import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.vulcan.dto.converter.DTOConverter;
+import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
+import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -438,40 +442,50 @@ public class CommerceOrderEngineImpl implements CommerceOrderEngine {
 		CommerceOrder commerceOrder, int orderStatus) {
 
 		TransactionCommitCallbackUtil.registerCallback(
-			new Callable<Void>() {
+			() -> {
+				if ((orderStatus ==
+						CommerceOrderConstants.ORDER_STATUS_PENDING) &&
+					(commerceOrder.getPaymentStatus() ==
+						CommerceOrderConstants.PAYMENT_STATUS_PAID)) {
 
-				@Override
-				public Void call() throws Exception {
-					if ((orderStatus ==
-							CommerceOrderConstants.ORDER_STATUS_PENDING) &&
-						(commerceOrder.getPaymentStatus() ==
-							CommerceOrderConstants.PAYMENT_STATUS_PAID)) {
-
-						CommerceSubscriptionEntryHelperUtil.
-							checkCommerceSubscriptions(commerceOrder);
-					}
-
-					_commerceNotificationHelper.sendNotifications(
-						commerceOrder.getGroupId(), commerceOrder.getUserId(),
-						CommerceOrderConstants.getNotificationKey(orderStatus),
-						commerceOrder);
-
-					Message message = new Message();
-
-					message.setPayload(
-						JSONUtil.put(
-							"commerceOrderId",
-							commerceOrder.getCommerceOrderId()
-						).put(
-							"orderStatus", commerceOrder.getOrderStatus()
-						));
-
-					MessageBusUtil.sendMessage(
-						DestinationNames.COMMERCE_ORDER_STATUS, message);
-
-					return null;
+					CommerceSubscriptionEntryHelperUtil.
+						checkCommerceSubscriptions(commerceOrder);
 				}
 
+				_commerceNotificationHelper.sendNotifications(
+					commerceOrder.getGroupId(), commerceOrder.getUserId(),
+					CommerceOrderConstants.getNotificationKey(orderStatus),
+					commerceOrder);
+
+				Message message = new Message();
+
+				message.setPayload(
+					JSONUtil.put(
+						"commerceOrder",
+						() -> {
+							DTOConverter<?, ?> dtoConverter =
+								_dtoConverterRegistry.getDTOConverter(
+									CommerceOrder.class.getName());
+
+							Object object = dtoConverter.toDTO(
+								new DefaultDTOConverterContext(
+									_dtoConverterRegistry,
+									commerceOrder.getCommerceOrderId(),
+									LocaleUtil.getSiteDefault(), null, null));
+
+							return JSONFactoryUtil.createJSONObject(
+								object.toString());
+						}
+					).put(
+						"commerceOrderId", commerceOrder.getCommerceOrderId()
+					).put(
+						"orderStatus", commerceOrder.getOrderStatus()
+					));
+
+				MessageBusUtil.sendMessage(
+					DestinationNames.COMMERCE_ORDER_STATUS, message);
+
+				return null;
 			});
 	}
 
@@ -634,6 +648,9 @@ public class CommerceOrderEngineImpl implements CommerceOrderEngine {
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
+
+	@Reference
+	private DTOConverterRegistry _dtoConverterRegistry;
 
 	@Reference
 	private UserLocalService _userLocalService;

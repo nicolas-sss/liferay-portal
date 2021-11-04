@@ -56,7 +56,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -106,7 +106,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -156,9 +156,7 @@ definition {
 			Navigator.openSiteURL(siteName = "Site Name");
 
 			for (var layoutName : list "Movies,Music,Science,Sports,Technology") {
-				JSONLayout.addPublicLayout(
-					groupName = "Site Name",
-					layoutName = "${layoutName}");
+				ACUtils.addPage(layoutName = "${layoutName}");
 			}
 		}
 
@@ -178,7 +176,7 @@ definition {
 				userLoginFullName = "ac ac");
 
 			for (var pageName : list "Movies,Music,Science,Sports,Technology") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}

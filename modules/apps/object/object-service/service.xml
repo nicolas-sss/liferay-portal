@@ -415,6 +415,7 @@
 		<exception>ObjectEntryValues</exception>
 		<exception>ObjectFieldLabel</exception>
 		<exception>ObjectFieldName</exception>
+		<exception>ObjectFieldRelationshipType</exception>
 		<exception>ObjectFieldType</exception>
 		<exception>ObjectLayoutColumnSize</exception>
 		<exception>ObjectRelationshipName</exception>

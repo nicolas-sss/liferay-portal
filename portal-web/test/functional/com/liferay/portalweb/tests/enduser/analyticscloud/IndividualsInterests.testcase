@@ -55,9 +55,7 @@ definition {
 			Navigator.openSiteURL(siteName = "Site Name");
 
 			for (var layoutName : list "Movies,Music,Science,Sports,Technology") {
-				JSONLayout.addPublicLayout(
-					groupName = "Site Name",
-					layoutName = "${layoutName}");
+				ACUtils.addPage(layoutName = "${layoutName}");
 
 				ACUtils.createWCAndAddToPage(
 					layoutName = "${layoutName}",
@@ -83,7 +81,7 @@ definition {
 				userLoginFullName = "ac ac");
 
 			for (var pageName : list "Movies,Music,Science,Sports,Technology") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -95,7 +93,7 @@ definition {
 				userLoginFullName = "usera usera");
 
 			for (var pageName : list "Movies,Music,Science,Sports,Technology") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -139,9 +137,7 @@ definition {
 		task ("Add page and web content to Site as interest topic") {
 			Navigator.openSiteURL(siteName = "Site Name");
 
-			JSONLayout.addPublicLayout(
-				groupName = "Site Name",
-				layoutName = "AC Page 1");
+			ACUtils.addPage(layoutName = "AC Page 1");
 
 			ACUtils.createWCAndAddToPage(
 				layoutName = "AC Page 1",
@@ -163,7 +159,7 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page 1",
 				siteName = "Site Name");
 		}
@@ -210,9 +206,7 @@ definition {
 		task ("Add page and web content to Site as interest topic") {
 			Navigator.openSiteURL(siteName = "Site Name");
 
-			JSONLayout.addPublicLayout(
-				groupName = "Site Name",
-				layoutName = "AC Page 1");
+			ACUtils.addPage(layoutName = "AC Page 1");
 
 			ACUtils.createWCAndAddToPage(
 				layoutName = "AC Page 1",
@@ -234,7 +228,7 @@ definition {
 				userLoginEmailAddress = "ac@liferay.com",
 				userLoginFullName = "ac ac");
 
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page 1",
 				siteName = "Site Name");
 		}
@@ -276,9 +270,7 @@ definition {
 			Navigator.openSiteURL(siteName = "Site Name");
 
 			for (var layoutName : list "Movies,Sports,Technology") {
-				JSONLayout.addPublicLayout(
-					groupName = "Site Name",
-					layoutName = "${layoutName}");
+				ACUtils.addPage(layoutName = "${layoutName}");
 
 				ACUtils.createWCAndAddToPage(
 					layoutName = "${layoutName}",
@@ -302,7 +294,7 @@ definition {
 				userLoginFullName = "ac ac");
 
 			for (var pageName : list "Movies,Sports,Technology") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -351,9 +343,7 @@ definition {
 			Navigator.openSiteURL(siteName = "Site Name");
 
 			for (var layoutName : list "Movies,Music,Science,Sports,Technology") {
-				JSONLayout.addPublicLayout(
-					groupName = "Site Name",
-					layoutName = "${layoutName}");
+				ACUtils.addPage(layoutName = "${layoutName}");
 
 				ACUtils.createWCAndAddToPage(
 					layoutName = "${layoutName}",
@@ -377,7 +367,7 @@ definition {
 				userLoginFullName = "ac ac");
 
 			for (var pageName : list "Movies,Music,Science,Sports,Technology") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}

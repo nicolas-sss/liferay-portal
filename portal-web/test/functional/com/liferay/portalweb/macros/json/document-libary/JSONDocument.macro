@@ -55,7 +55,12 @@ definition {
 			var dmDocumentDescription = "";
 		}
 
+		if (!(isSet(guestPermissions))) {
+			var guestPermissions = "true";
+		}
+
 		var serviceContext = JSONDocumentSetter.setServiceContext(
+			addGuestPermissions = "${guestPermissions}",
 			assetCategoryIds = "${assetCategoryIds}",
 			assetTagNames = "${assetTagNames}",
 			serviceContext = "${serviceContext}",
@@ -138,6 +143,10 @@ definition {
 			var expirationDate = "2099-01-25 01:00";
 		}
 
+		if (!(isSet(guestPermissions))) {
+			var guestPermissions = "true";
+		}
+
 		if (isSet(reviewDate)) {
 			var displayDateMinute = DateUtil.getFormattedCurrentDate("mm");
 			var displayDateHour = DateUtil.getFormattedCurrentDate("HH");
@@ -155,6 +164,7 @@ definition {
 		}
 
 		var serviceContext = JSONDocumentSetter.setServiceContext(
+			addGuestPermissions = "${guestPermissions}",
 			assetCategoryIds = "${assetCategoryIds}",
 			assetTagNames = "${assetTagNames}",
 			serviceContext = "${serviceContext}",
@@ -182,6 +192,7 @@ definition {
 			var curl = '''
 				${portalURL}/api/jsonws/dlapp/add-file-entry \
 				-u test@liferay.com:test \
+				-F externalReferenceCode= \
 				-F repositoryId=${repositoryId} \
 				-F folderId=${folderId} \
 				-F sourceFileName=${sourceFileName} \
@@ -318,8 +329,8 @@ definition {
 		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
 	}
 
-	@summary = "This calls the JSON WS API to move a document entry to trash"
-	macro moveFileEntryToTrash {
+	@summary = "This calls the JSON WS API to move a document to a trash"
+	macro moveToRecycleBin {
 		var portalURL = JSONCompany.getPortalURL();
 
 		if (isSet(folderName)) {
@@ -337,13 +348,15 @@ definition {
 			groupName = "${groupName}",
 			portalURL = "${baseURL}");
 
+		var portalURL = JSONCompany.getPortalURL();
+
 		var curl = '''
 			${portalURL}/api/jsonws/dltrash/move-file-entry-to-trash \
 			-u test@liferay.com:test \
 			-d fileEntryId=${fileEntryId}
 		''';
 
-		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+		JSONCurlUtil.post("${curl}");
 	}
 
 	@summary = "This calls the JSON WS API to subscribe to a folder"

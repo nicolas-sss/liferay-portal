@@ -453,13 +453,35 @@ definition {
 	}
 
 	@description = "This is a test for LPS-136810. It checks that a blog can be viewed with Quote Display in the Aggregator widget."
-	@ignore = "true"
 	@priority = "3"
 	test CanViewEntryInQuoteDisplayStyleViaAggregator {
-		property portal.acceptance = "false";
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "Blogs Aggregator Page");
 
-		// TODO LPS-136810 CanViewEntryInQuoteDisplayStyleViaAggregator pending implementation
+		JSONLayout.addWidgetToPublicLayout(
+			column = "1",
+			groupName = "Guest",
+			layoutName = "Blogs Aggregator Page",
+			widgetName = "Blogs Aggregator");
 
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
+
+		Navigator.gotoPage(pageName = "Blogs Aggregator Page");
+
+		BlogsAggregatorPortlet.viewBlogsEntryViaBAPortletPG(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
+
+		BlogsAggregatorPortlet.selectDisplayStyle(displayStyle = "Quote");
+
+		Navigator.gotoPage(pageName = "Blogs Aggregator Page");
+
+		BlogsAggregatorPortlet.viewBlogsEntryViaBAPortletPG(
+			entryQuoteContent = "Blogs Entry Content...",
+			entryTitle = "Blogs Entry Title");
 	}
 
 	@description = "This is a test for LPS-136811. It checks that a blog can be viewed through the Navigations Portlet."

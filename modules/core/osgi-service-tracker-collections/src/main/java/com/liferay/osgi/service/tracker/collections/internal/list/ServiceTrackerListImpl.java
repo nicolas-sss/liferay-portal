@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -33,7 +34,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 /**
  * @author Adolfo Pérez
  */
-public class ServiceTrackerListImpl<S, T> implements ServiceTrackerList<S, T> {
+public class ServiceTrackerListImpl<S, T> implements ServiceTrackerList<T> {
 
 	public ServiceTrackerListImpl(
 		BundleContext bundleContext, Class<S> clazz, String filterString,
@@ -61,6 +62,13 @@ public class ServiceTrackerListImpl<S, T> implements ServiceTrackerList<S, T> {
 	@Override
 	public void close() {
 		_serviceTracker.close();
+	}
+
+	@Override
+	public void forEach(Consumer<? super T> consumer) {
+		_services.forEach(
+			serviceReferenceServiceTuple -> consumer.accept(
+				serviceReferenceServiceTuple.getService()));
 	}
 
 	@Override

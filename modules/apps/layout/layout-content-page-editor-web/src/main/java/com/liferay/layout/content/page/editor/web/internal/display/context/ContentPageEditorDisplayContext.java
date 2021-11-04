@@ -535,7 +535,9 @@ public class ContentPageEditorDisplayContext {
 				() -> {
 					Layout layout = themeDisplay.getLayout();
 
-					LayoutSet layoutSet = layout.getLayoutSet();
+					LayoutSet layoutSet =
+						LayoutSetLocalServiceUtil.fetchLayoutSet(
+							themeDisplay.getSiteGroupId(), false);
 
 					if (Validator.isNull(layout.getThemeId()) ||
 						Objects.equals(
@@ -1895,7 +1897,7 @@ public class ContentPageEditorDisplayContext {
 			() -> {
 				Layout layout = themeDisplay.getLayout();
 
-				return layout.getMasterLayoutPlid();
+				return String.valueOf(layout.getMasterLayoutPlid());
 			}
 		);
 	}

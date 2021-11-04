@@ -13,7 +13,7 @@ definition {
 	}
 
 	macro editAsset {
-		Click(locator1 = "ContentDashboard#WEB_CONTENT_MENU_DROPDOWN_BUTTON");
+		Click(locator1 = "ContentDashboard#ASSET_MENU_DROPDOWN_BUTTON");
 
 		Click(locator1 = "ContentDashboard#EDIT_OPTION");
 
@@ -74,6 +74,8 @@ definition {
 			value1 = "Select");
 
 		SelectFrame(value1 = "relative=top");
+
+		WaitForElementPresent(locator1 = "ContentDashboard#ASSET_MENU_DROPDOWN_BUTTON");
 	}
 
 	macro filterByAuthorList {
@@ -112,9 +114,13 @@ definition {
 			value1 = "Select");
 
 		SelectFrame(value1 = "relative=top");
+
+		WaitForElementPresent(locator1 = "ContentDashboard#ASSET_MENU_DROPDOWN_BUTTON");
 	}
 
 	macro filterByAuthorMe {
+		WaitForElementPresent(locator1 = "ContentDashboard#ASSET_MENU_DROPDOWN_BUTTON");
+
 		if (IsElementPresent(locator1 = "ContentDashboard#FILTER_AND_ORDER_DROPDOWN")) {
 			AssertClickNoError(
 				locator1 = "ContentDashboard#FILTER_AND_ORDER_DROPDOWN",
@@ -162,6 +168,8 @@ definition {
 			value1 = "Select");
 
 		SelectFrame(value1 = "relative=top");
+
+		WaitForElementPresent(locator1 = "ContentDashboard#ASSET_MENU_DROPDOWN_BUTTON");
 	}
 
 	macro filterByCategory {
@@ -194,6 +202,8 @@ definition {
 			value1 = "Select");
 
 		SelectFrame(value1 = "relative=top");
+
+		WaitForElementPresent(locator1 = "ContentDashboard#ASSET_MENU_DROPDOWN_BUTTON");
 	}
 
 	macro filterBySiteGlobal {
@@ -301,6 +311,8 @@ definition {
 			value1 = "Select");
 
 		SelectFrame(value1 = "relative=top");
+
+		WaitForElementPresent(locator1 = "ContentDashboard#ASSET_MENU_DROPDOWN_BUTTON");
 	}
 
 	macro filterByType {
@@ -335,6 +347,16 @@ definition {
 
 	macro flipAxesButtonClick {
 		Click(locator1 = "ContentDashboard#FLIP_AXES_BUTTON");
+	}
+
+	macro goToContentDashboard {
+		var portalURL = PropsUtil.get("portal.url");
+
+		Navigator.openSpecificURL(url = "${portalURL}/group/guest/~/control_panel/manage?p_p_id=com_liferay_content_dashboard_web_portlet_ContentDashboardAdminPortlet");
+
+		WaitForPageLoad();
+
+		WaitForElementPresent(locator1 = "ContentDashboard#CONTENT_CHART_SVG");
 	}
 
 	macro moveToPage {
@@ -379,7 +401,7 @@ definition {
 	}
 
 	macro openInfoPanelByDropdownMenu {
-		Click(locator1 = "ContentDashboard#WEB_CONTENT_MENU_DROPDOWN_BUTTON");
+		Click(locator1 = "ContentDashboard#ASSET_MENU_DROPDOWN_BUTTON");
 
 		Click(locator1 = "ContentDashboard#INFO_OPTION");
 	}
@@ -418,28 +440,6 @@ definition {
 		KeyPress(
 			locator1 = "ContentDashboard#SEARCH_FIELD",
 			value1 = "\ENTER");
-	}
-
-	macro selectListofCategoriesForAudienceAndStage {
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
-
-		for (var count : list "1,2,3") {
-			WebContentNavigator.gotoEditCP(webContentTitle = "Webcontent Title ${count}");
-
-			for (var count : list "1,2,3") {
-				WebContent.selectCategory(
-					categoryName = "S ${count}",
-					vocabularyName = "Audience");
-			}
-
-			for (var count : list "1,2,3") {
-				WebContent.selectCategory(
-					categoryName = "test ${count}",
-					vocabularyName = "Stage");
-			}
-
-			PortletEntry.publish();
-		}
 	}
 
 	macro setVocabularyInUseSecondPosition {

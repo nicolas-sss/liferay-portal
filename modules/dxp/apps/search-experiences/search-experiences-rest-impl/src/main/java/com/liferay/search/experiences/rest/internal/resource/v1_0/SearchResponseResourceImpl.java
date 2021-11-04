@@ -14,10 +14,16 @@
 
 package com.liferay.search.experiences.rest.internal.resource.v1_0;
 
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRenderer;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Field;
@@ -135,6 +141,29 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 		};
 	}
 
+	private AssetRenderer<?> _getAssetRenderer(Map<String, Field> fields) {
+		try {
+			Field entryClassNameField = fields.get(
+				com.liferay.portal.kernel.search.Field.ENTRY_CLASS_NAME);
+
+			AssetRendererFactory<?> assetRendererFactory =
+				AssetRendererFactoryRegistryUtil.
+					getAssetRendererFactoryByClassName(
+						GetterUtil.getString(entryClassNameField.getValue()));
+
+			Field entryClassPKField = fields.get(
+				com.liferay.portal.kernel.search.Field.ENTRY_CLASS_PK);
+
+			return assetRendererFactory.getAssetRenderer(
+				GetterUtil.getLong(entryClassPKField.getValue()));
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+		}
+
+		return null;
+	}
+
 	private Map<String, DocumentField> _toDocumentFields(
 		Map<String, Field> fields) {
 
@@ -152,6 +181,37 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 							values = valuesList.toArray();
 						}
 					});
+			});
+
+		if (MapUtil.isEmpty(fields)) {
+			return documentFields;
+		}
+
+		AssetRenderer<?> assetRenderer = _getAssetRenderer(fields);
+
+		if (assetRenderer == null) {
+			return documentFields;
+		}
+
+		documentFields.put(
+			"assetSearchSummary",
+			new DocumentField() {
+				{
+					values = new String[] {
+						assetRenderer.getSearchSummary(
+							contextAcceptLanguage.getPreferredLocale())
+					};
+				}
+			});
+		documentFields.put(
+			"assetTitle",
+			new DocumentField() {
+				{
+					values = new String[] {
+						assetRenderer.getTitle(
+							contextAcceptLanguage.getPreferredLocale())
+					};
+				}
 			});
 
 		return documentFields;
@@ -173,6 +233,9 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 
 		return documents.toArray(new Document[0]);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		SearchResponseResourceImpl.class);
 
 	@Reference
 	private Searcher _searcher;

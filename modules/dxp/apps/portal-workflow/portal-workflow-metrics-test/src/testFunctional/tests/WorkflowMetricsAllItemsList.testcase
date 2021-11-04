@@ -873,12 +873,52 @@ definition {
 	}
 
 	@description = "LPS-130167 - Verify that the table entries should be ordered by Due Date, from older to the most recent date"
-	@ignore = "Test Stub"
 	@priority = "3"
 	test EntriesAreOrderedByDueDate {
+		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
 
-		// TODO LRQA-67740 EntriesAreOrderedByDueDate pending implementation
+		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
 
+		WorkflowMetrics.fillSLAForm(
+			slaDefinitionDays = "1",
+			slaDefinitionDescription = "SLA Description",
+			slaDefinitionEnd = "Process Ends: Approved",
+			slaDefinitionHours = "0000",
+			slaDefinitionName = "SLAName",
+			slaDefinitionStart = "Process Begins");
+
+		Button.clickSave();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Process Builder");
+
+		Navigator.gotoNavItem(navItem = "Configuration");
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver",
+			workflowResourceValue = "Blogs Entry");
+
+		for (var addBlogs : list "1,2") {
+			JSONBlog.addEntry(
+				entryContent = "Blogs Entry Content ${addBlogs}",
+				entryTitle = "Blogs Entry Title ${addBlogs}");
+		}
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "PENDING",
+			workflowMetricsTab = "DASHBOARD",
+			workflowProcess = "Single Approver");
+
+		AssertElementPresent(
+			key_value = "up",
+			locator1 = "WorkflowMetricsProcessListView#ANY_ARROW_ORDER");
 	}
 
 	@description = "LPS-94146 - Verify that user can close the filters shown as tags clicking on x and the result is applied on items list"
@@ -1503,12 +1543,104 @@ definition {
 	}
 
 	@description = "LPS-86652 - Verify that long texts will display ellipsis"
-	@ignore = "Test Stub"
 	@priority = "3"
 	test LongTextsDisplayEllipsis {
+		Navigator.openURL();
 
-		// TODO LRQA-67728 LongTextsDisplayEllipsis pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Site Administration",
+			portlet = "Workflow");
 
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver",
+			workflowResourceValue = "Web Content Article");
+
+		JSONWebcontent.addWebContent(
+			content = "WebContent Content",
+			groupName = "Guest",
+			title = "WebContent Title");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.assignToMeTaskByActions(
+			workflowAssetTitle = "WebContent Title",
+			workflowAssetType = "Web Content Article",
+			workflowTask = "Review");
+
+		Workflow.approveTaskByActions(
+			workflowAssetTitle = "WebContent Title",
+			workflowAssetType = "Web Content Article",
+			workflowTask = "Review");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		WorkflowMetrics.goToWorkflowProcessMetricsAndTotalCompleted(workflowProcessName = "Single Approver");
+
+		WorkflowMetrics.viewTableSizeInTheAllItems(
+			itemTable = "Web Content Article: WebContent Title",
+			itemTableSize = "106.887px");
+	}
+
+	@description = "LPS-98517 - Verify that the long usernames in the result table do not break into different lines"
+	@priority = "3"
+	test LongUserNameDisplaysEllipsis {
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Site Administration",
+			portlet = "Workflow");
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver",
+			workflowResourceValue = "Blogs Entry");
+
+		JSONUser.addUser(
+			userEmailAddress = "buyerbuyer@liferay.com",
+			userFirstName = "buyerbuyerbuyerbuyerbuyer",
+			userLastName = "buyerbuyerbuyerbuyerbuyer",
+			userScreenName = "buyerbuyerbuyerbuyerbuyer");
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Users",
+			panel = "Control Panel",
+			portlet = "Users and Organizations");
+
+		User.assignRegularRoleCP(
+			roleTitle = "Administrator",
+			userScreenName = "buyerbuyerbuyerbuyerbuyer");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Navigator.gotoNavTab(navTab = "Assigned to My Roles");
+
+		Workflow.assignTaskToUser(
+			assetTitle = "Blogs Entry Title",
+			assetType = "Blogs Entry",
+			assigneeName = "buyerbuyerbuyerbuyerbuyer (buyerbuyerbuyerbuyerbuyer buyerbuyerbuyerbuyerbuyer)",
+			workflowTask = "Review");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "PENDING",
+			workflowMetricsTab = "DASHBOARD",
+			workflowProcess = "Single Approver");
+
+		WorkflowMetrics.viewTableSizeInTheAllItems(
+			itemTable = "buyerbuyerbuyerbuyerbuyer",
+			itemTableSize = "106.887px");
 	}
 
 	@description = "LPS-98517 - Verify that a long username that exceeds 240px in the assignee dropdown option is placed in more than one line, respecting the alignment of the field"
@@ -1562,15 +1694,6 @@ definition {
 			locator1 = "WorkflowMetrics#METRICS_WORKLOAD_BY_ASSIGNEE_CARD_FILTER_OPTION2",
 			locator2 = "font-weight",
 			value1 = "400");
-	}
-
-	@description = "LPS-98517 - Verify that the long usernames in the result table are placed in more than one line if the text doesn't fit one line"
-	@ignore = "Test Stub"
-	@priority = "3"
-	test LongUserNameIsDisplayedInMoreThanOneLineInTable {
-
-		// TODO LRQA-67758 LongUserNameIsDisplayedInMoreThanOneLineInTable pending implementation
-
 	}
 
 	@description = "LPS-92053 - Verify that the Go to submission page button opens the submission page in another tab"
@@ -2224,10 +2347,32 @@ definition {
 
 	@description = "LPS-86652 - Verify that hovering the cursor on the process step, when it contains more than 1 option, the toolip will display a bullet list"
 	@priority = "3"
-	test TooltipDisplaysBulletListWhenMultipleItems {
+	test TooltipDisplaysStepsListWhenMultipleItems {
+		property portal.acceptance = "true";
+		property test.name.skip.portal.instance = "WorkflowMetricsAllItemsList#TooltipDisplaysBulletListWhenMultipleItems";
 
-		// TODO LRQA-67732 TooltipDisplaysBulletListWhenMultipleItems pending implementation
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Process Builder");
 
+		Workflow.uploadDefinition(
+			workflowDefinitionFile = "multi-task-process-workflow-definition.xml",
+			workflowDefinitionTitle = "Multi Task Process");
+
+		Navigator.gotoNavItem(navItem = "Configuration");
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Multi Task Process",
+			workflowResourceValue = "Blogs Entry");
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry",
+			entryTitle = "Blogs Entry Title");
+
+		WorkflowMetrics.goToWorkflowAllItems(workflowProcessName = "Multi Task Process");
+
+		WorkflowMetricsAllItemsList.assertProcessStepTooltipMessage(workflowInstanceName = "task1, task2, task3");
 	}
 
 	@description = "LPS-92053 - Verify that the Go to submission page button, on hover, displays a tooltip saying Open page in new tab"

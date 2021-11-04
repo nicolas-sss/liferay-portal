@@ -108,26 +108,26 @@ public class AddDepotEntryMVCActionCommand extends BaseMVCActionCommand {
 				JSONUtil.put(
 					"error",
 					_getErrorMessage(
-						exception,
 						(ThemeDisplay)actionRequest.getAttribute(
-							WebKeys.THEME_DISPLAY))));
+							WebKeys.THEME_DISPLAY),
+						exception.getCause())));
 		}
 	}
 
 	private String _getErrorMessage(
-		Exception exception, ThemeDisplay themeDisplay) {
+		ThemeDisplay themeDisplay, Throwable throwable) {
 
-		if (exception instanceof DepotEntryNameException) {
+		if (throwable instanceof DepotEntryNameException) {
 			return LanguageUtil.get(
 				themeDisplay.getRequest(), "please-enter-a-name");
 		}
 
-		if (exception instanceof DuplicateGroupException) {
+		if (throwable instanceof DuplicateGroupException) {
 			return LanguageUtil.get(
 				themeDisplay.getRequest(), "please-enter-a-unique-name");
 		}
 
-		if (exception instanceof GroupKeyException) {
+		if (throwable instanceof GroupKeyException) {
 			return _handleGroupKeyException(themeDisplay);
 		}
 

@@ -17,11 +17,11 @@ import DiagramZoomHandler from '../utilities/DiagramZoomHandler';
 class D3Handler extends DiagramZoomHandler {
 	constructor(
 		diagramWrapper,
-		zoomWrapper,
 		imageURL,
 		pinsCSSSelectors,
 		updateLabels,
-		updateZoomState
+		updateZoomState,
+		zoomWrapper
 	) {
 		super();
 

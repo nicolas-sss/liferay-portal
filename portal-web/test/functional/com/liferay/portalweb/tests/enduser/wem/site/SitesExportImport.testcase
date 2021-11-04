@@ -140,7 +140,7 @@ definition {
 ''';
 
 			var htmlSnippet = '''
-<${configuration.headingLevel} class="component-heading mb-0 text-break" data-lfr-editable-id="element-text" data-lfr-editable-type="text">
+<${configuration.headingLevel} class="component-global-fragment-name mb-0 text-break" data-lfr-editable-id="element-text" data-lfr-editable-type="text">
 	Heading Example
 </${configuration.headingLevel}>
 			''';
@@ -243,10 +243,10 @@ definition {
 				pageName = "Test Page Name",
 				siteName = "Site Name");
 
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Heading Example");
+			ContentPages.viewFragmentText(
+				fragmentName = "global-fragment-name",
+				id = "element-text",
+				text = "Heading Example");
 		}
 	}
 
@@ -499,11 +499,10 @@ definition {
 		}
 
 		task ("View the Button fragment shown on content page at view mode") {
-			AssertVisible(
+			ContentPages.viewFragmentText(
+				fragmentName = "button",
 				id = "link",
-				key_position = "1",
-				key_text = "Go Somewhere",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE");
+				text = "Go Somewhere");
 		}
 
 		task ("Export the new site") {
@@ -529,11 +528,10 @@ definition {
 		}
 
 		task ("View the Button fragment shown on content page at view mode") {
-			AssertVisible(
+			ContentPages.viewFragmentText(
+				fragmentName = "button",
 				id = "link",
-				key_position = "1",
-				key_text = "Go Somewhere",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE");
+				text = "Go Somewhere");
 		}
 	}
 

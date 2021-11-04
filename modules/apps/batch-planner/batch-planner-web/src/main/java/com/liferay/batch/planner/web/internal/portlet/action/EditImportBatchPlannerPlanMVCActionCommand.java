@@ -87,12 +87,14 @@ public class EditImportBatchPlannerPlanMVCActionCommand
 	private void _addBatchPlannerPlan(ActionRequest actionRequest)
 		throws Exception {
 
-		String name = ParamUtil.getString(actionRequest, "name");
 		boolean export = ParamUtil.getBoolean(actionRequest, "export");
 		String externalType = ParamUtil.getString(
 			actionRequest, "externalType");
 		String internalClassName = ParamUtil.getString(
 			actionRequest, "internalClassName");
+		String name = ParamUtil.getString(actionRequest, "name");
+		String taskItemDelegateName = ParamUtil.getString(
+			actionRequest, "taskItemDelegateName");
 
 		UploadPortletRequest uploadPortletRequest =
 			_portal.getUploadPortletRequest(actionRequest);
@@ -106,7 +108,7 @@ public class EditImportBatchPlannerPlanMVCActionCommand
 			BatchPlannerPlan batchPlannerPlan =
 				_batchPlannerPlanService.addBatchPlannerPlan(
 					export, externalType, importFileURI.toString(),
-					internalClassName, name, false);
+					internalClassName, name, taskItemDelegateName, false);
 
 			_batchPlannerPolicyService.addBatchPlannerPolicy(
 				batchPlannerPlan.getBatchPlannerPlanId(), "containsHeaders",

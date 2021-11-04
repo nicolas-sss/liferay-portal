@@ -57,12 +57,7 @@ public class AutoDeployDir {
 		throws AutoDeployException {
 
 		if (_serviceTrackerList != null) {
-			Iterator<AutoDeployListener> iterator =
-				_serviceTrackerList.iterator();
-
-			while (iterator.hasNext()) {
-				AutoDeployListener autoDeployListener = iterator.next();
-
+			for (AutoDeployListener autoDeployListener : _serviceTrackerList) {
 				if (autoDeployListener.isDeployable(autoDeploymentContext)) {
 					autoDeployListener.deploy(autoDeploymentContext);
 
@@ -374,10 +369,9 @@ public class AutoDeployDir {
 	private static final Log _log = LogFactoryUtil.getLog(AutoDeployDir.class);
 
 	private static AutoDeployScanner _autoDeployScanner;
-	private static final ServiceTrackerList
-		<AutoDeployListener, AutoDeployListener> _serviceTrackerList =
-			ServiceTrackerListFactory.open(
-				SystemBundleUtil.getBundleContext(), AutoDeployListener.class);
+	private static final ServiceTrackerList<AutoDeployListener>
+		_serviceTrackerList = ServiceTrackerListFactory.open(
+			SystemBundleUtil.getBundleContext(), AutoDeployListener.class);
 	private static final Pattern _versionPattern = Pattern.compile(
 		"-[\\d]+((\\.[\\d]+)+(-.+)*)\\.war$");
 

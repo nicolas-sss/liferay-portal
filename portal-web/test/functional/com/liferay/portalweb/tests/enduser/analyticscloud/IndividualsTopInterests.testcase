@@ -55,9 +55,7 @@ definition {
 			Navigator.openSiteURL(siteName = "Site Name");
 
 			for (var layoutName : list "Movies,Music,Science") {
-				JSONLayout.addPublicLayout(
-					groupName = "Site Name",
-					layoutName = "${layoutName}");
+				ACUtils.addPage(layoutName = "${layoutName}");
 
 				ACUtils.createWCAndAddToPage(
 					layoutName = "${layoutName}",
@@ -83,13 +81,13 @@ definition {
 				userLoginFullName = "ac ac");
 
 			for (var pageName : list "Movies,Music,Science") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
 
 			for (var pageName : list "Movies,Music") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -101,7 +99,7 @@ definition {
 				userLoginFullName = "usera usera");
 
 			for (var pageName : list "Movies") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -146,9 +144,7 @@ definition {
 			Navigator.openSiteURL(siteName = "Site Name");
 
 			for (var layoutName : list "Movies,Music,Science,Sports,Technology,Arts") {
-				JSONLayout.addPublicLayout(
-					groupName = "Site Name",
-					layoutName = "${layoutName}");
+				ACUtils.addPage(layoutName = "${layoutName}");
 
 				ACUtils.createWCAndAddToPage(
 					layoutName = "${layoutName}",
@@ -174,7 +170,7 @@ definition {
 				userLoginFullName = "ac1 ac1");
 
 			for (var pageName : list "Movies,Music,Science,Sports,Technology,Arts") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -186,7 +182,7 @@ definition {
 				userLoginFullName = "ac2 ac2");
 
 			for (var pageName : list "Movies,Music,Science,Sports,Technology") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -198,7 +194,7 @@ definition {
 				userLoginFullName = "ac3 ac3");
 
 			for (var pageName : list "Movies,Music,Science,Sports") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -210,7 +206,7 @@ definition {
 				userLoginFullName = "ac4 ac4");
 
 			for (var pageName : list "Movies,Music,Science") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -222,7 +218,7 @@ definition {
 				userLoginFullName = "ac5 ac5");
 
 			for (var pageName : list "Movies,Music") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}
@@ -234,7 +230,7 @@ definition {
 				userLoginFullName = "ac6 ac6");
 
 			for (var pageName : list "Movies") {
-				Navigator.gotoSitePage(
+				ACUtils.navigateToSitePage(
 					pageName = "${pageName}",
 					siteName = "Site Name");
 			}

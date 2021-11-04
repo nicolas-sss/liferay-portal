@@ -115,7 +115,9 @@ const ColorPicker = ({
 					<DropDown.Menu
 						active={active}
 						alignElementRef={triggerElementRef}
-						className="clay-color-dropdown-menu px-0"
+						className={classNames('clay-color-dropdown-menu', {
+							'px-0': config.tokenOptimizationEnabled,
+						})}
 						containerProps={{
 							className: 'cadmin',
 						}}
@@ -152,7 +154,7 @@ const ColorPicker = ({
 								</>
 							) : null
 						) : (
-							<div className="clay-color-swatch">
+							<div className="clay-color-swatch mt-0">
 								{colors.map(({label, name, value}, i) => (
 									<div
 										className="clay-color-swatch-item"
@@ -214,7 +216,7 @@ const Splotch = React.forwardRef(
 const ColorPalette = ({colors, onSetActive, onValueChange, splotchRef}) =>
 	Object.keys(colors).map((category) => (
 		<div className="page-editor__ColorPicker__color-palette" key={category}>
-			<span className="mb-3 px-3 sheet-subtitle">{category}</span>
+			<span className="mb-0 p-3 sheet-subtitle">{category}</span>
 			{Object.keys(colors[category]).map((tokenSet) => (
 				<div className="px-3" key={tokenSet}>
 					<span className="text-secondary">{tokenSet}</span>

@@ -1,46 +1,45 @@
 .badge {
 	align-items: center;
-	background: $primary-light;
+	background: $color-brand-primary-lighten-5;
 	border: none;
 	border-radius: 0.25rem;
-	color: $primary-default;
+	color: $color-action-primary-hover;
 	display: flex;
-	fill: $primary-default;
+	fill: $color-action-primary-hover;
 	font-family: $font-family;
 	font-size: 0.8rem;
 	font-weight: 500;
 	gap: 0.5rem;
 	height: 2rem;
 	justify-content: flex-start;
-	padding-left: 1rem;
-	padding-right: 1rem;
+	padding: 0 $spacer-3;
 }
 
 button.btn.badge {
-	background: #e1ebff;
+	background: $color-brand-primary-lighten-5;
 	font-weight: 500;
 
 	&.open {
-		background: $primary-default;
-		color: #fff;
-		fill: #fff;
+		background: $color-action-primary-hover;
+		color: $color-neutral-white;
+		fill: $color-neutral-white;
 	}
 }
 
 .badge-primary {
-	background: $primary-light;
-	color: $primary-default;
-	fill: $primary-default;
+	background: $color-brand-primary-lighten-5;
+	color: $color-action-primary-hover;
+	fill: $color-action-primary-hover;
 }
 
 .badge-error {
-	background: $error-light;
-	color: $error-default;
-	fill: $error-default;
+	background: $color-state-error-lighten-1;
+	color: $color-state-error;
+	fill: $color-state-error;
 }
 
 .badge-info {
-	background: $info-light;
-	color: $info-default;
-	fill: $info-default;
+	background: $color-state-info-lighten-1;
+	color: $color-action-primary-hover;
+	fill: $color-action-primary-hover;
 }

@@ -15,20 +15,37 @@
 package com.liferay.portal.vulcan.openapi;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Javier Gamarra
  */
 public class DTOProperty {
 
-	public DTOProperty(String name, String type) {
+	public DTOProperty(
+		Map<String, Object> extensions, String name, String type) {
+
+		_extensions = extensions;
 		_name = name;
 		_type = type;
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x)
+	 */
+	@Deprecated
+	public DTOProperty(String name, String type) {
+		this(new HashMap<>(), name, type);
+	}
+
 	public List<DTOProperty> getDTOProperties() {
 		return _dtoProperties;
+	}
+
+	public Map<String, Object> getExtensions() {
+		return _extensions;
 	}
 
 	public String getName() {
@@ -52,6 +69,7 @@ public class DTOProperty {
 	}
 
 	private List<DTOProperty> _dtoProperties = new ArrayList<>();
+	private final Map<String, Object> _extensions;
 	private String _name;
 	private String _type;
 

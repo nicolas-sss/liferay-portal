@@ -25,6 +25,7 @@ import com.liferay.object.exception.ObjectDefinitionPluralLabelException;
 import com.liferay.object.exception.ObjectDefinitionScopeException;
 import com.liferay.object.exception.ObjectDefinitionStatusException;
 import com.liferay.object.exception.ObjectDefinitionVersionException;
+import com.liferay.object.exception.ObjectFieldRelationshipTypeException;
 import com.liferay.object.exception.RequiredObjectDefinitionException;
 import com.liferay.object.internal.deployer.ObjectDefinitionDeployerImpl;
 import com.liferay.object.internal.petra.sql.dsl.DynamicObjectDefinitionTable;
@@ -532,7 +533,8 @@ public class ObjectDefinitionLocalServiceImpl
 			objectDefinitionPersistence.fetchByPrimaryKey(objectDefinitionId);
 
 		if (objectDefinition.isSystem()) {
-			throw new ObjectDefinitionStatusException();
+			throw new ObjectDefinitionStatusException(
+				"Object definition " + objectDefinition);
 		}
 
 		return _updateObjectDefinition(
@@ -967,6 +969,12 @@ public class ObjectDefinitionLocalServiceImpl
 				objectDefinition.getObjectDefinitionId())) {
 
 			throw new NoSuchObjectFieldException();
+		}
+
+		if (Validator.isNotNull(objectField.getRelationshipType())) {
+			throw new ObjectFieldRelationshipTypeException(
+				"Description and title object fields cannot have a " +
+					"relationship type");
 		}
 	}
 

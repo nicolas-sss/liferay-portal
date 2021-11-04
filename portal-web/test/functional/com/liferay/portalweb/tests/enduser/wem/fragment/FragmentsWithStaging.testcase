@@ -42,6 +42,7 @@ definition {
 
 	@description = "Fragments are published automatically on any publishing process."
 	@priority = "5"
+	@uitest
 	test AssertFragmentsAlwaysPublished {
 		property portal.acceptance = "true";
 
@@ -89,6 +90,7 @@ definition {
 
 	@description = "Page Fragments administration is only be accessible in staging view."
 	@priority = "5"
+	@uitest
 	test AssertFragmentsAreOnlyEditableInStagingView {
 		property portal.acceptance = "true";
 
@@ -226,6 +228,7 @@ definition {
 		task ("Edit inline text of each tab") {
 			for (var n : list "1,2,3,4") {
 				PageEditor.editFragmentText(
+					className = "tabs",
 					fragmentName = "Tabs (Copy)",
 					id = "title${n}",
 					text = "Test ${n}");
@@ -250,11 +253,10 @@ definition {
 				siteName = "Test Site Name");
 
 			for (var n : list "1,2,3,4") {
-				AssertVisible(
+				ContentPages.viewFragmentText(
+					fragmentName = "tabs",
 					id = "title${n}",
-					key_position = "1",
-					key_text = "Test ${n}",
-					locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE");
+					text = "Test ${n}");
 			}
 		}
 
@@ -276,11 +278,10 @@ definition {
 				siteName = "Test Site Name");
 
 			for (var n : list "1,2,3,4") {
-				AssertVisible(
+				ContentPages.viewFragmentText(
+					fragmentName = "tabs",
 					id = "title${n}",
-					key_position = "1",
-					key_text = "Test ${n}",
-					locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE");
+					text = "Test ${n}");
 			}
 		}
 	}

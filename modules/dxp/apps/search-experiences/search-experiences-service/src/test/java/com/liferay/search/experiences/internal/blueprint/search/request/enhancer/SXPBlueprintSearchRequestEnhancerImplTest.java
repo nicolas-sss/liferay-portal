@@ -31,23 +31,23 @@ import com.liferay.portal.search.internal.geolocation.GeoBuildersImpl;
 import com.liferay.portal.search.internal.highlight.FieldConfigBuilderFactoryImpl;
 import com.liferay.portal.search.internal.highlight.HighlightBuilderFactoryImpl;
 import com.liferay.portal.search.internal.query.QueriesImpl;
+import com.liferay.portal.search.internal.rescore.RescoreBuilderFactoryImpl;
 import com.liferay.portal.search.internal.script.ScriptsImpl;
 import com.liferay.portal.search.internal.searcher.SearchRequestBuilderFactoryImpl;
 import com.liferay.portal.search.internal.sort.SortsImpl;
 import com.liferay.portal.search.query.TermQuery;
 import com.liferay.portal.search.query.WrapperQuery;
+import com.liferay.portal.search.rescore.Rescore;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 import com.liferay.search.experiences.internal.blueprint.parameter.SXPParameterDataCreator;
-import com.liferay.search.experiences.rest.dto.v1_0.AggregationConfiguration;
 import com.liferay.search.experiences.rest.dto.v1_0.Configuration;
 import com.liferay.search.experiences.rest.dto.v1_0.Highlight;
 import com.liferay.search.experiences.rest.dto.v1_0.HighlightField;
 import com.liferay.search.experiences.rest.dto.v1_0.Parameter;
 import com.liferay.search.experiences.rest.dto.v1_0.SXPBlueprint;
-import com.liferay.search.experiences.rest.dto.v1_0.SortConfiguration;
 import com.liferay.search.experiences.rest.dto.v1_0.util.ConfigurationUtil;
 import com.liferay.search.experiences.rest.dto.v1_0.util.SXPBlueprintUtil;
 
@@ -75,16 +75,8 @@ public class SXPBlueprintSearchRequestEnhancerImplTest {
 	public void testAggregationConfiguration() throws Exception {
 		SXPBlueprint sxpBlueprint = _createSXPBlueprint();
 
-		Configuration configuration = sxpBlueprint.getConfiguration();
-
-		String json = _read();
-
-		configuration.setAggregationConfiguration(
-			new AggregationConfiguration() {
-				{
-					aggs = JSONFactoryUtil.createJSONObject(json);
-				}
-			});
+		sxpBlueprint.setConfiguration(
+			ConfigurationUtil.toConfiguration(_read()));
 
 		SearchRequest searchRequest = _toSearchRequest(sxpBlueprint);
 
@@ -176,37 +168,57 @@ public class SXPBlueprintSearchRequestEnhancerImplTest {
 
 		SearchRequest searchRequest = _toSearchRequest(sxpBlueprint);
 
-		List<ComplexQueryPart> complexQueryParts =
+		List<ComplexQueryPart> complexQueryParts1 =
 			searchRequest.getComplexQueryParts();
 
-		ComplexQueryPart complexQueryPart1 = complexQueryParts.get(0);
+		ComplexQueryPart complexQueryPart1 = complexQueryParts1.get(0);
 
-		Assert.assertEquals("must_not", complexQueryPart1.getOccur());
+		Assert.assertEquals("must", complexQueryPart1.getOccur());
 
 		TermQuery termQuery1 = (TermQuery)complexQueryPart1.getQuery();
 
-		Assert.assertEquals("status", termQuery1.getField());
-		Assert.assertEquals(0, termQuery1.getValue());
+		Assert.assertEquals("version", termQuery1.getField());
+		Assert.assertEquals("7.4", termQuery1.getValue());
+		Assert.assertEquals(Float.valueOf(142857), termQuery1.getBoost());
 
-		ComplexQueryPart complexQueryPart2 = complexQueryParts.get(1);
+		ComplexQueryPart complexQueryPart2 = complexQueryParts1.get(1);
 
 		Assert.assertEquals("should", complexQueryPart2.getOccur());
 
-		TermQuery termQuery2 = (TermQuery)complexQueryPart2.getQuery();
-
-		Assert.assertEquals("version", termQuery2.getField());
-		Assert.assertEquals("7.4", termQuery2.getValue());
-		Assert.assertEquals(Float.valueOf(142857), termQuery2.getBoost());
-
-		ComplexQueryPart complexQueryPart3 = complexQueryParts.get(2);
-
-		Assert.assertEquals("must", complexQueryPart3.getOccur());
-
-		WrapperQuery wrapperQuery = (WrapperQuery)complexQueryPart3.getQuery();
+		WrapperQuery wrapperQuery1 = (WrapperQuery)complexQueryPart2.getQuery();
 
 		Assert.assertEquals(
-			_formatJSON(JSONUtil.put("match", JSONUtil.put("status", 0))),
-			_formatJSON(new String(wrapperQuery.getSource())));
+			_formatJSON(JSONUtil.put("match", JSONUtil.put("ranking", 5))),
+			_formatJSON(new String(wrapperQuery1.getSource())));
+
+		List<ComplexQueryPart> complexQueryParts2 =
+			searchRequest.getPostFilterComplexQueryParts();
+
+		ComplexQueryPart complexQueryPart3 = complexQueryParts2.get(0);
+
+		Assert.assertEquals("must_not", complexQueryPart3.getOccur());
+
+		TermQuery termQuery2 = (TermQuery)complexQueryPart3.getQuery();
+
+		Assert.assertEquals("status", termQuery2.getField());
+		Assert.assertEquals(0, termQuery2.getValue());
+
+		List<Rescore> rescores = searchRequest.getRescores();
+
+		Rescore rescore = rescores.get(0);
+
+		WrapperQuery wrapperQuery2 = (WrapperQuery)rescore.getQuery();
+
+		Assert.assertEquals(
+			_formatJSON(
+				JSONUtil.put("exists", JSONUtil.put("field", "priority"))),
+			_formatJSON(new String(wrapperQuery2.getSource())));
+
+		Assert.assertEquals(Float.valueOf(2.3F), rescore.getQueryWeight());
+		Assert.assertEquals(
+			Float.valueOf(0.7F), rescore.getRescoreQueryWeight());
+		Assert.assertEquals(Rescore.ScoreMode.MULTIPLY, rescore.getScoreMode());
+		Assert.assertEquals(Integer.valueOf(6), rescore.getWindowSize());
 
 		_assert(sxpBlueprint);
 	}
@@ -215,16 +227,8 @@ public class SXPBlueprintSearchRequestEnhancerImplTest {
 	public void testSortConfiguration() throws Exception {
 		SXPBlueprint sxpBlueprint = _createSXPBlueprint();
 
-		Configuration configuration = sxpBlueprint.getConfiguration();
-
-		String json = _read();
-
-		configuration.setSortConfiguration(
-			new SortConfiguration() {
-				{
-					sorts = JSONFactoryUtil.createJSONArray(json);
-				}
-			});
+		sxpBlueprint.setConfiguration(
+			ConfigurationUtil.toConfiguration(_read()));
 
 		SearchRequest searchRequest = _toSearchRequest(sxpBlueprint);
 
@@ -298,6 +302,9 @@ public class SXPBlueprintSearchRequestEnhancerImplTest {
 		ReflectionTestUtil.setFieldValue(
 			sxpBlueprintSearchRequestEnhancerImpl, "_queries",
 			new QueriesImpl());
+		ReflectionTestUtil.setFieldValue(
+			sxpBlueprintSearchRequestEnhancerImpl, "_rescoreBuilderFactory",
+			new RescoreBuilderFactoryImpl());
 		ReflectionTestUtil.setFieldValue(
 			sxpBlueprintSearchRequestEnhancerImpl, "_scripts",
 			new ScriptsImpl());

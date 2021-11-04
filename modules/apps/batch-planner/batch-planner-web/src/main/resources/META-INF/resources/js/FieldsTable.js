@@ -26,9 +26,25 @@ function FieldsTable({portletNamespace}) {
 				const newSelectedFields = [];
 				const newFields = [];
 
-				for (const name in event.schema) {
-					newFields.push(name);
-					newSelectedFields.push(name);
+				for (const [label, property] of Object.entries(event.schema)) {
+					if (property.writeOnly || label.startsWith('x-')) {
+						continue;
+					}
+
+					let value = label;
+
+					if (
+						property.extensions &&
+						property.extensions['x-parent-map']
+					) {
+						value =
+							property.extensions['x-parent-map'] + '_' + label;
+					}
+
+					const field = {label, value};
+
+					newFields.push(field);
+					newSelectedFields.push(field);
 				}
 
 				updateFields(newFields);
@@ -94,11 +110,11 @@ function FieldsTable({portletNamespace}) {
 							const included = selectedFields.includes(field);
 
 							return (
-								<ClayTable.Row key={field}>
+								<ClayTable.Row key={field.label}>
 									<ClayTable.Cell>
 										<ClayCheckbox
 											checked={included}
-											id={`${portletNamespace}fieldName_${field}`}
+											id={`${portletNamespace}fieldName_${field.label}`}
 											name={`${portletNamespace}fieldName`}
 											onChange={() => {
 												if (included) {
@@ -117,14 +133,14 @@ function FieldsTable({portletNamespace}) {
 													]);
 												}
 											}}
-											value={field}
+											value={field.value}
 										/>
 									</ClayTable.Cell>
 									<ClayTable.Cell>
 										<label
-											htmlFor={`${portletNamespace}fieldName_${field}`}
+											htmlFor={`${portletNamespace}fieldName_${field.label}`}
 										>
-											{field}
+											{field.label}
 										</label>
 									</ClayTable.Cell>
 								</ClayTable.Row>

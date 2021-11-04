@@ -89,10 +89,10 @@ definition {
 
 			ControlMenu.viewHeaderTitle(headerTitle = "Display Page Name");
 
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Category Name");
+			ContentPages.viewFragmentText(
+				fragmentName = "heading",
+				id = "element-text",
+				text = "Category Name");
 		}
 	}
 
@@ -278,10 +278,10 @@ definition {
 
 			ControlMenu.viewHeaderTitle(headerTitle = "Display Page Name 2");
 
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Grand Subcategory Name");
+			ContentPages.viewFragmentText(
+				fragmentName = "heading",
+				id = "element-text",
+				text = "Grand Subcategory Name");
 		}
 	}
 
@@ -386,9 +386,9 @@ definition {
 				locator1 = "Select#GROUPED_SELECT_VALUE");
 
 			Click.clickNoWaitForVisible(
-				key_elementType = "Container",
-				key_position = "1",
-				locator1 = "PageEditor#LAYOUT_ELEMENTS_HEADER");
+				key_fragmentName = "Container",
+				key_index = "1",
+				locator1 = "Fragment#FRAGMENT_HEADER_ANY");
 
 			Click(
 				key_navItem = "Styles",
@@ -440,9 +440,9 @@ definition {
 				targetFragmentName = "Image");
 
 			Click.clickNoWaitForVisible(
-				key_elementType = "Container",
-				key_position = "3",
-				locator1 = "PageEditor#LAYOUT_ELEMENTS_HEADER");
+				key_fragmentName = "Container",
+				key_index = "3",
+				locator1 = "Fragment#FRAGMENT_HEADER_ANY");
 
 			Click(
 				key_navItem = "Styles",
@@ -529,10 +529,10 @@ definition {
 
 			ControlMenu.viewHeaderTitle(headerTitle = "Display Page Name");
 
-			AssertTextEquals(
-				key_fragmentName = "button",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Subcategory Name");
+			ContentPages.viewFragmentText(
+				fragmentName = "button",
+				id = "link",
+				text = "Subcategory Name");
 		}
 	}
 
@@ -738,21 +738,17 @@ definition {
 
 			ControlMenu.viewHeaderTitle(headerTitle = "Display Page Name");
 
-			AssertVisible(
+			ContentPages.viewFragmentText(
+				fragmentName = "heading",
 				id = "element-text",
-				key_position = "1",
-				key_text = "Category Name",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE");
+				text = "Category Name");
 
-			AssertVisible(
+			ContentPages.viewFragmentText(
+				fragmentName = "button",
 				id = "link",
-				key_position = "1",
-				key_text = "/web/test-site-name/v/${categoryId}",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE");
+				text = "/web/test-site-name/v/${categoryId}");
 
-			AssertVisible(
-				key_imageName = "/images/",
-				locator1 = "Fragment#FRAGMENT_SECTION_BACKGROUND_IMAGE");
+			ContentPages.viewFragmentBackgroundImage(image = "/images/");
 		}
 	}
 

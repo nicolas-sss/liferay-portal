@@ -101,11 +101,35 @@ definition {
 			value1 = "Shared Content");
 
 		if ("${contentSharingPermission}" == "View") {
-			AssertElementNotPresent(locator1 = "Comments#COMMENT_FIELD");
+			AssertElementNotPresent(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+
+			Click(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+			MenuItem.viewNotPresent(menuItem = "Edit");
 		}
 
-		else {
-			AssertElementPresent(locator1 = "Comments#COMMENT_FIELD");
+		else if ("${contentSharingPermission}" == "Comment") {
+			SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+
+			AssertElementPresent(locator1 = "CKEditor#BODY");
+
+			SelectFrame(value1 = "relative=top");
+
+			Click(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+			MenuItem.viewNotPresent(menuItem = "Edit");
+		}
+
+		else if ("${contentSharingPermission}" == "Update") {
+			SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+
+			AssertElementPresent(locator1 = "CKEditor#BODY");
+
+			SelectFrame(value1 = "relative=top");
+
+			Click(locator1 = "Notifications#NOTIFICATIONS_PORTLET_VERTICAL_ELLIPSIS");
+
+			MenuItem.viewPresent(menuItem = "Edit");
 		}
 
 		var key_dmDocumentTitle = "${dmDocumentTitle}";
@@ -115,17 +139,51 @@ definition {
 			value1 = "${dmDocumentTitle}");
 	}
 
+	macro viewNoDuplicateDocument {
+		UserBar.gotoDropdownItem(dropdownItem = "Shared Content");
+
+		AssertTextEquals(
+			key_contentTitle = "${dmDocumentTitle}",
+			locator1 = "Sharing#SHARED_CONTENT_CONTENT_TITLE",
+			value1 = "${dmDocumentTitle}");
+
+		AssertElementNotPresent(
+			key_contentTitle = "${dmDocumentTitle}",
+			locator1 = "Sharing#SHARED_CONTENT_CONTENT_TITLE_2");
+	}
+
 	macro viewSharedFlag {
 		if (isSet(detailsView)) {
-			AssertVisible(
-				key_dmDocumentTitle = "${dmDocumentTitle}",
-				locator1 = "DocumentsAndMedia#ICON_DOCUMENT_SHARED");
+			if ("${displayStyle}" == "table") {
+				AssertVisible(
+					key_dmDocumentTitle = "${dmDocumentTitle}",
+					locator1 = "DocumentsAndMedia#TABLE_DOCUMENT_SHARED");
+			}
+			else {
+				AssertVisible(
+					key_dmDocumentTitle = "${dmDocumentTitle}",
+					locator1 = "DocumentsAndMedia#ICON_DOCUMENT_SHARED");
+			}
 		}
-
 		else {
 			AssertElementNotPresent(
 				key_dmDocumentTitle = "${dmDocumentTitle}",
 				locator1 = "DocumentsAndMedia#ICON_DOCUMENT_SHARED");
+		}
+	}
+
+	macro viewSharingOption {
+		LexiconEntry.changeDisplayStyle(displayStyle = "list");
+
+		Click(
+			key_dmDocumentTitle = "${dmDocumentTitle}",
+			locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_VERTICAL_ELLIPSIS");
+
+		if ("${sharing}" == "true") {
+			MenuItem.viewPresent(menuItem = "Share");
+		}
+		else {
+			MenuItem.viewNotPresent(menuItem = "Share");
 		}
 	}
 

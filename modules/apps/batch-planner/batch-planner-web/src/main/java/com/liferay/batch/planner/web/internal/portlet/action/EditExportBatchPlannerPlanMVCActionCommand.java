@@ -56,17 +56,19 @@ public class EditExportBatchPlannerPlanMVCActionCommand
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		String name = ParamUtil.getString(
-			actionRequest, "name", "Plan " + System.currentTimeMillis());
 		String externalType = ParamUtil.getString(
 			actionRequest, "externalType");
 		String internalClassName = ParamUtil.getString(
 			actionRequest, "internalClassName");
+		String name = ParamUtil.getString(
+			actionRequest, "name", "Plan " + System.currentTimeMillis());
+		String taskItemDelegateName = ParamUtil.getString(
+			actionRequest, "taskItemDelegateName");
 
 		BatchPlannerPlan batchPlannerPlan =
 			_batchPlannerPlanService.addBatchPlannerPlan(
 				true, externalType, StringPool.SLASH, internalClassName, name,
-				false);
+				taskItemDelegateName, false);
 
 		_batchPlannerPolicyService.addBatchPlannerPolicy(
 			batchPlannerPlan.getBatchPlannerPlanId(), "containsHeaders",

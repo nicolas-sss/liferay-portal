@@ -28,6 +28,10 @@ export const createDocumentInFolder = async (folderId, fileEntry, callback) => {
 	);
 };
 
+export const removeDocumentById = (documentId) => {
+	return axios.delete(`${DeliveryAPI}/v1.0/documents/${documentId}/`);
+};
+
 const getDocumentFolders = (siteId, filter = '', parentDocumentFolder) => {
 	return axios.get(
 		parentDocumentFolder

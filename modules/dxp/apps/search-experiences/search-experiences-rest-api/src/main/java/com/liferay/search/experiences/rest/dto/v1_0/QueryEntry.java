@@ -143,6 +143,64 @@ public class QueryEntry implements Serializable {
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Boolean enabled;
 
+	@Schema
+	@Valid
+	public Clause[] getPostFilterClauses() {
+		return postFilterClauses;
+	}
+
+	public void setPostFilterClauses(Clause[] postFilterClauses) {
+		this.postFilterClauses = postFilterClauses;
+	}
+
+	@JsonIgnore
+	public void setPostFilterClauses(
+		UnsafeSupplier<Clause[], Exception> postFilterClausesUnsafeSupplier) {
+
+		try {
+			postFilterClauses = postFilterClausesUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Clause[] postFilterClauses;
+
+	@Schema
+	@Valid
+	public Rescore[] getRescores() {
+		return rescores;
+	}
+
+	public void setRescores(Rescore[] rescores) {
+		this.rescores = rescores;
+	}
+
+	@JsonIgnore
+	public void setRescores(
+		UnsafeSupplier<Rescore[], Exception> rescoresUnsafeSupplier) {
+
+		try {
+			rescores = rescoresUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Rescore[] rescores;
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -208,6 +266,46 @@ public class QueryEntry implements Serializable {
 			sb.append("\"enabled\": ");
 
 			sb.append(enabled);
+		}
+
+		if (postFilterClauses != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"postFilterClauses\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < postFilterClauses.length; i++) {
+				sb.append(String.valueOf(postFilterClauses[i]));
+
+				if ((i + 1) < postFilterClauses.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
+		}
+
+		if (rescores != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"rescores\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < rescores.length; i++) {
+				sb.append(String.valueOf(rescores[i]));
+
+				if ((i + 1) < rescores.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
 		sb.append("}");

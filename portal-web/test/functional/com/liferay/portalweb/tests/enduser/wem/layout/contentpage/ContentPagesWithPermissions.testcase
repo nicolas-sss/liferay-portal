@@ -295,14 +295,16 @@ definition {
 		task ("View only the Button fragment shown in page") {
 			MenuItem.click(menuItem = "View");
 
-			AssertTextEquals(
-				key_fragmentName = "button",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Go Somewhere");
+			ContentPages.viewFragmentText(
+				fragmentName = "button",
+				id = "link",
+				text = "Go Somewhere");
 
 			AssertElementNotPresent(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT");
+				fragmentName = "heading",
+				id = "element-text",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT");
 		}
 
 		task ("View the Preview Draft action is invisible in Page Tree") {
@@ -814,9 +816,7 @@ definition {
 		}
 
 		task ("Assert the Paragraph is invisible to new user") {
-			AssertElementNotPresent(
-				key_fragmentName = "Paragraph",
-				locator1 = "Fragment#FRAGMENT_HEADER");
+			PageEditor.viewFragmentNotPresent(fragmentName = "Paragraph");
 		}
 	}
 
@@ -873,19 +873,19 @@ definition {
 
 			ContentPages.gotoPageEditor();
 
-			AssertElementNotPresent(
-				key_fragmentName = "Paragraph",
-				locator1 = "Fragment#FRAGMENT_HEADER");
+			PageEditor.viewFragmentNotPresent(fragmentName = "Paragraph");
 
 			Click(
+				fragmentName = "paragraph",
 				id = "element-text",
-				key_fragmentName = "paragraph",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_WITHOUT_TOPPER");
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT");
 
 			DoubleClick(
+				fragmentName = "paragraph",
 				id = "element-text",
-				key_fragmentName = "paragraph",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_WITHOUT_TOPPER");
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT");
 
 			Type(
 				locator1 = "//*[contains(@class,'component-paragraph') and contains(@data-lfr-editable-id,'element-text')]/div[contains(@class,'cke_editable_inline')]",
@@ -899,10 +899,10 @@ definition {
 		}
 
 		task ("View the edited inline content in view mode") {
-			AssertTextEquals(
-				key_fragmentName = "paragraph",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "New editable fragment text");
+			ContentPages.viewFragmentText(
+				fragmentName = "paragraph",
+				id = "element-text",
+				text = "New editable fragment text");
 		}
 	}
 
@@ -951,11 +951,10 @@ definition {
 		task ("View the Paragraph shown on content page at view mode") {
 			WaitForVisible(locator1 = "Icon#EDIT_PENCIL");
 
-			AssertVisible(
+			ContentPages.viewFragmentText(
+				fragmentName = "paragraph",
 				id = "element-text",
-				key_position = "1",
-				key_text = "A paragraph is a self-contained unit of a discourse in writing dealing with a particular point or idea. Paragraphs are usually an expected part of formal writing, used to organize longer prose.",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE");
+				text = "A paragraph is a self-contained unit of a discourse in writing dealing with a particular point or idea. Paragraphs are usually an expected part of formal writing, used to organize longer prose.");
 		}
 	}
 
@@ -1035,14 +1034,13 @@ definition {
 
 			ContentPages.gotoPageEditor();
 
-			AssertElementNotPresent(
-				key_fragmentName = "Paragraph",
-				locator1 = "Fragment#FRAGMENT_HEADER");
+			PageEditor.viewFragmentNotPresent(fragmentName = "Paragraph");
 
 			Click(
+				fragmentName = "paragraph",
 				id = "element-text",
-				key_fragmentName = "paragraph",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_WITHOUT_TOPPER");
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT");
 
 			Pause(locator1 = "3000");
 
@@ -1056,10 +1054,10 @@ definition {
 		}
 
 		task ("View mapped content in view mode") {
-			AssertTextEquals(
-				key_fragmentName = "paragraph",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "WC Webcontent Content");
+			ContentPages.viewFragmentText(
+				fragmentName = "paragraph",
+				id = "element-text",
+				text = "WC WebContent Content");
 		}
 	}
 

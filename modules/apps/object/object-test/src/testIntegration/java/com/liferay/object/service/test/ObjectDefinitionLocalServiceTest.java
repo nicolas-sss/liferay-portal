@@ -16,6 +16,7 @@ package com.liferay.object.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.object.constants.ObjectDefinitionConstants;
+import com.liferay.object.constants.ObjectRelationshipConstants;
 import com.liferay.object.exception.DuplicateObjectDefinitionException;
 import com.liferay.object.exception.NoSuchObjectFieldException;
 import com.liferay.object.exception.ObjectDefinitionLabelException;
@@ -24,10 +25,13 @@ import com.liferay.object.exception.ObjectDefinitionPluralLabelException;
 import com.liferay.object.exception.ObjectDefinitionScopeException;
 import com.liferay.object.exception.ObjectDefinitionStatusException;
 import com.liferay.object.exception.ObjectDefinitionVersionException;
+import com.liferay.object.exception.ObjectFieldRelationshipTypeException;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
+import com.liferay.object.model.ObjectRelationship;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
+import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.object.system.BaseSystemObjectDefinitionMetadata;
 import com.liferay.object.util.LocalizedMapUtil;
 import com.liferay.object.util.ObjectFieldUtil;
@@ -279,17 +283,6 @@ public class ObjectDefinitionLocalServiceTest {
 		Assert.assertFalse(
 			_hasTable(objectDefinition.getExtensionDBTableName()));
 
-		// Before publish, messaging
-
-		/*Assert.assertFalse(
-			_messageBus.hasDestination(objectDefinition.getDestinationName()));
-
-		Collection<Destination> webhookCapableDestinations =
-			_messageBus.getWebhookCapableDestinations(
-				objectDefinition.getCompanyId());
-
-		int webhookCapableDestinationsCount = webhookCapableDestinations.size();*/
-
 		// Before publish, resources
 
 		Assert.assertEquals(
@@ -350,46 +343,6 @@ public class ObjectDefinitionLocalServiceTest {
 		Assert.assertTrue(_hasTable(objectDefinition.getDBTableName()));
 		Assert.assertTrue(
 			_hasTable(objectDefinition.getExtensionDBTableName()));
-
-		// After publish, messaging
-
-		/*Destination destination = _messageBus.getDestination(
-			objectDefinition.getDestinationName());
-
-		Set<Destination.WebhookEvent> webhookEvents =
-			destination.getWebhookEvents();
-
-		Assert.assertEquals(webhookEvents.toString(), 6, webhookEvents.size());
-
-		Iterator<Destination.WebhookEvent> iterator = webhookEvents.iterator();
-
-		for (String key : _DESTINATION_WEBHOOK_EVENT_KEYS) {
-			Destination.WebhookEvent webhookEvent = iterator.next();
-
-			Assert.assertEquals(
-				StringBundler.concat(
-					"destination-webhook-event-description[",
-					"liferay-object-event][", key, "]"),
-				webhookEvent.getDescription());
-			Assert.assertEquals(key, webhookEvent.getKey());
-			Assert.assertEquals(
-				"destination-webhook-event-name[liferay-object-event][" + key +
-					"]",
-				webhookEvent.getName());
-		}
-
-		Assert.assertFalse(
-			destination.isWebhookCapable(RandomTestUtil.randomLong()));
-		Assert.assertTrue(
-			destination.isWebhookCapable(objectDefinition.getCompanyId()));
-
-		webhookCapableDestinations = _messageBus.getWebhookCapableDestinations(
-			objectDefinition.getCompanyId());
-
-		Assert.assertEquals(
-			webhookCapableDestinations.toString(),
-			webhookCapableDestinationsCount + 1,
-			webhookCapableDestinations.size());*/
 
 		// After publish, resources
 
@@ -1054,6 +1007,9 @@ public class ObjectDefinitionLocalServiceTest {
 			LocalizedMapUtil.getLocalizedMap("Charlies"),
 			objectDefinition.getPluralLabelMap());
 
+		_testUpdateCustomObjectDefinitionThrowsObjectFieldRelationshipTypeException(
+			objectDefinition);
+
 		_objectDefinitionLocalService.deleteObjectDefinition(objectDefinition);
 	}
 
@@ -1150,10 +1106,66 @@ public class ObjectDefinitionLocalServiceTest {
 		}
 	}
 
-	/*private static final String[] _DESTINATION_WEBHOOK_EVENT_KEYS = {
-		"onAfterCreate", "onAfterRemove", "onAfterUpdate", "onBeforeCreate",
-		"onBeforeRemove", "onBeforeUpdate"
-	};*/
+	private void
+			_testUpdateCustomObjectDefinitionThrowsObjectFieldRelationshipTypeException(
+				ObjectDefinition objectDefinition1)
+		throws Exception {
+
+		ObjectDefinition objectDefinition2 =
+			_objectDefinitionLocalService.addCustomObjectDefinition(
+				TestPropsValues.getUserId(),
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				"A" + RandomTestUtil.randomString(), null, null,
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				ObjectDefinitionConstants.SCOPE_COMPANY,
+				Collections.<ObjectField>emptyList());
+
+		objectDefinition2 =
+			_objectDefinitionLocalService.publishCustomObjectDefinition(
+				TestPropsValues.getUserId(),
+				objectDefinition2.getObjectDefinitionId());
+
+		ObjectRelationship objectRelationship =
+			_objectRelationshipLocalService.addObjectRelationship(
+				TestPropsValues.getUserId(),
+				objectDefinition1.getObjectDefinitionId(),
+				objectDefinition2.getObjectDefinitionId(),
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				StringUtil.randomId(),
+				ObjectRelationshipConstants.TYPE_ONE_TO_MANY);
+
+		try {
+			objectDefinition2 =
+				_objectDefinitionLocalService.updateCustomObjectDefinition(
+					objectDefinition2.getObjectDefinitionId(),
+					objectRelationship.getObjectFieldId2(), 0,
+					objectDefinition2.isActive(),
+					LocalizedMapUtil.getLocalizedMap("Able"), "Able", null,
+					null, LocalizedMapUtil.getLocalizedMap("Ables"),
+					objectDefinition2.getScope());
+
+			Assert.fail();
+		}
+		catch (ObjectFieldRelationshipTypeException
+					objectFieldRelationshipTypeException) {
+
+			Assert.assertEquals(
+				"Description and title object fields cannot have a " +
+					"relationship type",
+				objectFieldRelationshipTypeException.getMessage());
+		}
+		finally {
+
+			// TODO Deleting an object definition should delete any of its
+			// object relationships
+
+			//_objectRelationshipLocalService.deleteObjectRelationship(
+			//	objectRelationship);
+
+			_objectDefinitionLocalService.deleteObjectDefinition(
+				objectDefinition2);
+		}
+	}
 
 	@Inject
 	private MessageBus _messageBus;
@@ -1163,6 +1175,9 @@ public class ObjectDefinitionLocalServiceTest {
 
 	@Inject
 	private ObjectFieldLocalService _objectFieldLocalService;
+
+	@Inject
+	private ObjectRelationshipLocalService _objectRelationshipLocalService;
 
 	@Inject
 	private ResourceActionLocalService _resourceActionLocalService;

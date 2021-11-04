@@ -163,7 +163,7 @@ AUI.add(
 
 					if (!maxOverlay) {
 						var maxOverlayMask = instance._getMaxOverlayMask();
-
+						// eslint-disable-next-line @liferay/aui/no-modal
 						maxOverlay = new A.Modal({
 							after: {
 								render() {

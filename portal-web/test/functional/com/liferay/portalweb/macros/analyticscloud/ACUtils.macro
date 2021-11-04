@@ -1,5 +1,19 @@
 definition {
 
+	macro addPage {
+		if (!(isSet(siteName))) {
+			siteName = "Site Name";
+		}
+
+		if (!(isSet(layoutName))) {
+			layoutName = "AC Page";
+		}
+
+		JSONLayout.addPublicLayout(
+			groupName = "${siteName}",
+			layoutName = "${layoutName}");
+	}
+
 	macro addSiteAndPage {
 		if (!(isSet(siteName))) {
 			siteName = "Site Name";
@@ -11,9 +25,9 @@ definition {
 			layoutName = "AC Page";
 		}
 
-		JSONLayout.addPublicLayout(
-			groupName = "${siteName}",
-			layoutName = "${layoutName}");
+		ACUtils.addPage(
+			layoutName = "${layoutName}",
+			siteName = "${siteName}");
 	}
 
 	macro addWidgetToPage {
@@ -29,6 +43,121 @@ definition {
 		Navigator.gotoSitePage(
 			pageName = "${layoutName}",
 			siteName = "Site Name");
+	}
+
+	macro assertActiveIndividualChart {
+		var key_timeFilter = "${timeFilter}";
+
+		if (isSet(visitorLegend)) {
+			var key_visitorLegend = "${visitorLegend}";
+
+			MouseOver(locator1 = "ACIndividualsDashboard#VISITORS_LEGEND");
+
+			while (IsElementNotPresent(locator1 = "ACIndividualsDashboard#ACTIVE_INDIVIDUAL_CHART") && (maxIterations = "50")) {
+				TestUtils.hardRefresh();
+
+				if ("${timeFilter}" != "Custom Range") {
+					ACTimeFilter.clickTimeFilterButton();
+
+					if ("${timeFilter}" == "Last 24 hours") {
+						ACTimeFilter.setLast24Hours();
+					}
+
+					if ("${timeFilter}" == "Yesterday") {
+						ACTimeFilter.setYesterday();
+					}
+
+					if ("${timeFilter}" == "Last 7 days") {
+						ACTimeFilter.setLast7Days();
+					}
+
+					if ("${timeFilter}" == "Last 28 days") {
+						ACTimeFilter.setLast28Days();
+					}
+
+					if ("${timeFilter}" == "Last 30 days") {
+						ACTimeFilter.setLast30Days();
+					}
+
+					if ("${timeFilter}" == "Last 90 days") {
+						ACTimeFilter.setLast90Days();
+					}
+
+					if ("${timeFilter}" == "Last 180 days") {
+						ACTimeFilter.setLast180Days();
+					}
+
+					if ("${timeFilter}" == "Last Year") {
+						ACTimeFilter.setLastYear();
+					}
+				}
+
+				if ("${timeFilter}" == "Custom Range") {
+					ACTimeFilter.setCustomRange(
+						endDay = "${endDay}",
+						endMonth = "${endMonth}",
+						endYear = "${endYear}",
+						startDay = "${startDay}",
+						startMonth = "${startMonth}",
+						startYear = "${startYear}");
+				}
+
+				MouseOver(locator1 = "ACIndividualsDashboard#VISITORS_LEGEND");
+			}
+		}
+
+		else {
+			while (IsElementNotPresent(locator1 = "ACIndividualsDashboard#ACTIVE_INDIVIDUAL_CHART")) {
+				TestUtils.hardRefresh();
+
+				if ("${timeFilter}" != "Custom Range") {
+					ACTimeFilter.clickTimeFilterButton();
+
+					if ("${timeFilter}" == "Last 24 hours") {
+						ACTimeFilter.setLast24Hours();
+					}
+
+					if ("${timeFilter}" == "Yesterday") {
+						ACTimeFilter.setYesterday();
+					}
+
+					if ("${timeFilter}" == "Last 7 days") {
+						ACTimeFilter.setLast7Days();
+					}
+
+					if ("${timeFilter}" == "Last 28 days") {
+						ACTimeFilter.setLast28Days();
+					}
+
+					if ("${timeFilter}" == "Last 30 days") {
+						ACTimeFilter.setLast30Days();
+					}
+
+					if ("${timeFilter}" == "Last 90 days") {
+						ACTimeFilter.setLast90Days();
+					}
+
+					if ("${timeFilter}" == "Last 180 days") {
+						ACTimeFilter.setLast180Days();
+					}
+
+					if ("${timeFilter}" == "Last Year") {
+						ACTimeFilter.setLastYear();
+					}
+				}
+
+				if ("${timeFilter}" == "Custom Range") {
+					ACTimeFilter.setCustomRange(
+						endDay = "${endDay}",
+						endMonth = "${endMonth}",
+						endYear = "${endYear}",
+						startDay = "${startDay}",
+						startMonth = "${startMonth}",
+						startYear = "${startYear}");
+				}
+			}
+		}
+		AssertElementPresent(locator1 = "ACIndividualsDashboard#ACTIVE_INDIVIDUAL_CHART");
 	}
 
 	macro assertAudienceCard {
@@ -656,8 +785,12 @@ definition {
 		for (var name : list "${nameList}") {
 			var key_nameList = "${name}";
 
+			WaitForPageLoad();
+
 			while (IsElementNotPresent(locator1 = "ACUtils#NAME_LIST") && (maxIterations = "50")) {
-				Refresh();
+				ACSegments.searchSegment(findSegment = "${name}");
+
+				ACUtils.clearSearchBar();
 			}
 
 			AssertTextEquals(
@@ -671,6 +804,8 @@ definition {
 
 		var index = "${index}";
 
+		WaitForPageLoad();
+
 		while (IsElementNotPresent(locator1 = "ACSegments#ADD_MEMBERS_INDEX_TABLE") && (maxIterations = "50")) {
 			Refresh();
 		}
@@ -682,6 +817,8 @@ definition {
 
 	macro viewNoResultsMessage {
 		var key_noResultMessage = "${noResultMessage}";
+
+		WaitForPageLoad();
 
 		while (IsElementNotPresent(locator1 = "ACAssets#NO_RESULTS_CONTENT_MESSAGE") && (maxIterations = "50")) {
 			TestUtils.hardRefresh();

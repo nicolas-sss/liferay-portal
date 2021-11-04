@@ -174,7 +174,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -230,7 +230,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 
@@ -616,7 +616,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -670,7 +670,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -946,7 +946,17 @@ definition {
 		task ("Switch tab to membership and check the membership list") {
 			ACNavigation.switchTab(tabName = "Membership");
 
-			ACUtils.viewNameList(nameList = "${nameList}");
+			ACUtils.viewNoResultsMessage(noResultMessage = "There are no items found.");
+		}
+
+		task ("Edit the segment") {
+			ACNavigation.goToSegments();
+
+			ACSegments.editSegment(searchTerm = "Dynamic Segment Test");
+		}
+
+		task ("View preview number") {
+			ACSegments.viewPreviewNumber(previewNumber = "3");
 		}
 	}
 
@@ -1073,7 +1083,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -1258,6 +1268,10 @@ definition {
 			ACNavigation.switchTab(tabName = "Membership");
 		}
 
+		task ("View all users are shown in current page") {
+			ACUtils.viewNameList(nameList = "${nameList},user5 user5");
+		}
+
 		task ("Select the 5 Items in Pagination") {
 			ACUtils.changePagination(itemsPerPage = "5");
 		}
@@ -1287,6 +1301,8 @@ definition {
 		var usernameList = "user1,user2,user3,user4,user5";
 
 		var emailList = "userea@liferay.com,user1@liferay.com,user2@liferay.com,user3@liferay.com,user4@liferay.com,user5@liferay.com";
+
+		var nameList = "user1 user1,user2 user2,user3 user3,user4 user4,user5 user5";
 
 		task ("Add 5 more new users") {
 			for (var name : list "${usernameList}") {
@@ -1337,9 +1353,7 @@ definition {
 		}
 
 		task ("View all users are shown in current page") {
-			for (var username : list "user1 user1,user2 user2,user3 user3,user4 user4,user5 user5,userfn userln") {
-				ACUtils.viewNameList(nameList = "${username}");
-			}
+			ACUtils.viewNameList(nameList = "${nameList},userfn userln");
 		}
 
 		task ("Select the 5 items in Add Members modal") {
@@ -1347,9 +1361,7 @@ definition {
 		}
 
 		task ("View only 5 users are shown in current page") {
-			for (var username : list "user1 user1,user2 user2,user3 user3,user4 user4,user5 user5") {
-				ACUtils.viewNameList(nameList = "${username}");
-			}
+			ACUtils.viewNameList(nameList = "${nameList}");
 
 			AssertElementNotPresent(
 				key_TableMember = "userfn userln",
@@ -1539,7 +1551,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -1592,7 +1604,7 @@ definition {
 		}
 
 		task ("View the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}

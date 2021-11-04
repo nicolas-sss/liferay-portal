@@ -47,11 +47,14 @@ public class SelectAccountUsersManagementToolbarDisplayContext
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
-		SearchContainer<AccountUserDisplay> searchContainer) {
+		SearchContainer<AccountUserDisplay> searchContainer,
+		SelectAccountUsersDisplayContext selectAccountUsersDisplayContext) {
 
 		super(
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			searchContainer);
+
+		_selectAccountUsersDisplayContext = selectAccountUsersDisplayContext;
 	}
 
 	@Override
@@ -67,7 +70,7 @@ public class SelectAccountUsersManagementToolbarDisplayContext
 
 	@Override
 	public CreationMenu getCreationMenu() {
-		if (!isShowCreateButton()) {
+		if (!_selectAccountUsersDisplayContext.isShowCreateButton()) {
 			return null;
 		}
 
@@ -100,30 +103,14 @@ public class SelectAccountUsersManagementToolbarDisplayContext
 		return false;
 	}
 
-	public boolean isOpenModalOnRedirect() {
-		return ParamUtil.getBoolean(httpServletRequest, "openModalOnRedirect");
-	}
-
 	@Override
 	public Boolean isSelectable() {
-		return !isSingleSelect();
-	}
-
-	public boolean isShowCreateButton() {
-		return ParamUtil.getBoolean(liferayPortletRequest, "showCreateButton");
-	}
-
-	public boolean isShowFilter() {
-		return ParamUtil.getBoolean(liferayPortletRequest, "showFilter", true);
-	}
-
-	public boolean isSingleSelect() {
-		return ParamUtil.getBoolean(liferayPortletRequest, "singleSelect");
+		return !_selectAccountUsersDisplayContext.isSingleSelect();
 	}
 
 	@Override
 	protected String[] getNavigationKeys() {
-		if (!isShowFilter()) {
+		if (!_selectAccountUsersDisplayContext.isShowFilter()) {
 			return new String[0];
 		}
 
@@ -162,5 +149,8 @@ public class SelectAccountUsersManagementToolbarDisplayContext
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		SelectAccountUsersManagementToolbarDisplayContext.class);
+
+	private final SelectAccountUsersDisplayContext
+		_selectAccountUsersDisplayContext;
 
 }

@@ -56,7 +56,7 @@ definition {
 		}
 
 		task ("Launch DXP and visit the site page") {
-			Navigator.gotoSitePage(
+			ACUtils.navigateToSitePage(
 				pageName = "AC Page",
 				siteName = "Site Name");
 		}
@@ -123,6 +123,11 @@ definition {
 	@description = "Feature ID: Legacy | Automation ID: LRAC-9208 | Test Summary: Add segment using a session property 'Referrer URL'"
 	@priority = "4"
 	test CanCreateSessionAttributeUsingReferrerURL {
+		property portal.upstream = "quarantine";
+
+		// AC Refactor: timing issue for Referrer URL with page sync
+		// AC Refactor ticket: LRAC-9272
+
 		var usernameList = "ac,liferay";
 
 		task ("Connect the DXP to Analytics Cloud") {
@@ -144,9 +149,7 @@ definition {
 		}
 
 		task ("Add pages") {
-			JSONLayout.addPublicLayout(
-				groupName = "Site Name",
-				layoutName = "AC Page 2");
+			ACUtils.addPage(layoutName = "AC Page 2");
 		}
 
 		task ("Sign in with the new user") {

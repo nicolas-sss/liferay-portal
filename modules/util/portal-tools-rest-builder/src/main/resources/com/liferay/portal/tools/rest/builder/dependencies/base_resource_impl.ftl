@@ -610,9 +610,7 @@ public abstract class Base${schemaName}ResourceImpl
 				return expressionConvert.convert(oDataFilter.getExpression(), contextAcceptLanguage.getPreferredLocale(), entityModel);
 			}
 			catch (Exception exception) {
-				if (_log.isDebugEnabled()) {
-					_log.debug("Invalid filter " + filterString, exception);
-				}
+				_log.error("Invalid filter " + filterString, exception);
 			}
 
 			return null;

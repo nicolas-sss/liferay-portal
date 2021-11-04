@@ -22,6 +22,8 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServ
 import com.liferay.layout.page.template.service.base.LayoutPageTemplateCollectionLocalServiceBaseImpl;
 import com.liferay.petra.string.CharPool;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
+import com.liferay.portal.kernel.dao.orm.WildcardMode;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
@@ -186,7 +188,27 @@ public class LayoutPageTemplateCollectionLocalServiceImpl
 		}
 
 		return layoutPageTemplateCollectionPersistence.findByG_LikeN(
-			groupId, name, start, end, orderByComparator);
+			groupId, _customSQL.keywords(name, false, WildcardMode.SURROUND)[0],
+			start, end, orderByComparator);
+	}
+
+	@Override
+	public int getLayoutPageTemplateCollectionsCount(long groupId) {
+		return layoutPageTemplateCollectionPersistence.countByGroupId(groupId);
+	}
+
+	@Override
+	public int getLayoutPageTemplateCollectionsCount(
+		long groupId, String name) {
+
+		if (Validator.isNull(name)) {
+			return layoutPageTemplateCollectionPersistence.countByGroupId(
+				groupId);
+		}
+
+		return layoutPageTemplateCollectionPersistence.countByG_LikeN(
+			groupId,
+			_customSQL.keywords(name, false, WildcardMode.SURROUND)[0]);
 	}
 
 	@Override
@@ -259,6 +281,9 @@ public class LayoutPageTemplateCollectionLocalServiceImpl
 				curLayoutPageTemplateCollectionKey + CharPool.DASH + count++;
 		}
 	}
+
+	@Reference
+	private CustomSQL _customSQL;
 
 	@Reference
 	private LayoutPageTemplateEntryLocalService

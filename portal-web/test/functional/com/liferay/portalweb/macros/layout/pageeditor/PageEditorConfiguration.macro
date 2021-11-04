@@ -3,9 +3,7 @@ definition {
 	macro changeConfigColor {
 		var key_fragmentName = "${fragmentName}";
 
-		if (IsNotVisible(locator1 = "Fragment#FRAGMENT_HEADER")) {
-			Click.clickNoWaitForVisible(locator1 = "Fragment#FRAGMENT_HEADER");
-		}
+		PageEditor.clickConfigurableField(fragmentName = "${fragmentName}");
 
 		AssertVisible(
 			key_sidebarButton = "Browser",
@@ -13,9 +11,17 @@ definition {
 
 		Navigator.gotoNavTab(navTab = "General");
 
-		Click(
-			colorPalette = "${colorPalette}",
-			locator1 = "FragmentEditor#FRAGMENTS_EDITOR_FLOATING_TOOLBAR_PALETTE_SELECT");
+		if (isSet(colorPicker)) {
+			PageEditor.selectColorSwatchItem(
+				colorSwatchItem = "${colorPicker}",
+				fieldLabel = "${fieldLabel}");
+		}
+
+		else {
+			Click(
+				colorPalette = "${colorPalette}",
+				locator1 = "FragmentEditor#FRAGMENTS_EDITOR_FLOATING_TOOLBAR_PALETTE_SELECT");
+		}
 
 		PageEditor.waitForAutoSave();
 	}
@@ -23,9 +29,7 @@ definition {
 	macro changeConfigSelection {
 		var key_fragmentName = "${fragmentName}";
 
-		if (IsNotVisible(locator1 = "Fragment#FRAGMENT_HEADER")) {
-			Click.clickNoWaitForVisible(locator1 = "Fragment#FRAGMENT_HEADER");
-		}
+		PageEditor.clickConfigurableField(fragmentName = "${fragmentName}");
 
 		AssertVisible(
 			key_sidebarButton = "Browser",
@@ -45,9 +49,7 @@ definition {
 	macro changeConfigText {
 		var key_fragmentName = "${fragmentName}";
 
-		if (IsNotVisible(locator1 = "Fragment#FRAGMENT_HEADER")) {
-			Click.clickNoWaitForVisible(locator1 = "Fragment#FRAGMENT_HEADER");
-		}
+		PageEditor.clickConfigurableField(fragmentName = "${fragmentName}");
 
 		AssertVisible(
 			key_sidebarButton = "Browser",
@@ -73,7 +75,7 @@ definition {
 
 		Click(locator1 = "PageEditor#CONTENT_PAGE_DISABLED_HEADER");
 
-		Click.clickNoWaitForVisible(locator1 = "Fragment#FRAGMENT_HEADER");
+		PageEditor.clickConfigurableField(fragmentName = "${fragmentName}");
 
 		AssertVisible(
 			key_sidebarButton = "Browser",

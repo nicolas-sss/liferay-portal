@@ -23,6 +23,7 @@ import com.liferay.petra.executor.PortalExecutorManager;
 import com.liferay.petra.lang.ClassLoaderPool;
 import com.liferay.petra.memory.FinalizeManager;
 import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
@@ -613,16 +614,35 @@ public class FreeMarkerManager extends BaseTemplateManager {
 		StringBundler sb = new StringBundler(3 * macroLibrary.length);
 
 		for (String library : macroLibrary) {
-			sb.append(contextName);
-			sb.append(library);
-			sb.append(StringPool.COMMA);
+			if (_hasLibrary(library)) {
+				sb.append(contextName);
+				sb.append(library);
+				sb.append(StringPool.COMMA);
+			}
+			else if (_log.isWarnEnabled()) {
+				_log.warn("Unable to find library: " + library);
+			}
 		}
 
-		if (macroLibrary.length > 0) {
+		if (sb.index() > 0) {
 			sb.setIndex(sb.index() - 1);
 		}
 
 		return sb.toString();
+	}
+
+	private boolean _hasLibrary(String library) {
+		int index = library.indexOf(CharPool.SPACE);
+
+		if (index != -1) {
+			library = library.substring(0, index);
+		}
+
+		if (_bundle.getResource(library) == null) {
+			return false;
+		}
+
+		return true;
 	}
 
 	private void _initAsyncRender(BundleContext bundleContext) {

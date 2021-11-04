@@ -32,6 +32,7 @@ page import="com.liferay.batch.planner.web.internal.display.context.BatchPlanner
 page import="com.liferay.batch.planner.web.internal.display.context.BatchPlannerPlanManagementToolbarDisplayContext" %><%@
 page import="com.liferay.batch.planner.web.internal.display.context.EditBatchPlannerPlanDisplayContext" %><%@
 page import="com.liferay.frontend.taglib.clay.servlet.taglib.util.SelectOption" %><%@
+page import="com.liferay.petra.portlet.url.builder.PortletURLBuilder" %><%@
 page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.petra.string.StringUtil" %><%@
 page import="com.liferay.portal.kernel.dao.search.ResultRow" %><%@

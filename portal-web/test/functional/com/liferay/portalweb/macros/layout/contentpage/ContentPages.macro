@@ -220,19 +220,14 @@ definition {
 
 		PageEditor.assertFragmentSidebarLoaded();
 
-		AssertTextEquals(
-			locator1 = "ControlMenu#HEADING",
-			value1 = "${pageName}");
+		ControlMenu.viewHeaderTitle(headerTitle = "${pageName}");
 
-		AssertTextEquals(
-			id = "element-text",
-			key_fragmentName = "Heading",
-			locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
-			value1 = "${collectionName}");
+		PageEditor.viewFragmentEditableText(
+			editableText = "${collectionName}",
+			fragmentName = "Heading",
+			id = "element-text");
 
-		AssertElementPresent(
-			key_fragmentName = "Collection Display",
-			locator1 = "Fragment#FRAGMENT_HEADER");
+		PageEditor.viewFragment(fragmentName = "Collection Display");
 	}
 
 	macro gotoPageEditor {
@@ -242,27 +237,36 @@ definition {
 	}
 
 	macro viewFragmentBackgroundImage {
-		if (!(isSet(index))) {
-			var index = "1";
+		if (!(isSet(position))) {
+			var position = "1";
 		}
 
 		AssertVisible(
 			image = "${image}",
-			index = "${index}",
+			index = "${position}",
 			locator1 = "Fragment#FRAGMENT_BACKGROUND_IMAGE");
 	}
 
 	macro viewFragmentImage {
-		if (!(isSet(index))) {
-			var index = "1";
+		if (!(isSet(position))) {
+			var position = "1";
 		}
 
 		if ("${fragmentName}" == "Content Display") {
-			AssertVisible(
-				assetType = "${assetType}",
-				image = "${image}",
-				index = "${index}",
-				locator1 = "Fragment#CONTENT_DISPLAY_IMAGE");
+			if (!(isSet(assetType))) {
+				AssertVisible(
+					image = "${image}",
+					index = "${position}",
+					locator1 = "Fragment#CONTENT_DISPLAY_PREVIEW_IMAGE");
+			}
+
+			else {
+				AssertVisible(
+					assetType = "${assetType}",
+					image = "${image}",
+					index = "${position}",
+					locator1 = "Fragment#CONTENT_DISPLAY_IMAGE");
+			}
 		}
 
 		else {
@@ -270,20 +274,28 @@ definition {
 				fragmentName = "${fragmentName}",
 				id = "${id}",
 				image = "${image}",
-				index = "${index}",
+				index = "${position}",
 				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_IMAGE");
 		}
 	}
 
 	macro viewFragmentText {
-		if (!(isSet(index))) {
-			var index = "1";
+		if (!(isSet(position))) {
+			var position = "1";
 		}
 
-		if ("${fragmentName}" == "Content Display") {
-			if ("${assetType}" == "category") {
+		if ("${contributed}" == "false") {
+			AssertTextEquals(
+				fragmentName = "${fragmentName}",
+				index = "${position}",
+				locator1 = "Fragment#EDITABLE_FIELD_ANY",
+				value1 = "${text}");
+		}
+
+		else if (("${fragmentName}" == "Content Display") || ("${fragmentName}" == "Display Page Content")) {
+			if (!(isSet(assetType))) {
 				AssertTextEquals(
-					index = "${index}",
+					index = "${position}",
 					locator1 = "Fragment#CONTENT_DISPLAY_ASSET_SUMMARY",
 					value1 = "${text}");
 			}
@@ -291,7 +303,7 @@ definition {
 			else {
 				AssertTextEquals(
 					assetType = "${assetType}",
-					index = "${index}",
+					index = "${position}",
 					locator1 = "Fragment#CONTENT_DISPLAY_TEXT",
 					value1 = "${text}");
 			}
@@ -301,10 +313,26 @@ definition {
 			AssertTextEquals(
 				fragmentName = "${fragmentName}",
 				id = "${id}",
-				index = "${index}",
+				index = "${position}",
 				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				value1 = "${text}");
 		}
+	}
+
+	macro viewFragmentTextInCollectionDisplay {
+		if (!(isSet(row))) {
+			var row = "1";
+		}
+
+		if (!(isSet(column))) {
+			var column = "1";
+		}
+
+		AssertTextEquals(
+			column = "${column}",
+			locator1 = "Fragment#FRAGMENT_TEXT_IN_COLLECTION_DISPLAY",
+			row = "${row}",
+			value1 = "${text}");
 	}
 
 }

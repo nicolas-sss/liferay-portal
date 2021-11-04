@@ -16,6 +16,16 @@
 		<td></td>
 	</tr>
 	<tr>
+		<td>ADD_ENTRY_CANCEL_BUTTON</td>
+		<td>//span[contains(text(),'Cancel')]</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>ADD_ENTRY_SAVE_BUTTON</td>
+		<td>//span[contains(text(),'Save')]</td>
+		<td></td>
+	</tr>
+	<tr>
 		<td>SAVE_CUSTOM_OBJECT</td>
 		<td>//button[contains(text(),'Save')]</td>
 		<td></td>
@@ -42,12 +52,12 @@
 	</tr>
 	<tr>
 		<td>DROPDOWN_LANGUAGEM</td>
-		<td>//button[@class = 'btn btn-monospaced btn-secondary dropdown-toggle input-localized-trigger']//span[contains(text(),'en-US')]</td>
+		<td>//button[contains(@class,'input-localized-trigger') and contains(@id,'labelMenu')]</td>
 		<td></td>
 	</tr>
 	<tr>
 		<td>DROPDOWN_LANGUAGEM_PLURAL_LABEL</td>
-		<td>//button[@id = '_com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet__com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet_pluralLabelMenu']//span[contains(text(),'en-US')]</td>
+		<td>//button[contains(@class,'input-localized-trigger') and contains(@id,'pluralLabelMenu')]</td>
 		<td></td>
 	</tr>
 	<tr>

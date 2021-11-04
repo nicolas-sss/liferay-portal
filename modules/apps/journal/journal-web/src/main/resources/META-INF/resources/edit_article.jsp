@@ -67,7 +67,27 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 				</li>
 				<li class="tbar-item">
 					<div class="journal-article-button-row tbar-section text-right">
-						<aui:button cssClass="btn-outline-borderless btn-outline-secondary btn-sm mr-3" href="<%= journalEditArticleDisplayContext.getRedirect() %>" type="cancel" />
+						<c:choose>
+							<c:when test="<%= journalWebConfiguration.journalArticleAutoSaveDraftEnabled() %>">
+								<div class="align-items-center d-none mx-3 small" id="<portlet:namespace />savingChangesIndicator">
+									<liferay-ui:message key="saving" />
+
+									<span aria-hidden="true" class="d-inline-block loading-animation loading-animation-sm ml-2 my-0"></span>
+								</div>
+
+								<div class="align-items-center d-none mx-3 small text-success" id="<portlet:namespace />changesSavedIndicator">
+									<liferay-ui:message key="saved" />
+
+									<clay:icon
+										cssClass="ml-2"
+										symbol="check-circle"
+									/>
+								</div>
+							</c:when>
+							<c:otherwise>
+								<aui:button cssClass="btn-outline-borderless btn-outline-secondary btn-sm mr-3" href="<%= journalEditArticleDisplayContext.getRedirect() %>" type="cancel" />
+							</c:otherwise>
+						</c:choose>
 
 						<c:if test="<%= journalEditArticleDisplayContext.getClassNameId() > JournalArticleConstants.CLASS_NAME_ID_DEFAULT %>">
 							<portlet:actionURL name="/journal/reset_values_ddm_structure" var="resetValuesDDMStructureURL">
@@ -82,7 +102,7 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 						</c:if>
 
 						<c:if test="<%= journalEditArticleDisplayContext.hasSavePermission() %>">
-							<c:if test="<%= journalEditArticleDisplayContext.getClassNameId() == JournalArticleConstants.CLASS_NAME_ID_DEFAULT %>">
+							<c:if test="<%= !journalWebConfiguration.journalArticleAutoSaveDraftEnabled() && (journalEditArticleDisplayContext.getClassNameId() == JournalArticleConstants.CLASS_NAME_ID_DEFAULT) %>">
 								<aui:button cssClass="btn-sm mr-3" data-actionname='<%= ((article == null) || Validator.isNull(article.getArticleId())) ? "/journal/add_article" : "/journal/update_article" %>' name="saveButton" primary="<%= false %>" type="submit" value="<%= journalEditArticleDisplayContext.getSaveButtonLabel() %>" />
 							</c:if>
 
@@ -250,6 +270,7 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 					languageId="<%= journalEditArticleDisplayContext.getSelectedLanguageId() %>"
 					namespace="<%= liferayPortletResponse.getNamespace() %>"
 					persisted="<%= article != null %>"
+					submittable="<%= false %>"
 				/>
 
 				<liferay-frontend:component

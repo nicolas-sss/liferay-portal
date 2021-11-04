@@ -202,6 +202,17 @@ public abstract class BaseLayoutStructureItemImporter {
 			return jsonObject;
 		}
 
+		Object hidden = fragmentViewportStyle.get("hidden");
+
+		if (hidden != null) {
+			if (GetterUtil.getBoolean(hidden)) {
+				jsonObject.put("display", "none");
+			}
+			else {
+				jsonObject.put("display", "block");
+			}
+		}
+
 		return JSONUtil.put(
 			"styles",
 			jsonObject.put(
@@ -281,6 +292,12 @@ public abstract class BaseLayoutStructureItemImporter {
 		}
 
 		String borderRadius = GetterUtil.getString(styles.get("borderRadius"));
+
+		boolean hidden = GetterUtil.getBoolean(styles.get("hidden"));
+
+		if (hidden) {
+			jsonObject.put("display", "none");
+		}
 
 		Object shadow = styles.getOrDefault("boxShadow", styles.get("shadow"));
 

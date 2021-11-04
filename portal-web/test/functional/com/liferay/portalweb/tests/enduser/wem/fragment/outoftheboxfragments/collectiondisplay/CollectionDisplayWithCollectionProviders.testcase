@@ -6,16 +6,22 @@ definition {
 	property testray.main.component.name = "Fragments";
 
 	setUp {
-		TestCase.setUpPortalInstance();
+		task ("Set up instance and sign in") {
+			TestCase.setUpPortalInstance();
 
-		User.firstLoginPG();
+			User.firstLoginPG();
+		}
 
-		JSONGroup.addGroup(groupName = "Test Site Name");
+		task ("Add a site") {
+			JSONGroup.addGroup(groupName = "Test Site Name");
+		}
 
-		JSONLayout.addPublicLayout(
-			groupName = "Test Site Name",
-			layoutName = "Content Page Name",
-			type = "content");
+		task ("Add a content page") {
+			JSONLayout.addPublicLayout(
+				groupName = "Test Site Name",
+				layoutName = "Content Page Name",
+				type = "content");
+		}
 	}
 
 	tearDown {
@@ -31,6 +37,7 @@ definition {
 
 	@description = "This is a use case for LPS-127024. The user can add a Collection Display with a manual collection into another Collection Display with Recent Content."
 	@priority = "5"
+	@uitest
 	test AddCollectionDisplayWithManualCollectionToAnotherCollectionDisplayWithRecentContent {
 		property portal.acceptance = "true";
 
@@ -942,6 +949,7 @@ definition {
 
 	@description = "This is a use case for LPS-114727. The Content Display fragment can display abstract of asset entries in Collection Display."
 	@priority = "5"
+	@uitest
 	test ViewAbstractInContentDisplay {
 		property portal.acceptance = "true";
 
@@ -995,38 +1003,38 @@ definition {
 			var n = "1";
 
 			for (var description : list "Blogs Entry Custom Abstract,DM Document Description,Web Content Discription") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${description}",
-					key_fragmentName = "Collection Display",
-					key_rowPosition = "${n}",
-					locator1 = "PageEditor#COLLECTION_ITEM_CONTENT");
+				ContentPages.viewFragmentText(
+					fragmentName = "Content Display",
+					position = "${n}",
+					text = "${description}");
 
 				var n = ${n} + 1;
 			}
+
+			PageEditor.clickPublish();
 		}
 
-		PageEditor.clickPublish();
+		task ("View the description of assets shown in Content Display at view mode") {
+			ContentPagesNavigator.openViewContentPage(
+				pageName = "Content Page Name",
+				siteName = "Test Site Name");
 
-		ContentPagesNavigator.openViewContentPage(
-			pageName = "Content Page Name",
-			siteName = "Test Site Name");
+			var n = "1";
 
-		var n = "1";
+			for (var description : list "Blogs Entry Custom Abstract,DM Document Description,Web Content Discription") {
+				ContentPages.viewFragmentText(
+					fragmentName = "Content Display",
+					position = "${n}",
+					text = "${description}");
 
-		for (var description : list "Blogs Entry Custom Abstract,DM Document Description,Web Content Discription") {
-			AssertVisible(
-				key_colPosition = "1",
-				key_entryContent = "${description}",
-				key_rowPosition = "${n}",
-				locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
-
-			var n = ${n} + 1;
+				var n = ${n} + 1;
+			}
 		}
 	}
 
 	@description = "This is a test for LPS-112094. TThe abstract of asset entries should be shown when select Abstract as List Item Style for different List styles."
 	@priority = "5"
+	@uitest
 	test ViewAbstractListItemStyleInDifferentListStyles {
 		property portal.acceptance = "true";
 
@@ -1399,6 +1407,7 @@ definition {
 
 	@description = "This is a use case for LPS-114727. The Content Display fragment can display title of asset entries in Collection Provider."
 	@priority = "5"
+	@uitest
 	test ViewAssetTitleInContentDisplay {
 		property portal.acceptance = "true";
 
@@ -1431,7 +1440,7 @@ definition {
 				fragmentName = "Collection Display");
 		}
 
-		task ("Assert assets' title are displayed in Collection Display with Content Display") {
+		task ("View asset titles are displayed in Content Display") {
 			PageEditor.editCollectionDisplay(
 				fragmentName = "Collection Display",
 				infoListProviderName = "Highest Rated Assets");
@@ -1444,38 +1453,36 @@ definition {
 			var n = "1";
 
 			for (var title : list "Document Title,Blogs Entry Title,Web Content Title") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${title}",
-					key_fragmentName = "Collection Display",
-					key_rowPosition = "${n}",
-					locator1 = "PageEditor#COLLECTION_ITEM_CONTENT");
+				ContentPages.viewFragmentTextInCollectionDisplay(
+					row = "${n}",
+					text = "${title}");
 
 				var n = ${n} + 1;
 			}
+
+			PageEditor.clickPublish();
 		}
 
-		PageEditor.clickPublish();
+		task ("View the title of assets shown in Content Display at view mode") {
+			ContentPagesNavigator.openViewContentPage(
+				pageName = "Content Page Name",
+				siteName = "Test Site Name");
 
-		ContentPagesNavigator.openViewContentPage(
-			pageName = "Content Page Name",
-			siteName = "Test Site Name");
+			var n = "1";
 
-		var n = "1";
+			for (var title : list "Document Title,Blogs Entry Title,Web Content Title") {
+				ContentPages.viewFragmentTextInCollectionDisplay(
+					row = "${n}",
+					text = "${title}");
 
-		for (var title : list "Document Title,Blogs Entry Title,Web Content Title") {
-			AssertVisible(
-				key_colPosition = "1",
-				key_entryContent = "${title}",
-				key_rowPosition = "${n}",
-				locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
-
-			var n = ${n} + 1;
+				var n = ${n} + 1;
+			}
 		}
 	}
 
 	@description = "This is a use case for LPS-114727. The Content Display fragment can display full content of asset entries in Collection Display."
 	@priority = "5"
+	@uitest
 	test ViewFullContentInContentDisplay {
 		property portal.acceptance = "true";
 
@@ -1508,7 +1515,7 @@ definition {
 				fragmentName = "Collection Display");
 		}
 
-		task ("Assert assets' title are displayed in Collection Display with Content Display") {
+		task ("View full content are displayed in Content Display") {
 			PageEditor.editCollectionDisplay(
 				fragmentName = "Collection Display",
 				infoListProviderName = "Most Viewed Assets");
@@ -1523,54 +1530,47 @@ definition {
 				inCollectionDisplay = "true",
 				template = "Full Content");
 
-			AssertVisible(
-				key_colPosition = "1",
-				key_element = "//img[contains(@src,'Document_1.jpg')]",
-				key_fragmentName = "Collection Display",
-				key_rowPosition = "1",
-				locator1 = "PageEditor#COLLECTION_CELL_NESTED_ELEMENT");
+			ContentPages.viewFragmentImage(
+				fragmentName = "Content Display",
+				image = "Document_1.jpg");
 
-			var n = "2";
+			ContentPages.viewFragmentText(
+				assetType = "blog",
+				fragmentName = "Content Display",
+				text = "Blogs Entry Content");
 
-			for (var content : list "Blogs Entry Content,Web Content Content") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_entryContent = "${content}",
-					key_fragmentName = "Collection Display",
-					key_rowPosition = "${n}",
-					locator1 = "PageEditor#COLLECTION_ITEM_CONTENT");
+			ContentPages.viewFragmentText(
+				assetType = "web-content",
+				fragmentName = "Content Display",
+				text = "Web Content Content");
 
-				var n = ${n} + 1;
-			}
+			PageEditor.clickPublish();
 		}
 
-		PageEditor.clickPublish();
+		task ("View full content are shown in Content Display at view mode") {
+			ContentPagesNavigator.openViewContentPage(
+				pageName = "Content Page Name",
+				siteName = "Test Site Name");
 
-		ContentPagesNavigator.openViewContentPage(
-			pageName = "Content Page Name",
-			siteName = "Test Site Name");
+			ContentPages.viewFragmentImage(
+				fragmentName = "Content Display",
+				image = "Document_1.jpg");
 
-		AssertVisible(
-			key_colPosition = "1",
-			key_image = "Document_1.jpg",
-			key_rowPosition = "1",
-			locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_IMAGE");
+			ContentPages.viewFragmentText(
+				assetType = "blog",
+				fragmentName = "Content Display",
+				text = "Blogs Entry Content");
 
-		var n = "2";
-
-		for (var content : list "Blogs Entry Content,Web Content Content") {
-			AssertVisible(
-				key_colPosition = "1",
-				key_entryContent = "${content}",
-				key_rowPosition = "${n}",
-				locator1 = "Fragment#CONTENT_DISPLAY_FRAGMENT_CONTENT");
-
-			var n = ${n} + 1;
+			ContentPages.viewFragmentText(
+				assetType = "web-content",
+				fragmentName = "Content Display",
+				text = "Web Content Content");
 		}
 	}
 
 	@description = "This is a test for LPS-112094. The full content of asset entries should be shown when select Full Content as List Item Style for different List styles."
 	@priority = "5"
+	@uitest
 	test ViewFullContentListItemStyleInDifferentListStyles {
 		property portal.acceptance = "true";
 
@@ -1935,6 +1935,7 @@ definition {
 
 	@description = "This is a use case for LPS-112360. The asset entries should be ordered by ratings from high to low in Collection Display when select Highest Rated Assets as Collection Provider."
 	@priority = "5"
+	@uitest
 	test ViewHighestRatedAssets {
 		property portal.acceptance = "true";
 
@@ -1996,15 +1997,14 @@ definition {
 				targetFragmentName = "Heading");
 
 			for (var i : list "1,2,3") {
-				AssertVisible(
-					key_colPosition = "1",
-					key_rowPosition = "${i}",
-					locator1 = "PageEditor#COLLECTION_ITEM_RATING_STAR_EMPTY");
+				AssertTextEquals(
+					index = "${i}",
+					locator1 = "Fragment#CONTENT_RATINGS_YOUR_RATING_STAR_RESULT",
+					value1 = "-");
 
 				AssertVisible(
-					key_colPosition = "1",
-					key_rowPosition = "${i}",
-					locator1 = "PageEditor#COLLECTION_ITEM_AVERAGE_STAR");
+					index = "${i}",
+					locator1 = "Fragment#CONTENT_RATINGS_AVERAGE_STAR");
 			}
 		}
 
@@ -2016,19 +2016,16 @@ definition {
 				siteName = "Test Site Name");
 
 			Ratings.rateStarCollectionItem(
-				colPosition = "1",
-				ratingStarCount = "1 star",
-				rowPosition = "1");
+				position = "1",
+				ratingStarCount = "1");
 
 			Ratings.rateStarCollectionItem(
-				colPosition = "1",
-				ratingStarCount = "3 stars",
-				rowPosition = "2");
+				position = "2",
+				ratingStarCount = "3");
 
 			Ratings.rateStarCollectionItem(
-				colPosition = "1",
-				ratingStarCount = "5 stars",
-				rowPosition = "3");
+				position = "3",
+				ratingStarCount = "5");
 		}
 
 		task ("Assert the display order of collection items") {
@@ -2053,12 +2050,11 @@ definition {
 		task ("Assert ratings of collection items") {
 			var n = "1";
 
-			for (var ratingStarCount : list "5 stars,3 stars,1 star") {
-				AssertElementPresent(
-					key_colPosition = "1",
-					key_ratingStarCount = "${ratingStarCount}",
-					key_rowPosition = "${n}",
-					locator1 = "PageEditor#COLLECTION_ITEM_YOUR_RATING_STAR_RESULT");
+			for (var ratingStarCount : list "5,3,1") {
+				AssertTextEquals(
+					index = "${n}",
+					locator1 = "Fragment#CONTENT_RATINGS_YOUR_RATING_STAR_RESULT",
+					value1 = "${ratingStarCount}");
 
 				var n = ${n} + 1;
 			}
@@ -2067,9 +2063,8 @@ definition {
 
 			for (var averageStarCount : list "5.0,3.0,1.0") {
 				AssertTextEquals.assertPartialText(
-					key_colPosition = "1",
-					key_rowPosition = "${n}",
-					locator1 = "PageEditor#COLLECTION_ITEM_AVERAGE_STAR_RESULT",
+					index = "${n}",
+					locator1 = "Fragment#CONTENT_RATINGS_AVERAGE_STAR_RESULT",
 					value1 = "${averageStarCount}");
 
 				var n = ${n} + 1;
@@ -2079,6 +2074,7 @@ definition {
 
 	@description = "This is a use case for LPS-112360. The asset entries should be ordered by view count from high to low in Collection Display when select Most Viewed Assets as Collection Provider."
 	@priority = "5"
+	@uitest
 	test ViewMostViewedAssets {
 		property portal.acceptance = "true";
 
@@ -2294,6 +2290,7 @@ definition {
 
 	@description = "This is a use case for LPS-112360. The asset entries should be ordered by modified time from recent to past in Collection Display when select Recent Content as Collection Provider."
 	@priority = "5"
+	@uitest
 	test ViewRecentContent {
 		property portal.acceptance = "true";
 

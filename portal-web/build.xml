@@ -29,7 +29,6 @@
 		<pathelement location="${project.dir}/lib/portal/jabsorb.jar" />
 		<pathelement location="${project.dir}/lib/portal/jcifs.jar" />
 		<pathelement location="${project.dir}/lib/portal/jcommon.jar" />
-		<pathelement location="${project.dir}/lib/portal/jdom.jar" />
 		<pathelement location="${project.dir}/lib/portal/jfreechart.jar" />
 		<pathelement location="${project.dir}/lib/portal/liferay-icu4j.jar" />
 		<pathelement location="${project.dir}/lib/portal/log4j-1.2-api.jar" />
@@ -37,7 +36,6 @@
 		<pathelement location="${project.dir}/lib/portal/log4j-core.jar" />
 		<pathelement location="${project.dir}/lib/portal/openid4java.jar" />
 		<pathelement location="${project.dir}/lib/portal/portlet.jar" />
-		<pathelement location="${project.dir}/lib/portal/rome.jar" />
 	</path>
 
 	<target name="build-dtd">

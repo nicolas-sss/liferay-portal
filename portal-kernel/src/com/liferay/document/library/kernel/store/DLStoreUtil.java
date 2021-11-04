@@ -44,22 +44,42 @@ import java.io.InputStream;
  * String dirName = "portlet_name/1234";
  *
  * try {
- * DLStoreUtil.addDirectory(companyId, repositoryId, dirName);
+ *     DLStoreUtil.addDirectory(companyId, repositoryId, dirName);
  * }
  * catch (PortalException pe) {
  * }
  *
  * DLStoreUtil.addFile(
- * companyId, repositoryId, dirName + "/" + fileName, file);
+ *     companyId, repositoryId, dirName + "/" + fileName, file);
  * </code>
  * </pre></p>
  *
  * @author Brian Wing Shun Chan
  * @author Alexander Chow
  * @author Edward Han
+ * @author Raymond Augé
  * @see    DLStoreImpl
  */
 public class DLStoreUtil {
+
+	public static void addFile(DLStoreRequest dlStoreRequest, byte[] bytes)
+		throws PortalException {
+
+		_store.addFile(dlStoreRequest, bytes);
+	}
+
+	public static void addFile(DLStoreRequest dlStoreRequest, File file)
+		throws PortalException {
+
+		_store.addFile(dlStoreRequest, file);
+	}
+
+	public static void addFile(
+			DLStoreRequest dlStoreRequest, InputStream inputStream)
+		throws PortalException {
+
+		_store.addFile(dlStoreRequest, inputStream);
+	}
 
 	/**
 	 * Adds a file based on a byte array.
@@ -396,6 +416,19 @@ public class DLStoreUtil {
 		throws PortalException {
 
 		return _store.hasFile(companyId, repositoryId, fileName, versionLabel);
+	}
+
+	public static void updateFile(DLStoreRequest dlStoreRequest, File file)
+		throws PortalException {
+
+		_store.updateFile(dlStoreRequest, file);
+	}
+
+	public static void updateFile(
+			DLStoreRequest dlStoreRequest, InputStream inputStream)
+		throws PortalException {
+
+		_store.updateFile(dlStoreRequest, inputStream);
 	}
 
 	/**

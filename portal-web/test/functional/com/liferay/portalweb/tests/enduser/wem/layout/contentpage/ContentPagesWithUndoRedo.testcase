@@ -183,7 +183,7 @@ definition {
 		}
 
 		task ("View the Tabs fragment not shown in page") {
-			PageEditor.viewNoFragment(fragmentName = "Tabs");
+			PageEditor.viewFragmentNotPresent(fragmentName = "Tabs");
 		}
 
 		task ("View the Redo button is enabled but the Undo button is disabled") {
@@ -216,10 +216,10 @@ definition {
 				key_text = "redo",
 				locator1 = "Icon#ANY");
 
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "New editable fragment text");
+			PageEditor.viewFragmentEditableText(
+				editableText = "New editable fragment text",
+				fragmentName = "Heading",
+				id = "element-text");
 
 			Click(
 				key_text = "redo",
@@ -315,7 +315,7 @@ definition {
 				key_text = "undo",
 				locator1 = "Icon#ANY");
 
-			PageEditor.viewNoFragment(fragmentName = "Grid");
+			PageEditor.viewFragmentNotPresent(fragmentName = "Grid");
 		}
 
 		task ("View the Undo button is disabled") {
@@ -486,7 +486,7 @@ definition {
 			PageEditor.removeFragmentViaPageStructure(fragmentName = "Container");
 
 			for (var fragmentName : list "Container,Grid") {
-				PageEditor.viewNoFragment(fragmentName = "${fragmentName}");
+				PageEditor.viewFragmentNotPresent(fragmentName = "${fragmentName}");
 			}
 		}
 
@@ -592,10 +592,10 @@ definition {
 		}
 
 		task ("View the edited inline content is shown") {
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "New editable fragment text");
+			PageEditor.viewFragmentEditableText(
+				editableText = "New editable fragment text",
+				fragmentName = "Heading",
+				id = "element-text");
 		}
 	}
 
@@ -863,11 +863,12 @@ definition {
 
 		task ("Move the Heading above the Button") {
 			DragAndDrop.javaScriptDragAndDropToUp(
+				fragmentName = "heading",
 				id = "element-text",
+				index = "1",
 				key_dragFragmentName = "Button",
-				key_fragmentName = "Heading",
 				locator1 = "Fragment#FRAGMENT_HEADER_DRAG_HANDLER",
-				locator2 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				locator2 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				value1 = "");
 
 			PageEditor.waitForAutoSave();

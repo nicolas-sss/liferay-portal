@@ -70,6 +70,10 @@ definition {
 		AssertChecked.assertCheckedNotVisible(locator1 = "ObjectAdmin#OBJECT_FIELDS_MANDATORY_TOGGLE_SWITCH");
 	}
 
+	macro checkToggleActive {
+		Check.checkToggleSwitch(locator1 = "CreateObject#TOGGLE_ACTIVE");
+	}
+
 	macro checkToggleInactive {
 		Uncheck.uncheckToggleSwitch(locator1 = "CreateObject#TOGGLE_INACTIVE");
 	}
@@ -110,6 +114,12 @@ definition {
 		Select(
 			locator1 = "CreateObject#PANEL_CATEGORY_KEY",
 			value1 = "${panelCategoryKey}");
+	}
+
+	macro selectTitleField {
+		Select(
+			locator1 = "CreateObject#TITLE_FIELD",
+			value1 = "${fieldLabel}");
 	}
 
 	macro toggleMandatory {

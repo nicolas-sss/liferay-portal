@@ -118,22 +118,27 @@ definition {
 		}
 
 		task ("View mapped content") {
+			PageEditor.viewFragment(fragmentName = "Heading");
+
 			AssertTextEquals.assertPartialText(
+				fragmentName = "heading",
 				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				value1 = "Category Name 3-1, Category Name 3-2, Category Name 3-3");
 
 			AssertTextEquals.assertPartialText(
+				fragmentName = "heading",
 				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				value1 = "Subcategory Name 2");
 
 			AssertTextEquals.assertPartialText(
+				fragmentName = "heading",
 				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
+				index = "1",
+				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_TEXT",
 				value1 = "Category Name 1");
 		}
 	}
@@ -285,11 +290,10 @@ definition {
 
 			PageEditor.waitForAutoSave();
 
-			AssertTextEquals(
-				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
-				value1 = "Web Content Content");
+			PageEditor.viewFragmentEditableText(
+				editableText = "Web Content Content",
+				fragmentName = "Heading",
+				id = "element-text");
 		}
 
 		task ("Map custom ddmfield of document type to Paragraph fragment") {
@@ -315,11 +319,10 @@ definition {
 
 			PageEditor.waitForAutoSave();
 
-			AssertTextEquals(
-				id = "element-text",
-				key_fragmentName = "Paragraph",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
-				value1 = "DM Document Text");
+			PageEditor.viewFragmentEditableText(
+				editableText = "DM Document Text",
+				fragmentName = "Paragraph",
+				id = "element-text");
 		}
 
 		task ("Assert mapped content in view mode") {
@@ -329,15 +332,15 @@ definition {
 				pageName = "Content Page Name",
 				siteName = "Test Site Name");
 
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Web Content Content");
+			ContentPages.viewFragmentText(
+				fragmentName = "heading",
+				id = "element-text",
+				text = "Web Content Content");
 
-			AssertTextEquals(
-				key_fragmentName = "paragraph",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "DM Document Text");
+			ContentPages.viewFragmentText(
+				fragmentName = "paragraph",
+				id = "element-text",
+				text = "DM Document Text");
 		}
 	}
 
@@ -1343,9 +1346,7 @@ definition {
 				pageName = "Content Page Name",
 				siteName = "Test Site Name");
 
-			AssertElementPresent(
-				key_imageName = "Document_2.jpeg",
-				locator1 = "Fragment#FRAGMENT_SECTION_BACKGROUND_IMAGE");
+			ContentPages.viewFragmentBackgroundImage(image = "Document_2.jpeg");
 		}
 	}
 
@@ -1465,10 +1466,10 @@ definition {
 		task ("Assert the web content in Preview Modal") {
 			SelectFrame.selectFrameNoLoading(locator1 = "IFrame#MODAL_BODY");
 
-			AssertTextEquals(
-				key_fragmentName = "heading",
-				locator1 = "Fragment#FRAGMENT_BASIC_COMPONENT",
-				value1 = "Web Content Title 1");
+			ContentPages.viewFragmentText(
+				fragmentName = "heading",
+				id = "element-text",
+				text = "Web Content Title 1");
 
 			AssertVisible(
 				key_content = "[contains(.,'Web Content Content 1')]",
@@ -1526,11 +1527,10 @@ definition {
 		}
 
 		task ("Assert the title of web content is shown in Heading") {
-			AssertTextEquals(
-				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
-				value1 = "Web Content Title");
+			PageEditor.viewFragmentEditableText(
+				editableText = "Web Content Title",
+				fragmentName = "Heading",
+				id = "element-text");
 		}
 
 		task ("Move the web content to the Recycle Bin") {
@@ -1544,11 +1544,10 @@ definition {
 				pageName = "Content Page Name",
 				siteName = "Test Site Name");
 
-			AssertTextEquals(
-				id = "element-text",
-				key_fragmentName = "Heading",
-				locator1 = "Fragment#CONTRIBUTED_FRAGMENT_EDITABLE_FIELD",
-				value1 = "Heading Example");
+			PageEditor.viewFragmentEditableText(
+				editableText = "Heading Example",
+				fragmentName = "Heading",
+				id = "element-text");
 		}
 	}
 

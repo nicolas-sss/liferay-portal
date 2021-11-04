@@ -12,8 +12,8 @@
 <tbody>
 <!--COLLECTION_DISPLAY_CELL-->
 <tr>
-	<td>CONTENT_DISPLAY_FRAGMENT_CONTENT</td>
-	<td>//div[@class='row'][${key_rowPosition}]/div[contains(@class,'col')][${key_colPosition}][contains(.,'${key_entryContent}')]</td>
+	<td>FRAGMENT_TEXT_IN_COLLECTION_DISPLAY</td>
+	<td>//section[contains(@id,'content')]//div[@class='row'][${row}]/div[contains(@class,'col')][${column}]//*[not(contains(@class,'tbar'))][normalize-space(text())]</td>
 	<td></td>
 </tr>
 <tr>
@@ -37,6 +37,32 @@
 	<td>xpath=(//div[contains(@data-analytics-asset-type,'${assetType}')])[${index}]//img[contains(@src,'${image}')]</td>
 	<td></td>
 </tr>
+<tr>
+	<td>CONTENT_DISPLAY_PREVIEW_IMAGE</td>
+	<td>xpath=(//div[contains(@class,'preview-file-container')])[${index}]//img[contains(@src,'${image}')]</td>
+	<td></td>
+</tr>
+<!--CONTENT_RATINGS_FRAGMENT-->
+<tr>
+	<td>CONTENT_RATINGS_AVERAGE_STAR</td>
+	<td>xpath=(//div[contains(@class,'ratings-stars')]//span[contains(@class,'ratings-stars-average')][.//*[name()='svg'][contains(@class,'ratings-stars-average-icon')]])[${index}]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTENT_RATINGS_AVERAGE_STAR_RESULT</td>
+	<td>xpath=(//div[contains(@class,'ratings-stars')]//span[contains(@class,'ratings-stars-average-text')])[${index}]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTENT_RATINGS_YOUR_RATING_STAR</td>
+	<td>xpath=(//div[contains(@class,'ratings-stars')]//button[.//*[name()='svg'][contains(@class,'lexicon-icon-star')]])[${index}]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTENT_RATINGS_YOUR_RATING_STAR_RESULT</td>
+	<td>xpath=(//div[contains(@class,'ratings-stars')]//span[contains(@class,'ratings-stars-button-text')])[${index}]</td>
+	<td></td>
+</tr>
 <!--FRAGMENT-->
 <tr>
 	<td>FRAGMENT</td>
@@ -44,28 +70,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>FRAGMENT_BASIC_COMPONENT</td>
-	<td>//div[contains(@class,'layout-content')]//*[contains(@class,'component-${key_fragmentName}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FRAGMENT_BASIC_COMPONENT_INDEX</td>
-	<td>xpath=(//div[contains(@class,'layout-content')]//*[contains(@class,'component-${key_fragmentName}')])[${key_index}]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FRAGMENT_BODY</td>
-	<td>//div[contains(@class,'page-editor__topper__bar') and contains(.,'${key_fragmentName}')]//following-sibling::div[contains(@class,'page-editor__topper__content')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>FRAGMENT_BODY_IN_FRAGMENT</td>
 	<td>//div[contains(@class,'page-editor__topper') and contains(.,'${key_fragmentName}')]/div[contains(@class,'page-editor__topper__content')]//preceding-sibling::div[contains(.,'${key_inFragmentName}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FRAGMENT_CONTENT_BACKGROUND_IMAGE</td>
-	<td>//div[contains(@class,'page-editor__topper') and contains(.,'${key_fragmentName}')]//div[contains(@style,'${key_imageName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -76,16 +82,6 @@
 <tr>
 	<td>FRAGMENT_LINK</td>
 	<td>//a[contains(@href,'${key_URL}')]${key_append}</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FRAGMENT_SECTION_BACKGROUND_IMAGE</td>
-	<td>//section[contains(@id,'content')]//div[contains(@style,'${key_imageName}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FRAGMENT_SECTION_CONTENT</td>
-	<td>//section[contains(@id,'content')]//p[contains(.,'${key_content}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -296,28 +292,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>CONTRIBUTED_FRAGMENT_EDITABLE_FIELD</td>
-	<td>//div[contains(@class,'page-editor__topper__bar') and contains(.,'${key_fragmentName}')]//following-sibling::div[contains(@class,'page-editor__topper__content')]//*[contains(@data-lfr-editable-id,'${id}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_ANY</td>
-	<td>xpath=(//div[contains(@class,'page-editor__topper__bar') and contains(.,'${key_fragmentName}')])[${index}]//following-sibling::div[contains(@class,'page-editor__topper__content')]//*[contains(@data-lfr-editable-id,'${id}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_CK_EDITOR</td>
-	<td>//div[contains(@class,'page-editor__topper') and contains(.,'${key_fragmentName}')]//*[contains(@data-lfr-editable-id,'${id}')]//div[contains(@class,'cke_editable_inline')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_IMAGE_PROPERTIES</td>
 	<td>//img[contains(@alt,'${key_imageDescription}') and contains(@data-lfr-editable-id,'${id}') and contains(@src,'${key_image}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_WITHOUT_TOPPER</td>
-	<td>//*[contains(@class,'component-${key_fragmentName}') and contains(@data-lfr-editable-id,'${id}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -337,7 +313,7 @@
 </tr>
 <tr>
 	<td>EDITABLE_FIELD_ANY</td>
-	<td>xpath=(//div[contains(@class,'page-editor')]//div[contains(.,'${key_fragmentName}')])[${index}]//lfr-editable[contains(@id,'${id}')]</td>
+	<td>xpath=(//div[contains(@id,'fragment-')][not(descendant::lfr-editable)][.//*[contains(@class,'${fragmentName}')]]//*[normalize-space(text())] | //div[contains(@id,'fragment-')][.//*[contains(@class,'${fragmentName}')]]//lfr-editable)[${index}]</td>
 	<td></td>
 </tr>
 <tr>
@@ -363,17 +339,12 @@
 <!--FRAGMENT_CONTENT_AT_VIEW_MODE-->
 <tr>
 	<td>CONTRIBUTED_FRAGMENT_TEXT</td>
-	<td>xpath=(//div[contains(@id,'fragment-')][.//*[contains(@class,'component-${fragmentName}')]])[${index}]//*[contains(@data-lfr-editable-id,'${id}')]</td>
+	<td>xpath=(//div[contains(@id,'fragment-')][.//*[contains(@class,'${fragmentName}')]])[${index}]//*[contains(@data-lfr-editable-id,'${id}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CONTRIBUTED_FRAGMENT_IMAGE</td>
-	<td>xpath=(//div[contains(@id,'fragment-')][.//*[contains(@class,'component-${fragmentName}')]])[${index}]//*[contains(@data-lfr-editable-id,'${id}')][contains(@src,'${image}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CONTRIBUTED_FRAGMENT_EDITABLE_FIELD_AT_VIEW_MODE</td>
-	<td>xpath=(//*[contains(@data-lfr-editable-id,'${id}')])[${key_position}][normalize-space()='${key_text}']</td>
+	<td>xpath=(//div[contains(@id,'fragment-')][.//*[contains(@class,'${fragmentName}')]])[${index}]//*[contains(@data-lfr-editable-id,'${id}')][contains(@src,'${image}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -382,11 +353,6 @@
 	<td></td>
 </tr>
 <!--FRAGMENT_HEADER-->
-<tr>
-	<td>FRAGMENT_HEADER</td>
-	<td>//li[contains(@class,'topper__title') and contains(.,'${key_fragmentName}')]</td>
-	<td></td>
-</tr>
 <tr>
 	<td>FRAGMENT_HEADER_ANY</td>
 	<td>xpath=(//li[contains(@class,'topper__title') and contains(.,'${key_fragmentName}')])[${key_index}]</td>

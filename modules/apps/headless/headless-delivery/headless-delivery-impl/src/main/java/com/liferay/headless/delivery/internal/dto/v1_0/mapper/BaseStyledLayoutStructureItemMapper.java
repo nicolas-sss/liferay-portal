@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.osgi.service.component.annotations.Reference;
@@ -295,6 +296,23 @@ public abstract class BaseStyledLayoutStructureItemMapper
 							backgroundImageJSONObject,
 							saveMappingConfiguration);
 					});
+
+				setHidden(
+					() -> {
+						if (Objects.equals(
+								jsonObject.getString("display"), "block")) {
+
+							return false;
+						}
+
+						if (Objects.equals(
+								jsonObject.getString("display"), "none")) {
+
+							return true;
+						}
+
+						return null;
+					});
 			}
 		};
 	}
@@ -361,6 +379,27 @@ public abstract class BaseStyledLayoutStructureItemMapper
 								"paddingRight", null);
 							paddingTop = styleJSONObject.getString(
 								"paddingTop", null);
+
+							setHidden(
+								() -> {
+									if (Objects.equals(
+											styleJSONObject.getString(
+												"display"),
+											"block")) {
+
+										return false;
+									}
+
+									if (Objects.equals(
+											styleJSONObject.getString(
+												"display"),
+											"none")) {
+
+										return true;
+									}
+
+									return null;
+								});
 						}
 					});
 			}

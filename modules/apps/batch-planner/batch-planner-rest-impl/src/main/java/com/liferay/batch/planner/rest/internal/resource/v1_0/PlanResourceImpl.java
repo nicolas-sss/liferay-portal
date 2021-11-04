@@ -26,8 +26,7 @@ import com.liferay.batch.planner.service.BatchPlannerPlanService;
 import com.liferay.batch.planner.service.BatchPlannerPolicyService;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
-
-import java.util.List;
+import com.liferay.portal.vulcan.util.TransformUtil;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -97,7 +96,8 @@ public class PlanResourceImpl extends BasePlanResourceImpl {
 		BatchPlannerPlan batchPlannerPlan =
 			_batchPlannerPlanService.addBatchPlannerPlan(
 				plan.getExport(), plan.getExternalType(), plan.getExternalURL(),
-				plan.getInternalClassName(), plan.getName(), false);
+				plan.getInternalClassName(), plan.getName(),
+				plan.getTaskItemDelegateName(), false);
 
 		Mapping[] mappings = plan.getMappings();
 
@@ -125,24 +125,18 @@ public class PlanResourceImpl extends BasePlanResourceImpl {
 		return _toPlan(batchPlannerPlan);
 	}
 
-	private Mapping[] _getMappings(BatchPlannerPlan batchPlannerPlan)
-		throws Exception {
-
-		List<BatchPlannerMapping> batchPlannerMappings =
-			_batchPlannerMappingService.getBatchPlannerMappings(
-				batchPlannerPlan.getBatchPlannerPlanId());
-
-		return batchPlannerMappings.toArray(new Mapping[0]);
-	}
-
-	private Policy[] _getPolicies(BatchPlannerPlan batchPlannerPlan)
-		throws Exception {
-
-		List<BatchPlannerPolicy> batchPlannerPolicies =
-			_batchPlannerPolicyService.getBatchPlannerPolicies(
-				batchPlannerPlan.getBatchPlannerPlanId());
-
-		return batchPlannerPolicies.toArray(new Policy[0]);
+	private Mapping _toMapping(BatchPlannerMapping batchPlannerMapping) {
+		return new Mapping() {
+			{
+				externalFieldName = batchPlannerMapping.getExternalFieldName();
+				externalFieldType = batchPlannerMapping.getExternalFieldType();
+				id = batchPlannerMapping.getBatchPlannerMappingId();
+				internalFieldName = batchPlannerMapping.getInternalFieldName();
+				internalFieldType = batchPlannerMapping.getInternalFieldType();
+				planId = batchPlannerMapping.getBatchPlannerPlanId();
+				script = batchPlannerMapping.getScript();
+			}
+		};
 	}
 
 	private Plan _toPlan(BatchPlannerPlan batchPlannerPlan) throws Exception {
@@ -154,9 +148,30 @@ public class PlanResourceImpl extends BasePlanResourceImpl {
 				externalURL = batchPlannerPlan.getExternalURL();
 				id = batchPlannerPlan.getBatchPlannerPlanId();
 				internalClassName = batchPlannerPlan.getInternalClassName();
-				mappings = _getMappings(batchPlannerPlan);
+				mappings = TransformUtil.transformToArray(
+					_batchPlannerMappingService.getBatchPlannerMappings(
+						batchPlannerPlan.getBatchPlannerPlanId()),
+					batchPlannerMapping -> _toMapping(batchPlannerMapping),
+					Mapping.class);
 				name = batchPlannerPlan.getName();
-				policies = _getPolicies(batchPlannerPlan);
+				policies = TransformUtil.transformToArray(
+					_batchPlannerPolicyService.getBatchPlannerPolicies(
+						batchPlannerPlan.getBatchPlannerPlanId()),
+					batchPlannerPolicy -> _toPolicy(batchPlannerPolicy),
+					Policy.class);
+				taskItemDelegateName =
+					batchPlannerPlan.getTaskItemDelegateName();
+			}
+		};
+	}
+
+	private Policy _toPolicy(BatchPlannerPolicy batchPlannerPolicy) {
+		return new Policy() {
+			{
+				id = batchPlannerPolicy.getBatchPlannerPolicyId();
+				name = batchPlannerPolicy.getName();
+				planId = batchPlannerPolicy.getBatchPlannerPlanId();
+				value = batchPlannerPolicy.getName();
 			}
 		};
 	}

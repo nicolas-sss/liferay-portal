@@ -35,7 +35,6 @@ import com.liferay.portlet.documentlibrary.store.StoreFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -159,20 +158,15 @@ public class DocumentLibraryConvertProcess extends BaseConvertProcess {
 	}
 
 	private Collection<DLStoreConvertProcess> _getDLStoreConvertProcesses() {
-		Iterator<DLStoreConvertProcess> iterator =
-			_dlStoreConvertProcesses.iterator();
-
 		List<DLStoreConvertProcess> dlStoreConvertProcesses = new ArrayList<>();
 
-		iterator.forEachRemaining(dlStoreConvertProcesses::add);
+		_dlStoreConvertProcesses.forEach(dlStoreConvertProcesses::add);
 
 		return dlStoreConvertProcesses;
 	}
 
-	private static final ServiceTrackerList
-		<DLStoreConvertProcess, DLStoreConvertProcess>
-			_dlStoreConvertProcesses = ServiceTrackerListFactory.open(
-				SystemBundleUtil.getBundleContext(),
-				DLStoreConvertProcess.class);
+	private static final ServiceTrackerList<DLStoreConvertProcess>
+		_dlStoreConvertProcesses = ServiceTrackerListFactory.open(
+			SystemBundleUtil.getBundleContext(), DLStoreConvertProcess.class);
 
 }

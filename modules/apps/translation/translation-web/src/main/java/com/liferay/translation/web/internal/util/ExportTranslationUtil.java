@@ -14,12 +14,10 @@
 
 package com.liferay.translation.web.internal.util;
 
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 
 import java.util.Collection;
@@ -31,37 +29,25 @@ import java.util.Locale;
 public class ExportTranslationUtil {
 
 	public static JSONArray getLocalesJSONArray(
-		Locale currentLocale, Collection<Locale> locales) {
+		Locale locale, Collection<Locale> locales) {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		locales.forEach(
-			locale -> jsonArray.put(
+			currentLocale -> jsonArray.put(
 				_getLocaleJSONObject(currentLocale, locale)));
 
 		return jsonArray;
-	}
-
-	private static String _getDisplayName(Locale currentLocale, Locale locale) {
-		String key = "language." + locale.getLanguage();
-
-		String displayName = LanguageUtil.get(currentLocale, key);
-
-		if (displayName.equals(key)) {
-			return locale.getDisplayName(currentLocale);
-		}
-
-		return StringBundler.concat(
-			displayName, " (", locale.getDisplayCountry(currentLocale), ")");
 	}
 
 	private static JSONObject _getLocaleJSONObject(
 		Locale currentLocale, Locale locale) {
 
 		return JSONUtil.put(
-			"displayName", _getDisplayName(currentLocale, locale)
+			"displayName",
+			LocaleUtil.getLocaleDisplayName(currentLocale, locale)
 		).put(
-			"languageId", LocaleUtil.toLanguageId(locale)
+			"languageId", LocaleUtil.toLanguageId(currentLocale)
 		);
 	}
 
