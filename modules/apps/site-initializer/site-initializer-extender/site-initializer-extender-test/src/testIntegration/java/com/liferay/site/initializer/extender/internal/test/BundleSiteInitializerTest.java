@@ -136,8 +136,8 @@ public class BundleSiteInitializerTest {
 
 		try {
 			siteInitializer.initialize(group.getGroupId());
-			_assertAssetVocabularies(group);
 			_assertAssetListEntries(group);
+			_assertAssetVocabularies(group);
 			_assertCommerceCatalogs(group);
 			_assertCommerceChannel(group);
 			_assertCommerceInventoryWarehouse(group);
