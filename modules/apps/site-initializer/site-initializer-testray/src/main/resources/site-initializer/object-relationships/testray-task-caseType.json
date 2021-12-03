@@ -1,0 +1,11 @@
+{
+	"deletionType": "cascade",
+	"label": {
+		"en-US": "Testray Cases Types"
+	},
+	"name": "testrayCaseTypes",
+	"objectDefinitionId1": "[$OBJECT_DEFINITION_NAME:C_TestrayTask$]",
+	"objectDefinitionId2": "[$OBJECT_DEFINITION_NAME:C_TestrayCaseType$]",
+	"objectDefinitionName2": "TestrayCaseType",
+	"type": "oneToMany"
+}

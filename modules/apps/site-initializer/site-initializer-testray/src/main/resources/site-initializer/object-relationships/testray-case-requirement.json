@@ -1,0 +1,11 @@
+{
+	"deletionType": "cascade",
+	"label": {
+		"en-US": "Testray Cases"
+	},
+	"name": "testrayRequirement",
+	"objectDefinitionId1": "[$OBJECT_DEFINITION_NAME:C_TestrayCase$]",
+	"objectDefinitionId2": "[$OBJECT_DEFINITION_NAME:C_TestrayRequirement$]",
+	"objectDefinitionName2": "TestrayRequirement",
+	"type": "oneToMany"
+}

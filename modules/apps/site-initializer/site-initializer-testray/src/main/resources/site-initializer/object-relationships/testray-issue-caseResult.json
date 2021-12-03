@@ -1,0 +1,11 @@
+{
+	"deletionType": "cascade",
+	"label": {
+		"en-US": "Testray Cases Results"
+	},
+	"name": "testrayCaseResults",
+	"objectDefinitionId1": "[$OBJECT_DEFINITION_NAME:C_TestrayIssue$]",
+	"objectDefinitionId2": "[$OBJECT_DEFINITION_NAME:C_TestrayCaseResult$]",
+	"objectDefinitionName2": "TestrayCaseResult",
+	"type": "oneToMany"
+}
