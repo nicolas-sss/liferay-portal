@@ -68,6 +68,11 @@ public class TestrayWebhookRestController {
 			List<Map<String, Object>> testrayCaseTypes = getTestrayCaseTypes(conn);
 			List<Map<String, Object>> testrayCaseResults =
 				getTestrayCaseResults(conn);
+			List<Map<String, Object>> testrayCaseResultWarnings =
+				getTestrayCaseResultWarnings(conn);
+			List<Map<String, Object>> testrayComponents =
+				getTestrayComponents(conn);
+			List<Map<String, Object>> testrayFactors = getTestrayFactors(conn);
 
 
 			// Post Batch Convertion
@@ -81,7 +86,12 @@ public class TestrayWebhookRestController {
 			createTestrayObjectEntrys("TestrayCaseTypes", siteId, testrayCaseTypes);
 			createTestrayObjectEntrys(
 				"TestrayCaseResults", siteId, testrayCaseResults);
-
+			createTestrayObjectEntrys(
+				"TestrayCaseResultWarnings",
+				siteId, testrayCaseResultWarnings);
+			createTestrayObjectEntrys(
+				"TestrayComponents", siteId, testrayComponents);
+			createTestrayObjectEntrys("TestrayFactors", siteId, testrayFactors);
 
 		}
 		catch (Exception exception) {
@@ -298,6 +308,101 @@ public class TestrayWebhookRestController {
 				params.put(
 					"testrayComponentId", resultSet.getLong("testrayComponentId"));
 				params.put("testrayRunId", resultSet.getLong("testrayRunId"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestrayCaseResultWarnings(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT content, testrayCaseResultId FROM TestrayCaseResultWarning");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put("content", resultSet.getString("content"));
+				params.put(
+					"testrayCaseResultId",
+					resultSet.getLong("testrayCaseResultId"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestrayComponents(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT name, originationKey, testrayProjectId, " +
+				"testrayTeamId FROM TestrayComponent");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put("name", resultSet.getString("name"));
+				params.put("originationKey", resultSet.getLong("originationKey"));
+				params.put(
+					"testrayProjectId", resultSet.getLong("testrayProjectId"));
+				params.put("testrayTeamId", resultSet.getLong("testrayTeamId"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestrayFactors(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT classNameId, classPK, testrayFactorCategoryId, " +
+				"testrayFactorCategoryName, testrayFactorOptionId, " +
+				"testrayFactorOptionName FROM TestrayFactor");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put("classNameId", resultSet.getLong("classNameId"));
+				params.put("classPK", resultSet.getLong("classPK"));
+				params.put(
+					"testrayFactorCategoryId",
+					resultSet.getLong("testrayFactorCategoryId"));
+				params.put(
+					"testrayFactorCategoryName",
+					resultSet.getString("testrayFactorCategoryName"));
+				params.put(
+					"testrayFactorOptionId",
+					resultSet.getLong("testrayFactorOptionId"));
+				params.put(
+					"testrayFactorOptionName",
+					resultSet.getString("testrayFactorOptionName"));
 
 				rows.add(params);
 			}
