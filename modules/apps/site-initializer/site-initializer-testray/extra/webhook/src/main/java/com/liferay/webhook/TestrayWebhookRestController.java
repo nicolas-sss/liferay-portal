@@ -65,6 +65,9 @@ public class TestrayWebhookRestController {
 				getTestrayAssignments(conn);
 			List<Map<String, Object>> testrayBuilds = getTestrayBuilds(conn);
 			List<Map<String, Object>> testrayCases = getTestrayCases(conn);
+			List<Map<String, Object>> testrayCaseTypes = getTestrayCaseTypes(conn);
+			List<Map<String, Object>> testrayCaseResults =
+				getTestrayCaseResults(conn);
 
 
 			// Post Batch Convertion
@@ -75,6 +78,10 @@ public class TestrayWebhookRestController {
 				"TestrayAssignments", siteId, testrayAssignments);
 			createTestrayObjectEntrys("TestrayBuilds", siteId, testrayBuilds);
 			createTestrayObjectEntrys("TestrayCases", siteId, testrayCases);
+			createTestrayObjectEntrys("TestrayCaseTypes", siteId, testrayCaseTypes);
+			createTestrayObjectEntrys(
+				"TestrayCaseResults", siteId, testrayCaseResults);
+
 
 		}
 		catch (Exception exception) {
@@ -227,6 +234,70 @@ public class TestrayWebhookRestController {
 					"testrayComponentId", resultSet.getLong("testrayComponentId"));
 				params.put(
 					"testrayProjectId", resultSet.getLong("testrayProjectId"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestrayCaseTypes(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT name FROM TestrayCaseType");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put("name", resultSet.getString("name"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestrayCaseResults(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT assignedUserId, attachments, closedDate, " +
+				"commentMBMessageId, dueStatus, errors, startDate, " +
+				"testrayBuildId, testrayCaseId, testrayComponentId, " +
+				"testrayRunId FROM TestrayCaseResult");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put(
+					"assignedUserId", resultSet.getLong("assignedUserId"));
+				params.put("attachments", resultSet.getString("attachments"));
+				params.put("closedDate", resultSet.getDate("closedDate"));
+				params.put(
+					"commentMBMessageId", resultSet.getLong("commentMBMessageId"));
+				params.put("dueStatus", resultSet.getInt("dueStatus"));
+				params.put("errors", resultSet.getString("errors"));
+				params.put("startDate", resultSet.getDate("startDate"));
+				params.put("testrayBuildId", resultSet.getLong("testrayBuildId"));
+				params.put("testrayCaseId", resultSet.getLong("testrayCaseId"));
+				params.put(
+					"testrayComponentId", resultSet.getLong("testrayComponentId"));
+				params.put("testrayRunId", resultSet.getLong("testrayRunId"));
 
 				rows.add(params);
 			}
