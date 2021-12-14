@@ -82,6 +82,12 @@ public class TestrayWebhookRestController {
 				getTestrayProductVersions(conn);
 			List<Map<String, Object>> testrayProjects =
 				getTestrayProjects(conn);
+			List<Map<String, Object>> testrayRequirements = getTestrayRequirements(conn);
+			List<Map<String, Object>> testrayRoutines = getTestrayRoutines(conn);
+			List<Map<String, Object>> testrayRuns = getTestrayRuns(conn);
+			List<Map<String, Object>> testraySubTasks = getTestraySubTasks(conn);
+
+
 
 
 			// Post Batch Convertion
@@ -107,7 +113,11 @@ public class TestrayWebhookRestController {
 				"TestrayFactorCategories", siteId, testrayFactorCategories);
 			createTestrayObjectEntrys("TestrayIssues", siteId, testrayIssues);
 			createTestrayObjectEntrys("TestrayProductVersions", siteId, testrayProductVersions);
-			createTestrayObjectEntrys("TestrayProjects", siteId, testrayProjects);
+			createTestrayObjectEntrys("TestrayProjects", siteId, testrayProjects); // verificar
+			createTestrayObjectEntrys("TestrayRequirements", siteId, testrayRequirements); // verificar
+			createTestrayObjectEntrys("TestrayRoutines", siteId, testrayRoutines);
+			createTestrayObjectEntrys("TestrayRuns", siteId, testrayRuns); //verificar
+			createTestrayObjectEntrys("TestraySubTasks", siteId, testraySubTasks);
 
 
 
@@ -541,13 +551,151 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT description, name FROM TestrayProjects");
+				"SELECT description, name FROM TestrayProject");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
 
 				params.put("description", resultSet.getString("description"));
 				params.put("name", resultSet.getString("name"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestrayRequirements(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT components, description, descriptionType, tr.key, " +
+				"linkTitle, linkURL, summary, testrayComponentId, " +
+				"testrayProjectId FROM TestrayRequirement as tr");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put("components", resultSet.getString("components"));
+				params.put("description", resultSet.getString("description"));
+				params.put(
+					"descriptionType", resultSet.getString("descriptionType"));
+				params.put("key", resultSet.getString("key"));
+				params.put("linkTitle", resultSet.getString("linkTitle"));
+				params.put("linkURL", resultSet.getString("linkURL"));
+				params.put("summary", resultSet.getString("summary"));
+				params.put(
+					"testrayComponentId", resultSet.getLong("testrayComponentId"));
+				params.put("testrayProjectId", resultSet.getLong("testrayProjectId"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestrayRoutines(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT autoanalyze, name, testrayProjectId FROM TestrayRoutine");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put("autoanalyze", resultSet.getBoolean("autoanalyze"));
+				params.put("name", resultSet.getString("name"));
+				params.put(
+					"testrayProjectId", resultSet.getLong("testrayProjectId"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestrayRuns(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT description, environmentHash, externalReferencePK, " +
+				"externalReferenceType, jenkinsJobKey, " +
+				"name, number, testrayBuildId FROM TestrayRun");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put("description", resultSet.getString("description"));
+				params.put(
+					"environmentHash", resultSet.getString("environmentHash"));
+				params.put(
+					"externalReferencePK", resultSet.getString("externalReferencePK"));
+				params.put(
+					"externalReferenceType", resultSet.getInt("externalReferenceType"));
+				params.put("jenkinsJobKey", resultSet.getLong("jenkinsJobKey")); // aqui zuou
+				params.put("name",resultSet.getString("name"));
+				params.put("number", resultSet.getLong("number"));
+				params.put("testrayBuildId", resultSet.getLong("testrayBuildId"));
+
+				rows.add(params);
+			}
+		}
+		catch (Exception exception) {
+			_log.info("Exception: " + exception);
+		}
+
+		return rows;
+	}
+
+	private List<Map<String, Object>> getTestraySubTasks(Connection conn) {
+		List<Map<String, Object>> rows = new ArrayList<>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet resultSet = stmt.executeQuery(
+				"SELECT commentMBMessageId, dueStatus, " +
+				"mergedToTestraySubtaskId, name, score, " +
+				"splitFromTestraySubtaskId, statusUpdateDate, " +
+				"testrayTaskId FROM TestraySubTask");
+
+			while (resultSet.next()) {
+				Map<String, Object> params = new LinkedHashMap<>();
+
+				params.put(
+					"commentMBMessageId", resultSet.getLong("commentMBMessageId"));
+				params.put("dueStatus", resultSet.getInt("dueStatus"));
+				params.put(
+					"mergedToTestraySubtaskId",
+					resultSet.getLong("mergedToTestraySubtaskId"));
+				params.put("name", resultSet.getString("name"));
+				params.put("score", resultSet.getInt("score"));
+				params.put(
+					"splitFromTestraySubtaskId",
+					resultSet.getLong("splitFromTestraySubtaskId"));
+				params.put("statusUpdateDate", resultSet.getDate("statusUpdateDate"));
+				params.put("testrayTaskId", resultSet.getLong("testrayTaskId"));
 
 				rows.add(params);
 			}
