@@ -14,10 +14,15 @@
 
 package com.liferay.webhook;
 
+import com.liferay.headless.delivery.client.resource.v1_0.DocumentResource;
+import com.liferay.headless.delivery.client.resource.v1_0.Document;
+
 import com.liferay.util.DatabaseConnection;
 import com.liferay.util.HttpClient;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -37,6 +42,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
 
 /**
  * @author Nícolas Moura
@@ -61,66 +68,66 @@ public class TestrayWebhookRestController {
 
 			List<Map<String, Object>> testrayArchives = getTestrayArchives(
 				conn);
-			List<Map<String, Object>> testrayAssignments =
-				getTestrayAssignments(conn);
-			List<Map<String, Object>> testrayBuilds = getTestrayBuilds(conn);
-			List<Map<String, Object>> testrayCases = getTestrayCases(conn);
-			List<Map<String, Object>> testrayCaseTypes = getTestrayCaseTypes(conn);
-			List<Map<String, Object>> testrayCaseResults =
-				getTestrayCaseResults(conn);
-			List<Map<String, Object>> testrayCaseResultWarnings =
-				getTestrayCaseResultWarnings(conn);
-			List<Map<String, Object>> testrayComponents =
-				getTestrayComponents(conn);
-			List<Map<String, Object>> testrayFactors = getTestrayFactors(conn);
-			List<Map<String, Object>> testrayFactorOptions =
-				getTestrayFactorOptions(conn);
-			List<Map<String, Object>> testrayFactorCategories =
-				getTestrayFactorCategories(conn);
-			List<Map<String, Object>> testrayIssues = getTestrayIssues(conn);
-			List<Map<String, Object>> testrayProductVersions =
-				getTestrayProductVersions(conn);
-			List<Map<String, Object>> testrayProjects =
-				getTestrayProjects(conn);
-			List<Map<String, Object>> testrayRequirements = getTestrayRequirements(conn);
-			List<Map<String, Object>> testrayRoutines = getTestrayRoutines(conn);
-			List<Map<String, Object>> testrayRuns = getTestrayRuns(conn);
-			List<Map<String, Object>> testraySubTasks = getTestraySubTasks(conn);
-			List<Map<String, Object>> testraySuites = getTestraySuites(conn);
-			List<Map<String, Object>> testrayTasks = getTestrayTasks(conn);
-			List<Map<String, Object>> testrayTeams = getTestrayTeams(conn);
+//			List<Map<String, Object>> testrayAssignments =
+//				getTestrayAssignments(conn);
+//			List<Map<String, Object>> testrayBuilds = getTestrayBuilds(conn);
+//			List<Map<String, Object>> testrayCases = getTestrayCases(conn);
+//			List<Map<String, Object>> testrayCaseTypes = getTestrayCaseTypes(conn);
+//			List<Map<String, Object>> testrayCaseResults =
+//				getTestrayCaseResults(conn);
+//			List<Map<String, Object>> testrayCaseResultWarnings =
+//				getTestrayCaseResultWarnings(conn);
+//			List<Map<String, Object>> testrayComponents =
+//				getTestrayComponents(conn);
+//			List<Map<String, Object>> testrayFactors = getTestrayFactors(conn);
+//			List<Map<String, Object>> testrayFactorOptions =
+//				getTestrayFactorOptions(conn);
+//			List<Map<String, Object>> testrayFactorCategories =
+//				getTestrayFactorCategories(conn);
+//			List<Map<String, Object>> testrayIssues = getTestrayIssues(conn);
+//			List<Map<String, Object>> testrayProductVersions =
+//				getTestrayProductVersions(conn);
+//			List<Map<String, Object>> testrayProjects =
+//				getTestrayProjects(conn);
+//			List<Map<String, Object>> testrayRequirements = getTestrayRequirements(conn);
+//			List<Map<String, Object>> testrayRoutines = getTestrayRoutines(conn);
+//			List<Map<String, Object>> testrayRuns = getTestrayRuns(conn);
+//			List<Map<String, Object>> testraySubTasks = getTestraySubTasks(conn);
+//			List<Map<String, Object>> testraySuites = getTestraySuites(conn);
+//			List<Map<String, Object>> testrayTasks = getTestrayTasks(conn);
+//			List<Map<String, Object>> testrayTeams = getTestrayTeams(conn);
 
 			// Post Batch Convertion
 
 			createTestrayObjectEntrys(
 				"TestrayArchives", siteId, testrayArchives);
-			createTestrayObjectEntrys(
-				"TestrayAssignments", siteId, testrayAssignments);
-			createTestrayObjectEntrys("TestrayBuilds", siteId, testrayBuilds);
-			createTestrayObjectEntrys("TestrayCases", siteId, testrayCases);
-			createTestrayObjectEntrys("TestrayCaseTypes", siteId, testrayCaseTypes);
-			createTestrayObjectEntrys(
-				"TestrayCaseResults", siteId, testrayCaseResults);
-			createTestrayObjectEntrys(
-				"TestrayCaseResultWarnings",
-				siteId, testrayCaseResultWarnings);
-			createTestrayObjectEntrys(
-				"TestrayComponents", siteId, testrayComponents);
-			createTestrayObjectEntrys("TestrayFactors", siteId, testrayFactors);
-			createTestrayObjectEntrys(
-				"TestrayFactorOptions", siteId, testrayFactorOptions);
-			createTestrayObjectEntrys(
-				"TestrayFactorCategories", siteId, testrayFactorCategories);
-			createTestrayObjectEntrys("TestrayIssues", siteId, testrayIssues);
-			createTestrayObjectEntrys("TestrayProductVersions", siteId, testrayProductVersions);
-			createTestrayObjectEntrys("TestrayProjects", siteId, testrayProjects); // verificar
-			createTestrayObjectEntrys("TestrayRequirements", siteId, testrayRequirements); // verificar
-			createTestrayObjectEntrys("TestrayRoutines", siteId, testrayRoutines);
-			createTestrayObjectEntrys("TestrayRuns", siteId, testrayRuns); //verificar
-			createTestrayObjectEntrys("TestraySubTasks", siteId, testraySubTasks);
-			createTestrayObjectEntrys("TestraySuites", siteId, testraySuites);
-			createTestrayObjectEntrys("TestrayTasks", siteId, testrayTasks);
-			createTestrayObjectEntrys("TestrayTeams", siteId, testrayTeams);
+//			createTestrayObjectEntrys(
+//				"TestrayAssignments", siteId, testrayAssignments);
+//			createTestrayObjectEntrys("TestrayBuilds", siteId, testrayBuilds);
+//			createTestrayObjectEntrys("TestrayCases", siteId, testrayCases);
+//			createTestrayObjectEntrys("TestrayCaseTypes", siteId, testrayCaseTypes);
+//			createTestrayObjectEntrys(
+//				"TestrayCaseResults", siteId, testrayCaseResults);
+//			createTestrayObjectEntrys(
+//				"TestrayCaseResultWarnings",
+//				siteId, testrayCaseResultWarnings);
+//			createTestrayObjectEntrys(
+//				"TestrayComponents", siteId, testrayComponents);
+//			createTestrayObjectEntrys("TestrayFactors", siteId, testrayFactors);
+//			createTestrayObjectEntrys(
+//				"TestrayFactorOptions", siteId, testrayFactorOptions);
+//			createTestrayObjectEntrys(
+//				"TestrayFactorCategories", siteId, testrayFactorCategories);
+//			createTestrayObjectEntrys("TestrayIssues", siteId, testrayIssues);
+//			createTestrayObjectEntrys("TestrayProductVersions", siteId, testrayProductVersions);
+//			createTestrayObjectEntrys("TestrayProjects", siteId, testrayProjects); // verificar
+//			createTestrayObjectEntrys("TestrayRequirements", siteId, testrayRequirements); // verificar
+//			createTestrayObjectEntrys("TestrayRoutines", siteId, testrayRoutines);
+//			createTestrayObjectEntrys("TestrayRuns", siteId, testrayRuns); //verificar
+//			createTestrayObjectEntrys("TestraySubTasks", siteId, testraySubTasks);
+//			createTestrayObjectEntrys("TestraySuites", siteId, testraySuites);
+//			createTestrayObjectEntrys("TestrayTasks", siteId, testrayTasks);
+//			createTestrayObjectEntrys("TestrayTeams", siteId, testrayTeams);
 
 		}
 		catch (Exception exception) {
@@ -148,16 +155,34 @@ public class TestrayWebhookRestController {
 		List<Map<String, Object>> rows = new ArrayList<>();
 
 		try {
+			DocumentResource.Builder builder = DocumentResource.builder();
+
+			DocumentResource documentResource = builder.authentication(
+				"test@liferay.com", "test"
+			).locale(
+				LocaleUtil.getDefault()
+			).build();
+			
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT classNameId, classPK FROM TestrayArchive");
+				"SELECT classNameId, classPK, compressedData FROM OSB_TestrayArchive");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
 
 				params.put("classNameId", resultSet.getLong("classNameId"));
 				params.put("classPK", resultSet.getLong("classPK"));
+
+
+				byte[] imageByte = resultSet.getBlob("compressedData");
+				byte[] encodedImage = Base64.encodeBase64(imageByte);
+
+				// TODO Logic for blob convertion to documents and media
+
+//				documentResource.postSiteDocument()
+
+				params.put("dataId", 548484); // put document ID
 
 				rows.add(params);
 			}
@@ -176,7 +201,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT assignedUserId, classNameId, classPK FROM TestrayAssignment");
+				"SELECT assignedUserId, classNameId, classPK FROM OSB_TestrayAssignment");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -206,7 +231,7 @@ public class TestrayWebhookRestController {
 				"SELECT description, dueDate, dueStatus, gitHash, " +
 					"githubCompareURLs, name, promoted, template, " +
 						"templateTestrayBuildId, testrayProductVersionId, " +
-							"testrayProjectId, testrayRoutineId FROM TestrayBuild");
+							"testrayProjectId, testrayRoutineId FROM OSB_TestrayBuild");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -252,7 +277,7 @@ public class TestrayWebhookRestController {
 				"SELECT caseNumber, description, descriptionType, " +
 				"estimatedDuration, name, originationKey, priority, steps, " +
 				"stepsType, testrayCaseTypeId, testrayComponentId, " +
-				"testrayProjectId FROM TestrayCase");
+				"testrayProjectId FROM OSB_TestrayCase");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -291,7 +316,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT name FROM TestrayCaseType");
+				"SELECT name FROM OSB_TestrayCaseType");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -318,7 +343,7 @@ public class TestrayWebhookRestController {
 				"SELECT assignedUserId, attachments, closedDate, " +
 				"commentMBMessageId, dueStatus, errors, startDate, " +
 				"testrayBuildId, testrayCaseId, testrayComponentId, " +
-				"testrayRunId FROM TestrayCaseResult");
+				"testrayRunId FROM OSB_TestrayCaseResult");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -355,7 +380,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT content, testrayCaseResultId FROM TestrayCaseResultWarning");
+				"SELECT content, testrayCaseResultId FROM OSB_TestrayCaseResultWarning");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -383,7 +408,7 @@ public class TestrayWebhookRestController {
 
 			ResultSet resultSet = stmt.executeQuery(
 				"SELECT name, originationKey, testrayProjectId, " +
-				"testrayTeamId FROM TestrayComponent");
+				"testrayTeamId FROM OSB_TestrayComponent");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -413,7 +438,7 @@ public class TestrayWebhookRestController {
 			ResultSet resultSet = stmt.executeQuery(
 				"SELECT classNameId, classPK, testrayFactorCategoryId, " +
 				"testrayFactorCategoryName, testrayFactorOptionId, " +
-				"testrayFactorOptionName FROM TestrayFactor");
+				"testrayFactorOptionName FROM OSB_TestrayFactor");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -450,7 +475,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT name, testrayFactorCategoryId FROM TestrayFactorOption");
+				"SELECT name, testrayFactorCategoryId FROM OSB_TestrayFactorOption");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -478,7 +503,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT name FROM TestrayFactorCategory");
+				"SELECT name FROM OSB_TestrayFactorCategory");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -502,7 +527,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT name FROM TestrayIssue");
+				"SELECT name FROM OSB_TestrayIssue");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -526,7 +551,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT name, testrayProjectId FROM TestrayProductVersion");
+				"SELECT name, testrayProjectId FROM OSB_TestrayProductVersion");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -552,7 +577,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT description, name FROM TestrayProject");
+				"SELECT description, name FROM OSB_TestrayProject");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -579,7 +604,7 @@ public class TestrayWebhookRestController {
 			ResultSet resultSet = stmt.executeQuery(
 				"SELECT components, description, descriptionType, tr.key, " +
 				"linkTitle, linkURL, summary, testrayComponentId, " +
-				"testrayProjectId FROM TestrayRequirement as tr");
+				"testrayProjectId FROM OSB_TestrayRequirement as tr");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -613,7 +638,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT autoanalyze, name, testrayProjectId FROM TestrayRoutine");
+				"SELECT autoanalyze, name, testrayProjectId FROM OSB_TestrayRoutine");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -642,7 +667,7 @@ public class TestrayWebhookRestController {
 			ResultSet resultSet = stmt.executeQuery(
 				"SELECT description, environmentHash, externalReferencePK, " +
 				"externalReferenceType, jenkinsJobKey, " +
-				"name, number, testrayBuildId FROM TestrayRun");
+				"name, number, testrayBuildId FROM OSB_TestrayRun");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -679,7 +704,7 @@ public class TestrayWebhookRestController {
 				"SELECT commentMBMessageId, dueStatus, " +
 				"mergedToTestraySubtaskId, name, score, " +
 				"splitFromTestraySubtaskId, statusUpdateDate, " +
-				"testrayTaskId FROM TestraySubTask");
+				"testrayTaskId FROM OSB_TestraySubTask");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -716,7 +741,7 @@ public class TestrayWebhookRestController {
 
 			ResultSet resultSet = stmt.executeQuery(
 				"SELECT caseParameters, description, name, " +
-				"testrayProjectId FROM TestraySuite");
+				"testrayProjectId FROM OSB_TestraySuite");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -746,7 +771,7 @@ public class TestrayWebhookRestController {
 
 			ResultSet resultSet = stmt.executeQuery(
 				"SELECT dueStatus, name, statusUpdateDate, " +
-				"testrayBuildId FROM TestrayTask");
+				"testrayBuildId FROM OSB_TestrayTask");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();
@@ -773,7 +798,7 @@ public class TestrayWebhookRestController {
 			Statement stmt = conn.createStatement();
 
 			ResultSet resultSet = stmt.executeQuery(
-				"SELECT name, testrayProjectId FROM TestrayTeam");
+				"SELECT name, testrayProjectId FROM OSB_TestrayTeam");
 
 			while (resultSet.next()) {
 				Map<String, Object> params = new LinkedHashMap<>();

@@ -13,7 +13,7 @@ public class DatabaseConnection {
 
 		try {
 			conn = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/master?characterEncoding=UTF-8&dontTrackOpenResources=true&holdResultsOpenOverStatementClose=true&serverTimezone=GMT&useFastDateParsing=false&useUnicode=true",
+				"jdbc:mysql://localhost:3306/testray?characterEncoding=UTF-8&dontTrackOpenResources=true&holdResultsOpenOverStatementClose=true&serverTimezone=GMT&useFastDateParsing=false&useUnicode=true",
 				"root", "lovethepoor");
 
 			System.out.println("Conectado com sucesso!");
