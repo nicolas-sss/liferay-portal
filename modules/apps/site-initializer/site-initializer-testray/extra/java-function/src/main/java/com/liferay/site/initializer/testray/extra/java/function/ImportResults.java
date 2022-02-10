@@ -15,11 +15,13 @@
 package com.liferay.site.initializer.testray.extra.java.function;
 
 import com.google.api.gax.paging.Page;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+
+import java.io.FileInputStream;
 
 import java.nio.file.Paths;
 
@@ -28,39 +30,15 @@ import java.nio.file.Paths;
  */
 public class ImportResults {
 
-	public static void downloadObject(
-		String projectId, String bucketName, String objectName,
-		String destFilePath) {
-
-		// The ID of your GCP project
-		// String projectId = "your-project-id";
-
-		// The ID of your GCS bucket
-		// String bucketName = "testray-results";
-
-		// The ID of your GCS object
-		// String objectName = "your-object-name";
-
-		// The path to which the file should be downloaded
-		// String destFilePath = "/local/path/to/file.txt";
-
-		Storage storage = StorageOptions.newBuilder(
-		).setProjectId(
-			projectId
-		).build(
-		).getService();
-
-		Blob blob = storage.get(BlobId.of(bucketName, objectName));
-
-		blob.downloadTo(Paths.get(destFilePath));
-
-		System.out.println("Downloaded object " + objectName);
-	}
-
 	public static void listBuckets(String projectId) throws Exception {
+		GoogleCredentials credentials = GoogleCredentials.fromStream(
+			new FileInputStream("/home/me/Downloads/key.json"));
+
 		Storage storage = StorageOptions.newBuilder(
 		).setProjectId(
 			projectId
+		).setCredentials(
+			credentials
 		).build(
 		).getService();
 
@@ -68,6 +46,14 @@ public class ImportResults {
 
 		for (Bucket bucket : bucketsPage.iterateAll()) {
 			System.out.println(bucket.getName());
+
+			Page<Blob> blobsPage = storage.list(bucket.getName());
+
+			for (Blob blob : blobsPage.iterateAll()) {
+				System.out.println(blob.getName());
+
+				blob.downloadTo(Paths.get("/home/me/Downloads/key.text"));
+			}
 		}
 	}
 
@@ -75,7 +61,7 @@ public class ImportResults {
 		try {
 			System.out.println("Hello World!");
 
-			listBuckets("testray-340800");
+			listBuckets("wise-aegis-340917");
 		}
 		catch (Exception exception) {
 			exception.printStackTrace();
