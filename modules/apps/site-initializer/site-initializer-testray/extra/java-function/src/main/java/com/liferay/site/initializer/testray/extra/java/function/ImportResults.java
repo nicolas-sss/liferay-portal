@@ -24,6 +24,14 @@ import com.google.cloud.storage.StorageOptions;
 import java.io.FileInputStream;
 
 import java.nio.file.Paths;
+import java.io.File;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+
 
 /**
  * @author José Abelenda
@@ -52,10 +60,36 @@ public class ImportResults {
 			for (Blob blob : blobsPage.iterateAll()) {
 				System.out.println(blob.getName());
 
-				blob.downloadTo(Paths.get("/home/me/Downloads/key.text"));
+				blob.downloadTo(Paths.get("/home/me/Downloads/key.xml"));
 			}
 		}
 	}
+	// public static void processXML() throws Exception {
+		
+	// 	DocumentBuilderFactory factory =
+	// 	DocumentBuilderFactory.newInstance();
+	// 	DocumentBuilder builder = factory.newDocumentBuilder();
+
+	// 	StringBuilder xmlStringBuilder = new StringBuilder();
+	// 	xmlStringBuilder.append("<?xml version="1.0"?> <class> </class>");
+	// 	ByteArrayInputStream input = new ByteArrayInputStream(
+	// 	xmlStringBuilder.toString().getBytes("UTF-8"));
+	// 	Document doc = builder.parse(input);
+
+	// 	Element root = document.getDocumentElement();
+
+	// 	//returns specific attribute
+	// 	getAttribute("attributeName");
+
+	// 	//returns a Map (table) of names/values
+	// 	getAttributes();
+
+	// 	//returns a list of subelements of specified name
+	// 	getElementsByTagName("subelementName");
+
+	// 	//returns a list of all child nodes
+	// 	getChildNodes();
+	// }
 
 	public static void main(String[] args) {
 		try {
@@ -66,6 +100,34 @@ public class ImportResults {
 		catch (Exception exception) {
 			exception.printStackTrace();
 		}
+ try {
+         File inputFile = new File("/home/me/Downloads/key.xml");
+         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+         Document doc = dBuilder.parse(inputFile);
+         doc.getDocumentElement().normalize();
+         System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+         NodeList nList = doc.getElementsByTagName("name");
+         System.out.println("----------------------------");
+         
+         for (int temp = 0; temp < nList.getLength(); temp++) {
+            Node nNode = nList.item(temp);
+            System.out.println("\nCurrent Element :" + nNode.getNodeName());
+            
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+               Element eElement = (Element) nNode;
+               System.out.println("Student name no : " 
+                  + eElement.getAttribute("name"));
+               System.out.println("Value : " 
+                  + eElement
+                  .getElementsByTagName("value")
+                  .item(0)
+                  .getTextContent());
+            }
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
 	}
 
 }
