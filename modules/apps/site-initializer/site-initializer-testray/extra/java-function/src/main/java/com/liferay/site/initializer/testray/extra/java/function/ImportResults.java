@@ -31,6 +31,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 /**
@@ -64,38 +76,12 @@ public class ImportResults {
 			}
 		}
 	}
-	// public static void processXML() throws Exception {
-		
-	// 	DocumentBuilderFactory factory =
-	// 	DocumentBuilderFactory.newInstance();
-	// 	DocumentBuilder builder = factory.newDocumentBuilder();
-
-	// 	StringBuilder xmlStringBuilder = new StringBuilder();
-	// 	xmlStringBuilder.append("<?xml version="1.0"?> <class> </class>");
-	// 	ByteArrayInputStream input = new ByteArrayInputStream(
-	// 	xmlStringBuilder.toString().getBytes("UTF-8"));
-	// 	Document doc = builder.parse(input);
-
-	// 	Element root = document.getDocumentElement();
-
-	// 	//returns specific attribute
-	// 	getAttribute("attributeName");
-
-	// 	//returns a Map (table) of names/values
-	// 	getAttributes();
-
-	// 	//returns a list of subelements of specified name
-	// 	getElementsByTagName("subelementName");
-
-	// 	//returns a list of all child nodes
-	// 	getChildNodes();
-	// }
 
 	public static void main(String[] args) {
 		try {
 			System.out.println("Hello World!");
 
-			listBuckets("wise-aegis-340917");
+		//	listBuckets("wise-aegis-340917");
 		}
 		catch (Exception exception) {
 			exception.printStackTrace();
@@ -106,24 +92,21 @@ public class ImportResults {
          DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
          Document doc = dBuilder.parse(inputFile);
          doc.getDocumentElement().normalize();
+		 
          System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-         NodeList nList = doc.getElementsByTagName("name");
-         System.out.println("----------------------------");
+         NodeList nList = doc.getElementsByTagName("environment");
          
          for (int temp = 0; temp < nList.getLength(); temp++) {
             Node nNode = nList.item(temp);
             System.out.println("\nCurrent Element :" + nNode.getNodeName());
-            
-            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-               Element eElement = (Element) nNode;
-               System.out.println("Student name no : " 
-                  + eElement.getAttribute("name"));
-               System.out.println("Value : " 
-                  + eElement
-                  .getElementsByTagName("value")
-                  .item(0)
-                  .getTextContent());
-            }
+            System.out.println("\nCurrent Element :" + nNode.item(0));
+             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+			// Element element = (Element) nNode;
+
+			// String currency = element.item(0).getAttributes().getNamedItem("name").getTextContent();
+
+             }
          }
       } catch (Exception e) {
          e.printStackTrace();
