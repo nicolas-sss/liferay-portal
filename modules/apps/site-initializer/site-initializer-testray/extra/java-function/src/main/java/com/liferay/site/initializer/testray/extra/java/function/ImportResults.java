@@ -14,9 +14,11 @@
 
 package com.liferay.site.initializer.testray.extra.java.function;
 
+import org.json.JSONObject;
 import com.google.api.gax.paging.Page;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -27,6 +29,7 @@ import java.io.File;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
+import com.liferay.portal.kernel.util.StringUtil;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
@@ -105,20 +108,34 @@ public class ImportResults {
 
 	// 			String type = nNode.getAttributes().getNamedItem("type").getTextContent();
 	// 			System.out.println(type);
-    //          }
+    //          }	
     //      }
     //   } catch (Exception e) {
     //      e.printStackTrace();
     //   }
 
-	  HashMap<String, String> params = new HashMap<String, String>();
-
-		params.put("name","testray.testcase.priority");
-		params.put("value","5");
-			HttpClient.post(
+try{
+				String json = StringUtil.read(new FileInputStream("/home/me/Downloads/auu.json"));
+JSONObject jsonObject = new JSONObject(json);
+System.out.println(jsonObject);
+							HttpClient.post(
 					"http://localhost:8080/o/c/"+
 					"testrayprojects"+"/scopes/"+"42537",
-				params);
+				jsonObject);
+
+				
+
+}catch (Exception e) {
+          e.printStackTrace();
+       }
+
+		
+
+	//   HashMap<String, String> params = new HashMap<String, String>();
+
+		// params.put("name","testray.testcase.priority");
+		// params.put("value","5");
+
 	}
 
 }

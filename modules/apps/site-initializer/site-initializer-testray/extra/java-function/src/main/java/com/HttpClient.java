@@ -7,13 +7,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.io.File;
 import java.net.URLEncoder;
 
 import java.nio.charset.StandardCharsets;
 
 import java.util.Base64;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -91,7 +90,7 @@ public class HttpClient {
 	}
 
 	public static JSONObject post(
-		String urlTarget, HashMap<String, String> params) {
+		String urlTarget, JSONObject params) {
 
 		JSONObject jsonObject = null;
 
@@ -108,7 +107,7 @@ public class HttpClient {
 
 			// Request setup
 
-			String auth = "test@liferay.com:test";
+			String auth = "test@liferay.com:t";
 
 			byte[] encodedAuth = Base64.getEncoder(
 			).encode(
@@ -150,8 +149,8 @@ public class HttpClient {
 
 				reader.close();
 			}
-File auu = new File("/home/me/Downloads/auu.json");
-			jsonObject = new JSONObject(auu);
+System.out.println(responseContent.toString());
+			jsonObject = new JSONObject(responseContent.toString());
 
 			System.out.println(jsonObject);
 		}
@@ -168,16 +167,8 @@ File auu = new File("/home/me/Downloads/auu.json");
 		return jsonObject;
 	}
 
-	private static byte[] parseBodyData(HashMap<String, String> params)
+	private static byte[] parseBodyData(JSONObject postData)
 		throws IOException, MalformedURLException {
-
-		JSONObject postData = new JSONObject();
-
-		for (HashMap.Entry<String, String> param : params.entrySet()) {
-			postData.put(
-				URLEncoder.encode(param.getKey(), "UTF-8"),
-				String.valueOf(param.getValue()));
-		}
 
 		return postData.toString(
 		).getBytes(
