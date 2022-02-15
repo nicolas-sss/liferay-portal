@@ -20,9 +20,8 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-
+import java.util.HashMap; // import the HashMap class
 import java.io.FileInputStream;
-
 import java.nio.file.Paths;
 import java.io.File;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +42,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import com.liferay.util.HttpClient;
+import com.liferay.petra.string.StringBundler;
 
 
 /**
@@ -78,39 +79,46 @@ public class ImportResults {
 	}
 
 	public static void main(String[] args) {
-		try {
-			System.out.println("Hello World!");
+	// 	try {
+	// 		System.out.println("Hello World!");
 
-		//	listBuckets("wise-aegis-340917");
-		}
-		catch (Exception exception) {
-			exception.printStackTrace();
-		}
- try {
-         File inputFile = new File("/home/me/Downloads/key.xml");
-         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-         Document doc = dBuilder.parse(inputFile);
-         doc.getDocumentElement().normalize();
+	// 	//	listBuckets("wise-aegis-340917");
+	// 	}
+	// 	catch (Exception exception) {
+	// 		exception.printStackTrace();
+	// 	}
+ 	// 	try {
+	// 		File inputFile = new File("/home/me/Downloads/key.xml");
+	// 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	// 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	// 		Document doc = dBuilder.parse(inputFile);
+	// 		doc.getDocumentElement().normalize();
 		 
-         System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-         NodeList nList = doc.getElementsByTagName("environment");
+    //     	System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+    //     	NodeList nList = doc.getElementsByTagName("environment");
+
+	// 		for (int temp = 0; temp < nList.getLength(); temp++) {
+	// 			Node nNode = nList.item(temp);
+	// 			System.out.println("\nCurrent Element :" + nNode.getNodeName());
          
-         for (int temp = 0; temp < nList.getLength(); temp++) {
-            Node nNode = nList.item(temp);
-            System.out.println("\nCurrent Element :" + nNode.getNodeName());
-            System.out.println("\nCurrent Element :" + nNode.item(0));
-             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+    //         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-			// Element element = (Element) nNode;
+	// 			String type = nNode.getAttributes().getNamedItem("type").getTextContent();
+	// 			System.out.println(type);
+    //          }
+    //      }
+    //   } catch (Exception e) {
+    //      e.printStackTrace();
+    //   }
 
-			// String currency = element.item(0).getAttributes().getNamedItem("name").getTextContent();
+	  HashMap<String, String> params = new HashMap<String, String>();
 
-             }
-         }
-      } catch (Exception e) {
-         e.printStackTrace();
-      }
+		params.put("name","testray.testcase.priority");
+		params.put("value","5");
+			HttpClient.post(
+					"http://localhost:8080/o/c/"+
+					"testrayprojects"+"/scopes/"+"42537",
+				params);
 	}
 
 }
