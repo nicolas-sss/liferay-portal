@@ -38,7 +38,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import com.liferay.util.HttpClient;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 
 
 /**
@@ -114,13 +115,20 @@ public class ImportResults {
     //      e.printStackTrace();
     //   }
 
-try{
-				String json = StringUtil.read(new FileInputStream("/home/me/Downloads/auu.json"));
-JSONObject jsonObject = new JSONObject(json);
-System.out.println(jsonObject);
+		try{
+
+		Map<String, String> json = HashMapBuilder.put(
+			"description", "uuuuuuu"
+		).put(
+			"name", "uuuuu"
+		).build();
+
+			//	String json = StringUtil.read(new FileInputStream("/home/me/Downloads/auu.json"));
+				JSONObject jsonObject = new JSONObject(json);
+				System.out.println(jsonObject);
 							HttpClient.post(
 					"http://localhost:8080/o/c/"+
-					"testrayprojects"+"/scopes/"+"42537",
+					"testrayprojects"+"/scopes/"+"42413",
 				jsonObject);
 
 				
