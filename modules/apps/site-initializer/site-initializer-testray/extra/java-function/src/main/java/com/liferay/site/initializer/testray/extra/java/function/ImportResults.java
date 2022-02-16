@@ -83,66 +83,65 @@ public class ImportResults {
 	}
 
 	public static void main(String[] args) {
-	// 	try {
-	// 		System.out.println("Hello World!");
-
-	// 	//	listBuckets("wise-aegis-340917");
-	// 	}
-	// 	catch (Exception exception) {
-	// 		exception.printStackTrace();
-	// 	}
- 	// 	try {
-	// 		File inputFile = new File("/home/me/Downloads/key.xml");
-	// 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-	// 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	// 		Document doc = dBuilder.parse(inputFile);
-	// 		doc.getDocumentElement().normalize();
-		 
-    //     	System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-    //     	NodeList nList = doc.getElementsByTagName("environment");
-
-	// 		for (int temp = 0; temp < nList.getLength(); temp++) {
-	// 			Node nNode = nList.item(temp);
-	// 			System.out.println("\nCurrent Element :" + nNode.getNodeName());
-         
-    //         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-	// 			String type = nNode.getAttributes().getNamedItem("type").getTextContent();
-	// 			System.out.println(type);
-    //          }	
-    //      }
-    //   } catch (Exception e) {
-    //      e.printStackTrace();
-    //   }
-
-		try{
-
-		Map<String, String> json = HashMapBuilder.put(
-			"description", "uuuuuuu"
-		).put(
-			"name", "uuuuu"
-		).build();
-
-			//	String json = StringUtil.read(new FileInputStream("/home/me/Downloads/auu.json"));
-				JSONObject jsonObject = new JSONObject(json);
-				System.out.println(jsonObject);
-							HttpClient.post(
-					"http://localhost:8080/o/c/"+
-					"testrayprojects"+"/scopes/"+"42413",
-				jsonObject);
-
-				
-
-}catch (Exception e) {
-          e.printStackTrace();
-       }
-
 		
+		try {
+			System.out.println("Hello World!");
 
-	//   HashMap<String, String> params = new HashMap<String, String>();
+		//	listBuckets("wise-aegis-340917");
+		}
+		catch (Exception exception) {
+			exception.printStackTrace();
+		}
+ 		try {
+			 Map<String, String> json = null;
+			File inputFile = new File("/home/me/Downloads/key.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(inputFile);
+			doc.getDocumentElement().normalize();
+		 
+        	System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+        	NodeList nList = doc.getElementsByTagName("testsuite");
+			Node uu = nList.item(1);
+			System.out.println(uu+"aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+			//NodeList newList = uu.childNodes;
+			//NodeList nListUpdate =	nNode.getElementsByTagName("properties");
 
-		// params.put("name","testray.testcase.priority");
-		// params.put("value","5");
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				Node nNode = nList.item(temp);
+				System.out.println("\nCurrent Element :" + nNode.getNodeName());
+
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+				String type = nNode.getAttributes().getNamedItem("type").getTextContent();
+				String status = nNode.getAttributes().getNamedItem("option").getTextContent();
+				System.out.println(type);
+				System.out.println(status);
+			json =	HashMapBuilder.put(
+					"type", type
+				).put(
+					"status", status
+				).build();
+            }	
+        }
+			try{
+			JSONObject jsonObject = new JSONObject(json);
+					System.out.println(jsonObject);
+								HttpClient.post(
+						"http://localhost:8080/o/c/"+
+						"testrayrequirements"+"/scopes/"+"42413",jsonObject);
+
+					
+
+			}catch (Exception e) {
+					e.printStackTrace();
+				}
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+
+
+
 
 	}
 
