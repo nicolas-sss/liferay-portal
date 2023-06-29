@@ -69,6 +69,11 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaAddLayoutParameterCheck() throws Exception {
+		test("upgrade/UpgradeJavaAddLayoutParameterCheck.testjava");
+	}
+
+	@Test
 	public void testUpgradeJavaAssetEntryAssetCategoriesCheck()
 		throws Exception {
 
