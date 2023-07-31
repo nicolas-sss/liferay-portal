@@ -1719,6 +1719,10 @@
 			<category name="Upgrade" />
 			<description name="Replace parameter in updateCommerceAddress method by other parameters list" />
 		</check>
+		<check name="UpgradeJavaUpdateStatusMethodCheck">
+			<category name="Upgrade" />
+			<description name="Fill the new parameter of the method `updateStatus` of 'UserLocalService', 'UserLocalServiceUtil', 'UserServiceUtil' and 'UserService' classes" />
+		</check>
 		<check name="UpgradeRejectedExecutionHandlerCheck">
 			<category name="Upgrade" />
 			<description name="Replace Liferay's RejectedExecutionHandler with Java's RejectedExecutionHandler" />
