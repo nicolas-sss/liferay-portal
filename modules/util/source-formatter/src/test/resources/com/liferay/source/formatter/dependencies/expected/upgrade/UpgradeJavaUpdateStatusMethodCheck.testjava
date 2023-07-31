@@ -1,0 +1,51 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.source.formatter.dependencies.upgrade;
+
+/**
+ * @author Tamyris Bernardo
+ */
+public class UpgradeJavaUpdateStatusMethodCheck {
+
+	public void method(long userId, int status) {
+
+		// UserLocalService
+
+		ServiceContext serviceContextThreadLocal = ServiceContextThreadLocal.getServiceContext();
+
+		user = _userLocalService.updateStatus(
+			userId, status, (ServiceContext)serviceContextThreadLocal.clone());
+
+		// UserLocalServiceUtil
+
+		ServiceContext serviceContextThreadLocal = ServiceContextThreadLocal.getServiceContext();
+
+		UserLocalServiceUtil.updateStatus(
+			userId, status, (ServiceContext)serviceContextThreadLocal.clone());
+
+		// UserService
+
+		ServiceContext serviceContextThreadLocal = ServiceContextThreadLocal.getServiceContext();
+
+		return _userService.updateStatus(
+			userId, status, (ServiceContext)serviceContextThreadLocal.clone());
+
+		// UserServiceUtil
+
+		ServiceContext serviceContextThreadLocal = ServiceContextThreadLocal.getServiceContext();
+
+		UserServiceUtil.updateStatus(
+			userId, status, (ServiceContext)serviceContextThreadLocal.clone());
+
+		// Test to fail
+
+		UserServiceUtil.updateStatus(12344, 1);
+	}
+
+	private UserLocalService _userLocalService;
+	private UserService _userService;
+
+}

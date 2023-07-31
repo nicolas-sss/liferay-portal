@@ -245,6 +245,17 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaUpdateStatusMethodCheck() throws Exception {
+		test(
+			"upgrade/UpgradeJavaUpdateStatusMethodCheck.testjava",
+			StringBundler.concat(
+				"Could not resolve types of updateStatus method. The method ",
+				"signature has changed to updateStatus(long userId,",
+				"int status, ServiceContext serviceContext). Fill the new ",
+				"parameter manually."));
+	}
+
+	@Test
 	public void testUpgradeRejectedExecutionHandlerCheck() throws Exception {
 		test("upgrade/UpgradeRejectedExecutionHandlerCheck.testjava");
 	}
