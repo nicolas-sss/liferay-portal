@@ -68,6 +68,29 @@ public class JavaSourceUtil extends SourceUtil {
 			content, packageName + StringPool.SEMICOLON, sb.toString());
 	}
 
+	public static String addMethodNewParameters(
+		List<Integer> indexNewParameters, String methodCall,
+		String newMethodCall, List<String> newParameters, String variableName) {
+
+		List<String> parameterList = getParameterList(methodCall);
+
+		for (int i = 0; i < indexNewParameters.size(); i++) {
+			parameterList.add(indexNewParameters.get(i), newParameters.get(i));
+		}
+
+		StringBundler sb = new StringBundler(7);
+
+		sb.append(variableName);
+		sb.append(newMethodCall);
+		sb.append(StringPool.NEW_LINE);
+		sb.append(getIndent(methodCall));
+		sb.append(StringPool.TAB);
+		sb.append(StringUtil.merge(parameterList, StringPool.COMMA_AND_SPACE));
+		sb.append(StringPool.CLOSE_PARENTHESIS);
+
+		return sb.toString();
+	}
+
 	public static String getClassName(String fileName) {
 		int x = fileName.lastIndexOf(CharPool.SLASH);
 		int y = fileName.lastIndexOf(CharPool.PERIOD);
