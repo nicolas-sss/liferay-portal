@@ -1,0 +1,46 @@
+[
+	{
+		"className": "CommerceAddress",
+		"from": "getCode",
+		"to": "getRegionCode"
+	},
+	{
+		"className": "CountryService",
+		"from": "fetchCommerceCountry",
+		"to": "fetchCountryByA2"
+	},
+	{
+		"from": "HtmlUtil.extractText",
+		"newImports": [
+			"com.liferay.portal.kernel.util.HtmlParser"
+		],
+		"newReference": "HtmlParser _htmlParser",
+		"to": "_htmlParser.extractText"
+	},
+	{
+		"className": "Indexer",
+		"from": "getClassNames",
+		"to": "getSearchClassNames",
+		"validExtensions": [
+			"java",
+			"jspf"
+		]
+	},
+	{
+		"className": "Region",
+		"from": "getCode",
+		"to": "getRegionCode"
+	},
+	{
+		"from": "DLUtil.getImagePreviewURL",
+		"newImports": [
+			"com.liferay.document.library.util.DLURLHelper"
+		],
+		"newReference": "DLURLHelper _dlURLHelper",
+		"to": "_dlURLHelper.getImagePreviewURL",
+		"validExtensions": [
+			"java",
+			"jsp"
+		]
+	}
+]
