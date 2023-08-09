@@ -1,0 +1,39 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.source.formatter.dependencies.upgrade;
+
+/**
+ * @author Tamyris Bernardo
+ */
+public class UpgradeJavaListUtilFromArrayMethodCheck {
+
+	public void firstMethod() {
+
+		// First Case test
+
+		List<Locale> availableLocales = new ArrayList<>();
+
+		for (Locale listLocale : LanguageUtil.getAvailableLocales()){
+			availableLocales.add(listLocale);}
+
+		//Second Case Test
+
+
+
+		List<Serializable> values = new ArrayList<>();
+
+		for (Serializable listSerializable : (Serializable[])value){
+			values.add(listSerializable);}
+	}
+
+	public List<Test> secondMethod() {
+
+		//Test to fail
+
+		return ListUtil.fromArray(_createDDMTemplate, _editDDMTemplate);
+	}
+
+}

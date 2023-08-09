@@ -7,11 +7,10 @@ package com.liferay.source.formatter.processor;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.source.formatter.SourceFormatterArgs;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
 
 /**
  * @author Kevin Lee
@@ -179,6 +178,16 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	@Test
 	public void testUpgradeJavaIndexerCheck() throws Exception {
 		test("upgrade/UpgradeJavaIndexerCheck.testjava");
+	}
+
+	@Test
+	public void testUpgradeJavaListUtilFromArrayMethodCheck() throws Exception {
+		test(
+			"upgrade/UpgradeJavaListUtilFromArrayMethodCheck.testjava",
+			StringBundler.concat(
+				"Could not change the method call 'ListUtil.fromArray'. ",
+				"Replace with class instance, construct a 'for' to iterate ",
+				"and add to your list."));
 	}
 
 	@Test
