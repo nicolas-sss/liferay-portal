@@ -36,6 +36,7 @@ UpgradeJavaGetFileMethodCheck | .bnd, .ftl, .gradle, .java, .jsp, .jspf or .vm |
 UpgradeJavaGetLayoutDisplayPageObjectProviderCheck | .bnd, .ftl, .gradle, .java, .jsp, .jspf or .vm | Replace parameter type long by ItemInfoReference in the getLayoutDisplayPageObjectProvider method |
 UpgradeJavaGetLayoutDisplayPageProviderCheck | .bnd, .ftl, .gradle, .java, .jsp, .jspf or .vm | Replace getLayoutDisplayPageProvider by getLayoutDisplayPageProviderByClassName |
 UpgradeJavaIndexerCheck | .bnd, .ftl, .gradle, .java, .jsp, .jspf or .vm | Replace Indexer by Indexer<?> |
+UpgradeJavaListUtilFromArrayMethodCheck | .bnd, .ftl, .gradle, .java, .jsp, .jspf or .vm | Replace `List Util.from Array` by `new ArrayList` and included a for function to interaction about the List |
 UpgradeJavaMultiVMPoolUtilCheck | .bnd, .ftl, .gradle, .java, .jsp, .jspf or .vm | Replaces the references of the MultiVMPoolUtil class and also its methods usages. |
 UpgradeJavaPortletSharedSearchSettingsCheck | .bnd, .ftl, .gradle, .java, .jsp, .jspf or .vm | Replaces the Optional return type of the methods `getParameterValues` and `getPortletPreferences` of `PortletSharedSearchSettings` class |
 UpgradeJavaSearchVocabulariesMethodCheck | .bnd, .ftl, .gradle, .java, .jsp, .jspf or .vm | Fill in the new parameters of the method `searchVocabularies` of 'AssetVocabularyService' and 'AssetVocabularyLocalService' |
