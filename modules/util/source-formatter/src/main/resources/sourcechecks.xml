@@ -1699,6 +1699,10 @@
 			<category name="Upgrade" />
 			<description name="Replace Indexer by Indexer&lt;?&gt;" />
 		</check>
+		<check name="UpgradeJavaListUtilFromArrayMethodCheck">
+			<category name="Upgrade" />
+			<description name="Replace `List Util.from Array` by `new ArrayList` and included a for function to interaction about the List" />
+		</check>
 		<check name="UpgradeJavaMultiVMPoolUtilCheck">
 			<category name="Upgrade" />
 			<description name="Replaces the references of the MultiVMPoolUtil class and also its methods usages." />
