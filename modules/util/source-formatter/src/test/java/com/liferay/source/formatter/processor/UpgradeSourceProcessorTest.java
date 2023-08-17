@@ -276,6 +276,11 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testXMLUpgradeCompatibilityVersionCheck() throws Exception {
+		test("upgrade/XMLUpgradeCompatibilityVersionCheck.testxml");
+	}
+
+	@Test
 	public void testXMLUpgradeDTDVersionCheck() throws Exception {
 		test("upgrade/XMLUpgradeDTDVersionCheck.testxml");
 	}
