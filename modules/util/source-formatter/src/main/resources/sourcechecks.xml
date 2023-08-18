@@ -1614,6 +1614,10 @@
 			<category name="Upgrade" />
 			<description name="Replace the getGroupIds method of class `DLUtil` by getCurrentAndAncestorSiteGroupIds of class `PortalUtil`." />
 		</check>
+		<check name="UpgradeFTLPortletTopperCheck">
+			<category name="Upgrade" />
+			<description name="Include the CSS classes 'cadmin' in 'portlet.ftl' file" />
+		</check>
 		<check name="UpgradeGetClassNamesMethodCheck">
 			<category name="Upgrade" />
 			<description name="Run code migration of method from 'getClassNames' to 'getSearchClassNames'" />
