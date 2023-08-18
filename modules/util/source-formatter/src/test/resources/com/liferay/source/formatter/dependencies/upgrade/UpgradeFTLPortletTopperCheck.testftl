@@ -1,0 +1,3 @@
+
+	<header class="portlet-topper">
+		<@liferay_portlet["icon-options"] portletConfigurationIcons=portlet_configuration_icons />

@@ -1,0 +1,3 @@
+
+	<header class="cadmin portlet-topper">
+		<@liferay_frontend["icon-options"] direction="right cadmin" portletConfigurationIcons=portlet_configuration_icons />
