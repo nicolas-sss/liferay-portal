@@ -1748,6 +1748,10 @@
 			<category name="Upgrade" />
 			<description name="Replace parameter in updateCommerceAddress method by other parameters list" />
 		</check>
+		<check name="UpgradeJSONLiferayThemeCheck">
+			<category name="Upgrade" />
+			<description name="Replace liferay theme version in package.json" />
+		</check>
 		<check name="UpgradeRejectedExecutionHandlerCheck">
 			<category name="Upgrade" />
 			<description name="Replace Liferay's RejectedExecutionHandler with Java's RejectedExecutionHandler" />
