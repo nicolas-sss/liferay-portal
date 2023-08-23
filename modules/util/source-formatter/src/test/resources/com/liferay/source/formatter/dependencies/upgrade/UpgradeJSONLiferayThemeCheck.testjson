@@ -1,0 +1,15 @@
+{
+	"name": "liferay-theme",
+	"version": "1.0.0",
+	"main": "package.json",
+	"keywords": [
+		"liferay-theme"
+	],
+	"liferayTheme": {
+		"baseTheme": "styled",
+		"fontAwesome": true,
+		"screenshot": "",
+		"templateLanguage": "ftl",
+		"version": "7.3"
+	}
+}

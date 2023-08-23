@@ -280,6 +280,11 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJSONLiferayThemeCheck() throws Exception {
+		test("upgrade/UpgradeJSONLiferayThemeCheck.testjson");
+	}
+
+	@Test
 	public void testUpgradeRejectedExecutionHandlerCheck() throws Exception {
 		test("upgrade/UpgradeRejectedExecutionHandlerCheck.testjava");
 	}
