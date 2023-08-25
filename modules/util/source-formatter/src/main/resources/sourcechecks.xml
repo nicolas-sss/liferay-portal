@@ -1760,6 +1760,10 @@
 			<category name="Upgrade" />
 			<description name="Replace Liferay's RejectedExecutionHandler with Java's RejectedExecutionHandler" />
 		</check>
+		<check name="UpgradeSCSSIncludeMediaQueryCheck">
+			<category name="Upgrade" />
+			<description name="Find '@include media-query' and send message to replace by equivalent mixing" />
+		</check>
 		<check name="UpgradeSetResultsSetTotalMethodCheck">
 			<category name="Upgrade" />
 			<description name="Run code migration of method searchContainer.setResults to the searchContainer.setResultsAndTotal and delete searchContainer.setTotal" />
