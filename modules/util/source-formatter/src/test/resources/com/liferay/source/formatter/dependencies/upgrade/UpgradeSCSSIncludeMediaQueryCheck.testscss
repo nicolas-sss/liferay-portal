@@ -1,0 +1,2 @@
+@include media-query(null, $screen-xs-max) {
+};

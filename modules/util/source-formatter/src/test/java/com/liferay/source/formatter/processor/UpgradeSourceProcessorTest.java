@@ -295,6 +295,16 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeSCSSIncludeMediaQueryCheck() throws Exception {
+		test(
+			"upgrade/UpgradeSCSSIncludeMediaQueryCheck.testscss",
+			StringBundler.concat(
+				"Do not use 'media-query' mixing, replace with its equivalent ",
+				"(e.g., media-breakpoint-up, media-breakpoint-only, ",
+				"media-breakpoint-down, etc.), see LPS-194507."));
+	}
+
+	@Test
 	public void testUpgradeSetResultsSetTotalMethodCheck() throws Exception {
 		test("upgrade/UpgradeJavaSetResultsSetTotalMethodCheck.testjava");
 		test("upgrade/UpgradeJSPSetResultsSetTotalMethodCheck.testjsp");
