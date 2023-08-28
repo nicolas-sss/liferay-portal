@@ -1758,6 +1758,10 @@
 			<category name="Upgrade" />
 			<description name="Replace Liferay's RejectedExecutionHandler with Java's RejectedExecutionHandler" />
 		</check>
+		<check name="UpgradeSASSCheck">
+			<category name="Upgrade" />
+			<description name="Run code migration the division using of '/' by math.div in SASS file" />
+		</check>
 		<check name="UpgradeSetResultsSetTotalMethodCheck">
 			<category name="Upgrade" />
 			<description name="Run code migration of method searchContainer.setResults to the searchContainer.setResultsAndTotal and delete searchContainer.setTotal" />
