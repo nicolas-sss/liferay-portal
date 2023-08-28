@@ -295,6 +295,11 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeSASSCheck() throws Exception {
+		test("upgrade/UpgradeSASSCheck.testsass");
+	}
+
+	@Test
 	public void testUpgradeSetResultsSetTotalMethodCheck() throws Exception {
 		test("upgrade/UpgradeJavaSetResultsSetTotalMethodCheck.testjava");
 		test("upgrade/UpgradeJSPSetResultsSetTotalMethodCheck.testjsp");
