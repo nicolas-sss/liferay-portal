@@ -1758,7 +1758,7 @@
 			<category name="Upgrade" />
 			<description name="Replace Liferay's RejectedExecutionHandler with Java's RejectedExecutionHandler" />
 		</check>
-		<check name="UpgradeReplacementCheck">
+		<check name="UpgradeReplacementsCheck">
 			<category name="Upgrade" />
 			<description name="Performs replacements on Liferay's outdated code" />
 			<weight>1</weight>
