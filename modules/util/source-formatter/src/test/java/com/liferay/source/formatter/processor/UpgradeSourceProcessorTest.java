@@ -36,12 +36,6 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
-	public void testUpgradeDLUtilCheck() throws Exception {
-		test("upgrade/UpgradeJavaDLUtilCheck.testjava");
-		test("upgrade/UpgradeJSPDLUtilCheck.testjsp");
-	}
-
-	@Test
 	public void testUpgradeGetPortletGroupIdMethodCheck() throws Exception {
 		test("upgrade/UpgradeFTLGetPortletGroupIdMethodCheck.testftl");
 		test("upgrade/UpgradeJavaGetPortletGroupIdMethodCheck.testjava");
@@ -59,34 +53,8 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
-	public void testUpgradeJavaAddAddressMethodCheck() throws Exception {
-		test(
-			"upgrade/UpgradeJavaAddAddressMethodCheck.testjava",
-			StringBundler.concat(
-				"Unable to format method addAddress from AddressLocalService, ",
-				"AddressLocalServiceUtil, AddressService and ",
-				"AddressServiceUtil. Fill the new parameters manually, see ",
-				"LPS-193462"));
-	}
-
-	@Test
-	public void testUpgradeJavaAddCategoryParameterCheck() throws Exception {
-		test(
-			"upgrade/UpgradeJavaAddCategoryParameterCheck.testjava",
-			StringBundler.concat(
-				"Unable to format method addCategory from ",
-				"AssetCategoryLocalService and AssetCategoryLocalServiceUtil. ",
-				"Fill the new parameters manually, see LPS-192320"));
-	}
-
-	@Test
 	public void testUpgradeJavaAddFDSTableSchemaFieldCheck() throws Exception {
 		test("upgrade/UpgradeJavaAddFDSTableSchemaFieldCheck.testjava");
-	}
-
-	@Test
-	public void testUpgradeJavaAddFolderParameterCheck() throws Exception {
-		test("upgrade/UpgradeJavaAddFolderParameterCheck.testjava");
 	}
 
 	@Test
@@ -245,18 +213,6 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
-	public void testUpgradeJavaSearchVocabulariesMethodCheck()
-		throws Exception {
-
-		test(
-			"upgrade/UpgradeJavaSearchVocabulariesMethodCheck.testjava",
-			StringBundler.concat(
-				"Unable to format searchVocabularies method from ",
-				"AssetVocabularyService and AssetVocabularyLocalService. Fill ",
-				"the new parameters manually, see LPS-189866"));
-	}
-
-	@Test
 	public void testUpgradeJavaServiceReferenceAnnotationCheck()
 		throws Exception {
 
@@ -310,7 +266,10 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
-	public void testUpgradeReplacementCheck() throws Exception {
+	public void testUpgradeReplacementsCheck() throws Exception {
+		test("upgrade/UpgradeJavaAddFolderParameterCheck.testjava");
+		test("upgrade/UpgradeJavaDLUtilCheck.testjava");
+		test("upgrade/UpgradeJSPDLUtilCheck.testjsp");
 		test("upgrade/UpgradeJavaExtractTextMethodCheck.testjava");
 		test("upgrade/UpgradeJavaGetClassNamesMethodCheck.testjava");
 		test("upgrade/UpgradeJSPFGetClassNamesMethodCheck.testjspf");
@@ -319,6 +278,24 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 		test("upgrade/UpgradeJavaCommerceCountryServiceCheck.testjava");
 		test("upgrade/UpgradeJavaCommerceRegionCheck.testjava");
 		test("upgrade/UpgradeJavaIndexerCheck.testjava");
+		test(
+			"upgrade/UpgradeJavaSearchVocabulariesMethodCheck.testjava",
+			StringBundler.concat(
+				"Unable to format searchVocabularies method from ",
+				"AssetVocabularyService, AssetVocabularyLocalService. Fill ",
+				"the new parameters manually, see LPS-189866"));
+		test(
+			"upgrade/UpgradeJavaAddAddressMethodCheck.testjava",
+			StringBundler.concat(
+				"Unable to format addAddress method from AddressLocalService, ",
+				"AddressService, AddressLocalServiceUtil, AddressServiceUtil. ",
+				"Fill the new parameters manually, see LPS-193462"));
+		test(
+			"upgrade/UpgradeJavaAddCategoryParameterCheck.testjava",
+			StringBundler.concat(
+				"Unable to format addCategory method from ",
+				"AssetCategoryLocalService, AssetCategoryLocalServiceUtil. ",
+				"Fill the new parameters manually, see LPS-192320"));
 	}
 
 	@Test
