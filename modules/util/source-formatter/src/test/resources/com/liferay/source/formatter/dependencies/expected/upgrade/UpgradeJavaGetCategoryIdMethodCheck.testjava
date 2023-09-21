@@ -1,0 +1,11 @@
+package com.liferay.source.formatter.dependencies.upgrade;
+
+public class UpgradeJavaGetCategoryIdMethodCheck {
+
+	public void method(AssetCategory<?> assetCategory) {
+		UnsafeFunction<AssetCategory, Long, Throwable> getCategoryId = assetCategory.getCategoryId;
+
+		UnsafeFunction<AssetCategory, Long, Throwable> getCategoryId = AssetCategory::getCategoryId;
+	}
+
+}

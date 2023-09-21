@@ -213,6 +213,11 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaGetCategoryIdMethodCheck() throws Exception {
+		test("upgrade/UpgradeJavaGetCategoryIdMethodCheck.testjava");
+	}
+
+	@Test
 	public void testUpgradeJavaGetFileMethodCheck() throws Exception {
 		test("upgrade/UpgradeJavaGetFileMethodCheck.testjava");
 	}
