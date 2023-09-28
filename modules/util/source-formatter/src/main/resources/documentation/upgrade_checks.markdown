@@ -30,6 +30,7 @@ UpgradeJavaCaptchaUtilCheck | .bnd, .ftl, .gradle, .java, .json, .jsp, .jspf, .s
 UpgradeJavaCheck | .bnd, .ftl, .gradle, .java, .json, .jsp, .jspf, .scss or .vm | Performs upgrade checks for `java` files |
 UpgradeJavaCommerceCountryCheck | .bnd, .ftl, .gradle, .java, .json, .jsp, .jspf, .scss or .vm | Replaces the old methods of class `CommerceCountry` with the new equivalents in the `Country` class. |
 UpgradeJavaCommerceCountryServiceCheck | .bnd, .ftl, .gradle, .java, .json, .jsp, .jspf, .scss or .vm | Replaces the old methods of class `CommerceCountryService` with the new equivalents in the `CountryService` class. |
+UpgradeJavaCommerceOrderValidatorCheck | .bnd, .ftl, .gradle, .java, .json, .jsp, .jspf, .scss or .vm | Replace the parameter Int for BigDecimal of method validate of 'CommerceOrderValidator' interface |
 UpgradeJavaCommerceRegionCheck | .bnd, .ftl, .gradle, .java, .json, .jsp, .jspf, .scss or .vm | Replaces the old methods of class `CommerceRegion` with the new equivalents in the `Region` class. |
 UpgradeJavaCookieKeysCheck | .bnd, .ftl, .gradle, .java, .json, .jsp, .jspf, .scss or .vm | CookieKeys class was replaced by CookiesManagerUtil and CookieConstants |
 UpgradeJavaCookieUtilCheck | .bnd, .ftl, .gradle, .java, .json, .jsp, .jspf, .scss or .vm | Replace CookieUtilCheck.get by CookiesManagerUtil.getCookieValue and reorder parameters |
