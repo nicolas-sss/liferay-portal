@@ -1800,6 +1800,10 @@
 			<category name="Upgrade" />
 			<description name="Fill in the new parameters of the method 'updateFileEntry' of 'DLAppLocalService' and 'DLAppLocalServiceUtil'" />
 		</check>
+		<check name="UpgradeJavaUpsertCPDefinitionMethodCheck">
+			<category name="Upgrade" />
+			<description name="Fill in the new parameters of the method 'upsertCPDefinition' and change the name by addOrUpdateCPDefinition method of CPDefinitionLocalService, CPDefinitionLocalServiceUtil, CPDefinitionService and CPDefinitionServiceUtil" />
+		</check>
 		<check name="UpgradeJavaUserLocalServiceUtilCheck">
 			<category name="Upgrade" />
 			<description name="Replace parameters of addUser and updateStatus methods in UserServices" />
