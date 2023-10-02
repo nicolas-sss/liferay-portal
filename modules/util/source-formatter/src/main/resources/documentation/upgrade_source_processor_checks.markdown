@@ -50,6 +50,7 @@ UpgradeJavaServiceReferenceAnnotationCheck | [Upgrade](upgrade_checks.markdown#u
 UpgradeJavaServiceTrackerListCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Replace the number of generic type arguments in ServiceTrackerList |
 UpgradeJavaUpdateCommerceAddressCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Replace parameter in updateCommerceAddress method by other parameters list |
 UpgradeJavaUpdateFileEntryMethodCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Fill in the new parameters of the method 'updateFileEntry' of 'DLAppLocalService' and 'DLAppLocalServiceUtil' |
+UpgradeJavaUpsertCPDefinitionMethodCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Fill in the new parameters of the method 'upsertCPDefinition' and change the name by addOrUpdateCPDefinition method of CPDefinitionLocalService, CPDefinitionLocalServiceUtil, CPDefinitionService and CPDefinitionServiceUtil |
 UpgradeJavaUserLocalServiceUtilCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Replace parameters of addUser and updateStatus methods in UserServices |
 UpgradePortletFTLCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Include the CSS classes 'cadmin' and include for impression of 'right cadmin' in 'portlet.ftl' file |
 UpgradeRejectedExecutionHandlerCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Replace Liferay's RejectedExecutionHandler with Java's RejectedExecutionHandler |
