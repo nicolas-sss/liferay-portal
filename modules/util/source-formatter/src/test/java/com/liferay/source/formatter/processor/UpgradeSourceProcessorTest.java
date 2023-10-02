@@ -386,6 +386,20 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaUpsertCPDefinitionMethodCheck()
+		throws Exception {
+
+		test(
+			"upgrade/UpgradeJavaUpsertCPDefinitionMethodCheck.testjava",
+			StringBundler.concat(
+				"Unable to format method upsertCPDefinition from ",
+				"CPDefinitionLocalService, CPDefinitionLocalServiceUtil, ",
+				"CPDefinitionService and CPDefinitionServiceUtil. Fill the ",
+				"new parameters manually and change the name method by ",
+				"'addOrUpdateCPDefinition', see LPS-197613."));
+	}
+
+	@Test
 	public void testUpgradeJavaUserLocalServiceUtilCheck() throws Exception {
 		test(
 			"upgrade/UpgradeJavaUserLocalServiceUtilCheck.testjava",
