@@ -30,6 +30,7 @@ UpgradeJavaFDSActionProviderCheck | [Upgrade](upgrade_checks.markdown#upgrade-ch
 UpgradeJavaFDSDataProviderCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Reorder parameters in the getItems and getItemsCount methods of the FDSDataProvider interface |
 UpgradeJavaFacetedSearcherCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Replaces the references of the `Indexer indexer = FacetedSearcher.getInstance();` declaration and `indexer.search` method call. |
 UpgradeJavaFetchAssetCategoryByExternalReferenceCodeCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Adds a message about the breaking change made on method `fetchAssetCategoryByExternalReferenceCode` of `AssetCategoryLocalService` and `AssetCategoryLocalServiceUtil` classes. |
+UpgradeJavaFetchReferenceCodeMethodCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Reverse the order of the parameters 'company' and 'externalReferenceCode' of 'fetchCPInstanceByExternalReferenceCode' |
 UpgradeJavaGetFileMethodCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Run code migration of method from 'getFile' to 'getFileAsStream', and include a method 'FileUtil.createTempFile' |
 UpgradeJavaGetLayoutDisplayPageObjectProviderCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Replace parameter type long by ItemInfoReference in the getLayoutDisplayPageObjectProvider method |
 UpgradeJavaGetLayoutDisplayPageProviderCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | Replace getLayoutDisplayPageProvider by getLayoutDisplayPageProviderByClassName |
