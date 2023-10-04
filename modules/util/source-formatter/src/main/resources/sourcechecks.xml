@@ -1721,6 +1721,10 @@
 			<category name="Upgrade" />
 			<description name="Adds a message about the breaking change made on method `fetchAssetCategoryByExternalReferenceCode` of `AssetCategoryLocalService` and `AssetCategoryLocalServiceUtil` classes." />
 		</check>
+		<check name="UpgradeJavaFetchReferenceCodeMethodCheck">
+			<category name="Upgrade" />
+			<description name="Reverse the order of the parameters 'company' and 'externalReferenceCode' of 'fetchCPInstanceByExternalReferenceCode'" />
+		</check>
 		<check name="UpgradeJavaGetFileMethodCheck">
 			<category name="Upgrade" />
 			<description name="Run code migration of method from 'getFile' to 'getFileAsStream', and include a method 'FileUtil.createTempFile'" />
