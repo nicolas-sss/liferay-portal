@@ -1,0 +1,35 @@
+package com.liferay.source.formatter.dependencies.upgrade;
+
+public class UpgradeJavaFetchReferenceCodeMethodCheck {
+
+	public void fetchCPInstanceByExternalReferenceCodeMethod(long companyId, String externalReferenceCode) {
+		_cpInstanceLocalService.fetchCPInstanceByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		CPInstanceLocalServiceUtil.fetchCPInstanceByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+	}
+
+	public void fetchByExternalReferenceCodeMethod(long companyId, String externalReferenceCode) {
+		_cpInstanceLocalService.fetchByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		CPInstanceLocalServiceUtil.fetchByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		_cpInstanceService.fetchByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		CPInstanceServiceUtil.fetchByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		CPInstanceServiceUtil.fetchByExternalReferenceCode(
+			1234, 1234);
+
+	}
+
+	private CPInstanceLocalService _cpInstanceLocalService;
+	private CPInstanceService _cpInstanceService;
+
+}
