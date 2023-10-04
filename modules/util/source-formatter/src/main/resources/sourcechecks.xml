@@ -1682,6 +1682,11 @@
 			<description name="Replaces the old methods of class `CommerceCountryService` with the new equivalents in the `CountryService` class." />
 			<weight>1</weight>
 		</check>
+		<check name="UpgradeJavaCommerceDestinationNamesCheck">
+			<category name="Upgrade" />
+			<description name="CommerceDestinationNames deprecated constants were replaced by DestinationNames constants" />
+			<weight>1</weight>
+		</check>
 		<check name="UpgradeJavaCommerceOrderItemServicesCheck">
 			<category name="Upgrade" />
 			<description name="Fill the new parameters of the method `addCommerceOrderItem` and `deleteCommerceOrderItems` of `CommerceOrderItemLocalService`, `CommerceOrderItemLocalServiceUtil`, `CommerceOrderItemService` and `CommerceOrderItemServiceUtil` classes" />
