@@ -1,0 +1,16 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2023 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.source.formatter.dependencies.upgrade;
+
+public class UpgradeJavaCommerceDestinationNamesCheck {
+
+	public static final String BASE_PRICE_LIST = DestinationNames.BASE_PRICE_LIST;
+	public static final String ORDER_STATUS = DestinationNames.ORDER_STATUS;
+	public static final String PAYMENT_STATUS = DestinationNames.PAYMENT_STATUS;
+	public static final String SHIPMENT_STATUS = DestinationNames.SHIPMENT_STATUS;
+	public static final String STOCK_QUANTITY = DestinationNames.STOCK_QUANTITY;
+
+}

@@ -158,6 +158,13 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaCommerceDestinationNamesCheck()
+		throws Exception {
+
+		test("upgrade/UpgradeJavaCommerceDestinationNamesCheck.testjava");
+	}
+
+	@Test
 	public void testUpgradeJavaCommerceOrderItemServicesCheck()
 		throws Exception {
 
