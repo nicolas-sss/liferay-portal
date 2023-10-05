@@ -172,6 +172,18 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaCommerceOrderLocalServiceCheck()
+		throws Exception {
+
+		test(
+			"upgrade/UpgradeJavaCommerceOrderLocalServiceCheck.testjava",
+			StringBundler.concat(
+				"Unable to format method addCommerceOrder from ",
+				"CommerceOrderLocalService, CommerceOrderLocalServiceUtil. ",
+				"Fill the new parameters manually, see LPS-LPS-196619"));
+	}
+
+	@Test
 	public void testUpgradeJavaCommerceRegionCheck() throws Exception {
 		test("upgrade/UpgradeJavaCommerceRegionCheck.testjava");
 	}
