@@ -1686,6 +1686,10 @@
 			<category name="Upgrade" />
 			<description name="Fill the new parameters of the method `addCommerceOrderItem` and `deleteCommerceOrderItems` of `CommerceOrderItemLocalService`, `CommerceOrderItemLocalServiceUtil`, `CommerceOrderItemService` and `CommerceOrderItemServiceUtil` classes" />
 		</check>
+		<check name="UpgradeJavaCommerceOrderLocalServiceCheck">
+			<category name="Upgrade" />
+			<description name="Fill the new parameters of the method `addCommerceOrder` of `CommerceOrderLocalService` and `CommerceOrderLocalServiceUtil` classes" />
+		</check>
 		<check name="UpgradeJavaCommerceRegionCheck">
 			<category name="Upgrade" />
 			<description name="Replaces the old methods of class `CommerceRegion` with the new equivalents in the `Region` class." />
