@@ -207,6 +207,19 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaCPInstanceServicesCheck() throws Exception {
+		test(
+			"upgrade/UpgradeJavaCPInstanceServicesCheck.testjava",
+			StringBundler.concat(
+				"Unable to format method fetchByExternalReferenceCode from ",
+				"CPInstanceLocalService, CPInstanceLocalServiceUtil, ",
+				"CPInstanceService, CPInstanceServiceUtil and method ",
+				"fetchCPInstanceByExternalReferenceCode from ",
+				"CPInstanceLocalService, CPInstanceLocalServiceUtil. Fill the ",
+				"new parameter manually, see LPS-197724 and LPS-197965."));
+	}
+
+	@Test
 	public void testUpgradeJavaDLFolderMethodCheck() throws Exception {
 		test(
 			"upgrade/UpgradeJavaDLFolderMethodCheck.testjava",

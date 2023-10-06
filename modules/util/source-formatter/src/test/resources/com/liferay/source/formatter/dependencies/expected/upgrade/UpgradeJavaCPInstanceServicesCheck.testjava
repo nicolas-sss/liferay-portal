@@ -1,0 +1,44 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2023 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.source.formatter.dependencies.upgrade;
+
+public class UpgradeJavaCPInstanceServicesCheck {
+
+	public void fetchByExternalReferenceCodeMethod(
+		long companyId, String externalReferenceCode) {
+
+		_cpInstanceLocalService.fetchByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		CPInstanceLocalServiceUtil.fetchByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		_cpInstanceService.fetchByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		CPInstanceServiceUtil.fetchByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		CPInstanceServiceUtil.fetchByExternalReferenceCode(1234, "1234");
+	}
+
+	public void fetchCPInstanceByExternalReferenceCodeMethod(
+		long companyId, String externalReferenceCode) {
+
+		_cpInstanceLocalService.fetchCPInstanceByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		CPInstanceLocalServiceUtil.fetchCPInstanceByExternalReferenceCode(
+			externalReferenceCode, companyId);
+
+		_cpInstanceService.fetchCPInstanceByExternalReferenceCode(
+			companyId, externalReferenceCode);
+	}
+
+	private CPInstanceLocalService _cpInstanceLocalService;
+	private CPInstanceService _cpInstanceService;
+
+}
