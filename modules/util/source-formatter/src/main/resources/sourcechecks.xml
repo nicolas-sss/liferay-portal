@@ -1707,6 +1707,10 @@
 			<category name="Upgrade" />
 			<description name="Replace CookieUtilCheck.get by CookiesManagerUtil.getCookieValue and reorder parameters" />
 		</check>
+		<check name="UpgradeJavaCPInstanceServicesCheck">
+			<category name="Upgrade" />
+			<description name="Fill the new parameters of the method `fetchByExternalReferenceCode` and `fetchCPInstanceByExternalReferenceCode` of `CPInstanceLocalService`, `CPInstanceLocalServiceUtil`, `CPInstanceService` and `CPInstanceServiceUtil` classes" />
+		</check>
 		<check name="UpgradeJavaDLFolderMethodCheck">
 			<category name="Upgrade" />
 			<description name="Fill the new parameter of the method addFolder of DLFolderLocalService, DLFolderLocalServiceUtil, DLFolderService and DLFolderServiceUtil" />
