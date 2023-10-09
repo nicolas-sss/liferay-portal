@@ -1725,6 +1725,10 @@
 			<category name="Upgrade" />
 			<description name="Adds a message about the breaking change made on method `fetchAssetCategoryByExternalReferenceCode` of `AssetCategoryLocalService` and `AssetCategoryLocalServiceUtil` classes." />
 		</check>
+		<check name="UpgradeJavaFetchAssetVocabularyByExternalReferenceCodeCheck">
+			<category name="Upgrade" />
+			<description name="Adds a message about the breaking change made on method `fetchAssetVocabularyByExternalReferenceCode` of `AssetVocabularyLocalService` and `AssetVocabularyLocalServiceUtil` classes." />
+		</check>
 		<check name="UpgradeJavaGetFDSTableSchemaParameterCheck">
 			<category name="Upgrade" />
 			<description name="Fill the new parameter of the method 'getFDSTableSchema' of 'FDSTableSchema'" />
