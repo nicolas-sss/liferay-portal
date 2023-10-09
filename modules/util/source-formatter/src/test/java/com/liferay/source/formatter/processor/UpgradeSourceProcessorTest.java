@@ -238,6 +238,21 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaFetchAssetVocabularyByExternalReferenceCodeCheck()
+		throws Exception {
+
+		test(
+			"upgrade/UpgradeJavaFetchAssetVocabularyByExternal" +
+				"ReferenceCodeCheck.testjava",
+			StringBundler.concat(
+				"The fetchAssetVocabularyByExternalReferenceCode method from ",
+				"AssetVocabularyLocalServiceUtil and ",
+				"AssetVocabularyLocalService no longer uses companyId as a ",
+				"parameter and has changed the order of its parameters. Fill ",
+				"the new parameters manually see LPS-198292."));
+	}
+
+	@Test
 	public void testUpgradeJavaFetchCPDefinitionByCProductExternalReferenceCodeCheck()
 		throws Exception {
 
