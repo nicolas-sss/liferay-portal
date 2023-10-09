@@ -252,6 +252,13 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaGetCurrentCommerceAccountCheck()
+		throws Exception {
+
+		test("upgrade/UpgradeJavaGetCurrentCommerceAccountCheck.testjava");
+	}
+
+	@Test
 	public void testUpgradeJavaGetFDSTableSchemaParameterCheck()
 		throws Exception {
 
