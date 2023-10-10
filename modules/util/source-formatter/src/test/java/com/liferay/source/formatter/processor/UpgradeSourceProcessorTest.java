@@ -112,6 +112,17 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testUpgradeJavaAddCommercePriceEntryCheck() throws Exception {
+		test(
+			"upgrade/UpgradeJavaAddCommercePriceEntryCheck.testjava",
+			StringBundler.concat(
+				"Unable to format method addCommercePriceEntry from ",
+				"CommercePriceEntryLocalService, ",
+				"CommercePriceEntryLocalServiceUtil Fill the new parameter ",
+				"manually, see LPS-194001."));
+	}
+
+	@Test
 	public void testUpgradeJavaAddFDSTableSchemaFieldCheck() throws Exception {
 		test("upgrade/UpgradeJavaAddFDSTableSchemaFieldCheck.testjava");
 	}
