@@ -1647,6 +1647,10 @@
 			<category name="Upgrade" />
 			<description name="Fill the new parameter of the method 'addCategory' of 'AssetCategoryLocalService' and 'AssetCategoryLocalServiceUtil' classes" />
 		</check>
+		<check name="UpgradeJavaAddCommercePriceEntryCheck">
+			<category name="Upgrade" />
+			<description name="Add new parameters in the addCommercePriceEntry" />
+		</check>
 		<check name="UpgradeJavaAddFDSTableSchemaFieldCheck">
 			<category name="Upgrade" />
 			<description name="Replace method addFDSTableSchemaFieldCheck by add" />
