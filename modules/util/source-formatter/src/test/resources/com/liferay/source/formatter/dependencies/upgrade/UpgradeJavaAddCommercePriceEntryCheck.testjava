@@ -1,0 +1,39 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2023 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.source.formatter.dependencies.upgrade;
+
+import com.liferay.commerce.price.list.service.CommercePriceEntryLocalService;
+
+/**
+ * @author Albert Gomes Cabral
+ */
+public class UpgradeJavaAddCommercePriceEntryCheck {
+
+	public void method(
+		String externalReferenceCode, long cProductId, String cpInstanceUuid,
+	 	long commercePriceListId, BigDecimal price, BigDecimal promoPrice,
+	 	ServiceContext serviceContext){
+
+		_commercePriceEntryLocalService.addCommercePriceEntry(
+			 null, cpInstance.getCPDefinition().getCProductId(),
+			 cpInstance.getCPInstanceUuid(), commercePriceList.getCommercePriceListId(),
+			 price, null, serviceContext);
+	}
+
+	public void methodTwo(
+		String externalReferenceCode, long cProductId, String cpInstanceUuid,
+		long commercePriceListId, BigDecimal price, BigDecimal promoPrice,
+		ServiceContext serviceContext){
+
+		_commercePriceEntryLocalService.addCommercePriceEntry(
+			 externalReferenceCode, cProductId, cpInstanceUuid, commercePriceListId,
+			 price, promoPrice, serviceContext);
+	}
+
+	@Reference
+	private CommercePriceEntryLocalService _commercePriceEntryLocalService;
+
+}
