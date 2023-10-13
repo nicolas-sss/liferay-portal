@@ -58,11 +58,20 @@ public class UpgradeCatchAllCheck {
 			companyId, 551, "test", start, end);
 	}
 
+	public void method(HttpServletRequest httpServletRequest) {
+	   _commerceAccountHelper.getCurrentAccountEntry(0, httpServletRequest);
+
+	   _commerceAccountHelper.getCurrentCommerceAccount(null);
+	}
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+    private CommerceAccountHelper _commerceAccountHelper;
 
 
 	@Reference
