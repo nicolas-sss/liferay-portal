@@ -71,5 +71,13 @@
 			"java",
 			"jsp"
 		]
+	},
+	{
+		"classNames": [
+			"CommerceAccountHelper"
+		],
+		"from": "getCurrentCommerceAccount(HttpServletRequest)",
+		"issueKey": "LPS-196638",
+		"to": "getCurrentAccountEntry(0, param#0#)"
 	}
 ]
