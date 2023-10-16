@@ -71,5 +71,17 @@
 			"java",
 			"jsp"
 		]
+	},
+	{
+		"classNames": [
+			"CommercePriceEntryLocalServiceUtil",
+			"CommercePriceEntryLocalService"
+		],
+		"from": "addCommercePriceEntry(String, long, String, long, BigDecimal, BigDecimal, ServiceContext)",
+		"issueKey": "LPS-198546",
+		"newImports": [
+			"com.liferay.commerce.price.list.service.CommercePriceEntryLocalService"
+		],
+		"to": "addCommercePriceEntry(param#0#, param#1#, param#2#, param#3#, param#4#, false, param#5#, null, param#6#)"
 	}
 ]
