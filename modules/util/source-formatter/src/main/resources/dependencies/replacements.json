@@ -71,5 +71,14 @@
 			"java",
 			"jsp"
 		]
+	},
+	{
+		"classNames": [
+			"CommercePriceListLocalService",
+			"CommercePriceListLocalServiceUtil"
+		],
+		"from": "fetchByExternalReferenceCode(long, String)",
+		"issueKey": "LPS-198414",
+		"to": "fetchByExternalReferenceCode(param#1#, param#0#)"
 	}
 ]
