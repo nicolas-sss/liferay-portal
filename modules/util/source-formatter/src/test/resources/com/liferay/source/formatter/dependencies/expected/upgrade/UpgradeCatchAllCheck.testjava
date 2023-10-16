@@ -58,11 +58,21 @@ public class UpgradeCatchAllCheck {
 			companyId, 551, "test", start, end);
 	}
 
+	public void method(long companyId, String externalReferenceCode) {
+		_commercePriceListLocalService.fetchByExternalReferenceCode(externalReferenceCode, companyId);
+
+		_commercePriceListLocalService.fetchByExternalReferenceCode(
+			1234, "externalReferenceCode");
+	}
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private CommercePriceListLocalService _commercePriceListLocalService;
 
 
 	@Reference
