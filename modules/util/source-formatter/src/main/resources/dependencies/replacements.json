@@ -71,5 +71,14 @@
 			"java",
 			"jsp"
 		]
+	},
+	{
+		"classNames": [
+			"AccountGroupLocalServiceUtil",
+			"AccountGroupLocalService"
+		],
+		"from": "fetchCommerceAccountGroupByExternalReferenceCode(long, String)",
+		"issueKey": "LPS-191860",
+		"to": "fetchAccountGroupByExternalReferenceCode(param#1#, param#0#)"
 	}
 ]
