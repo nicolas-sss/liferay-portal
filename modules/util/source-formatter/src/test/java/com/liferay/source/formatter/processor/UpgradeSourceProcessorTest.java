@@ -282,13 +282,6 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
-	public void testUpgradeJavaGetLayoutDisplayPageProviderCheck()
-		throws Exception {
-
-		test("upgrade/UpgradeJavaGetLayoutDisplayPageProviderCheck.testjava");
-	}
-
-	@Test
 	public void testUpgradeJavaGetLeftCategoryIdMethodCheck() throws Exception {
 		test("upgrade/UpgradeJavaGetLeftCategoryIdMethodCheck.testjava");
 	}
