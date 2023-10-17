@@ -35,5 +35,14 @@
 		],
 		"newReference": "HtmlParser _htmlParser",
 		"to": "_htmlParser.extractText"
+	},
+	{
+		"classNames": [
+			"AssetCategoryLocalService",
+			"AssetCategoryLocalServiceUtil"
+		],
+		"from": "addCategory(long, long, long, Map<Locale, String>, Map<Locale, String>, long, String[], ServiceContext)",
+		"issueKey": "LPS-199372",
+		"to": "addCategory(null, param#0#, param#1#, param#2#, param#3#, param#4#, param#5#, param#6#, param#7#)"
 	}
 ]
