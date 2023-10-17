@@ -44,6 +44,15 @@ public class UpgradeCatchAllCheck {
 			companyId, 551, "test", start, end);
 	}
 
+	public void method(
+		InfoItemReference infoItemReference,
+		LayoutDisplayPageProviderRegistry layoutDisplayPageProviderRegistry) {
+
+		LayoutDisplayPageProvider<?> layoutDisplayPageProvider =
+			layoutDisplayPageProviderRegistry.getLayoutDisplayPageProviderByClassName(
+				infoItemReference.getClassName());
+	}
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
