@@ -35,5 +35,13 @@
 		],
 		"newReference": "HtmlParser _htmlParser",
 		"to": "_htmlParser.extractText"
+	},
+	{
+		"classNames": [
+			"LayoutDisplayPageProviderRegistry"
+		],
+		"from": "getLayoutDisplayPageProvider",
+		"issueKey": "LPS-199380",
+		"to": "getLayoutDisplayPageProviderByClassName"
 	}
 ]
