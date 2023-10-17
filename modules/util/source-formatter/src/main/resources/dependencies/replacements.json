@@ -71,5 +71,13 @@
 			"java",
 			"jsp"
 		]
+	},
+	{
+		"from": "PhoneLocalServiceUtil.addPhone(long, String, long, String, String, long, boolean)",
+		"newImports": [
+			"com.liferay.portal.kernel.service.ServiceContextThreadLocal"
+		],
+		"issueKey": "LPS-199359",
+		"to": "PhoneLocalServiceUtil.addPhone(param#0#, param#1#, param#2#, param#3#, param#4#, param#5#, param#6#, ServiceContextThreadLocal.getServiceContext())"
 	}
 ]
