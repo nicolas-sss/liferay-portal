@@ -7,6 +7,8 @@ package com.liferay.source.formatter.dependencies.upgrade;
 
 import com.liferay.commerce.constants.CommerceOrderPaymentConstants;
 
+import com.liferay.portal.kernel.util.PortalUtil;
+
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 
 import com.liferay.portal.kernel.util.HtmlParser;
@@ -66,6 +68,12 @@ public class UpgradeCatchAllCheck {
 	public void method(HttpServletRequest httpServletRequest) {
 		_commerceAccountHelper.getCurrentAccountEntry(0, httpServletRequest);
 		_commerceAccountHelper.getCurrentCommerceAccount(null);
+	}
+
+	public void method(
+		ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
+
+		CaptchaUtil.serveImage(PortalUtil.getHttpServletRequest(resourceRequest), PortalUtil.getHttpServletResponse(resourceResponse));
 	}
 
 	public void method(
@@ -218,7 +226,7 @@ public class UpgradeCatchAllCheck {
 		CommercePriceEntryLocalServiceUtil.addCommercePriceEntry(externalReferenceCode, cProductId, cpInstanceUuid, commercePriceListId, price, false, promoPrice, null, serviceContext);
 		_commercePriceEntryLocalService.addCommercePriceEntry("test123", cProductId, cpInstanceUuid, commercePriceListId, price, promoPrice, serviceContext);
 		_commercePriceEntryLocalService.addCommercePriceEntry(externalReferenceCode, cProductId, cpInstanceUuid, commercePriceListId, price, false, promoPrice, null, serviceContext);
-	 }
+	}
 
 	@Reference
 	private AccountGroupLocalService _accountGroupLocalService;
