@@ -34,6 +34,37 @@ public class UpgradeCatchAllCheck {
 	}
 
 	public void method(
+		long userId, long groupId, long billingAddressId,
+		long commerceAccountId, long commerceCurrencyId,
+		long commerceOrderTypeId, long commerceShippingMethodId,
+		long shippingAddressId, String commercePaymentMethodKey,
+		int orderDateMonth, int orderDateDay, int orderDateYear,
+		int orderDateHour, int orderDateMinute, int orderStatus,
+		int paymentStatus, String purchaseOrderNumber,
+		BigDecimal shippingAmount, String shippingOptionName,
+		BigDecimal shippingWithTaxAmount, BigDecimal subtotal,
+		BigDecimal subtotalWithTaxAmount, BigDecimal taxAmount,
+		BigDecimal total, BigDecimal totalWithTaxAmount,
+		ServiceContext serviceContext) {
+
+		_commerceOrderLocalService.addCommerceOrder(userId, groupId, billingAddressId, commerceAccountId, commerceCurrencyId, commerceOrderTypeId, commerceShippingMethodId, shippingAddressId, commercePaymentMethodKey, orderDateMonth, orderDateDay, orderDateYear, orderDateHour, orderDateMinute, orderStatus, paymentStatus, purchaseOrderNumber, shippingAmount, shippingOptionName);
+
+		CommerceOrderLocalServiceUtil.addCommerceOrder(userId, groupId, billingAddressId, commerceAccountId, commerceCurrencyId, commerceOrderTypeId, commerceShippingMethodId, shippingAddressId, commercePaymentMethodKey, orderDateMonth, orderDateDay, orderDateYear, orderDateHour, orderDateMinute, orderStatus, paymentStatus, purchaseOrderNumber, shippingAmount, shippingOptionName);
+
+		CommerceOrderLocalServiceUtil.addCommerceOrder(
+			serviceContext.getUserId(), commerceChannel.getGroupId(),
+			commerceAccount.getDefaultBillingAddressId(),
+			commerceAccount.getCommerceAccountId(),
+			commerceCurrency.getCommerceCurrencyId(), 0, 0,
+			commerceAccount.getDefaultShippingAddressId(), null, 0, 0, 0, 0, 0,
+			MBCommerceOrderConstants.getOrderStatusByExternalReferenceCode(
+				rowBean.getCoStatus()),
+			CommerceOrderConstants.ORDER_STATUS_COMPLETED, rowBean.getOrderNo(),
+			BigDecimal.ZERO, null, BigDecimal.ZERO, subtotal, subtotal,
+			BigDecimal.ZERO, total, total, serviceContext);
+	}
+
+	public void method(
 		long companyId, long groupId, String title, int start, int end) {
 
 		_assetVocabularyLocalService.searchVocabularies(companyId, new long[] {groupId}, title, new int[0], start, end, new Sort());
@@ -49,6 +80,9 @@ public class UpgradeCatchAllCheck {
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private CommerceOrderLocalService _commerceOrderLocalService;
 
 	@Reference
 	private HtmlParser _htmlParser;
