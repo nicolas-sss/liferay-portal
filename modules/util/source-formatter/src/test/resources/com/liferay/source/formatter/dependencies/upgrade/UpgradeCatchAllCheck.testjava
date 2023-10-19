@@ -17,6 +17,12 @@ public class UpgradeCatchAllCheck {
 		CommerceOrderConstants.PAYMENT_STATUS_PAID;
 		CommerceOrderConstants.PAYMENT_STATUS_PENDING;
 
+		FDSTableSchemaBuilder fDSTableSchemaBuilder =
+			_fDSTableSchemaBuilderFactory.create();
+
+		fDSTableSchemaBuilder.addFDSTableSchemaField(
+			"purchaseOrderNumber", "purchase-order-number");
+
 		HtmlUtil.extractText(testEntry.getContent());
 
 		if (true) {
@@ -51,5 +57,8 @@ public class UpgradeCatchAllCheck {
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private FDSTableSchemaBuilderFactory _fDSTableSchemaBuilderFactory;
 
 }
