@@ -1,6 +1,14 @@
 [
 	{
 		"classNames": [
+			"CountryService"
+		],
+		"from": "fetchCommerceCountry",
+		"issueKey": "LPS-187663",
+		"to": "fetchCountryByA2"
+	},
+	{
+		"classNames": [
 			"CommerceAddress"
 		],
 		"from": "getCode",
