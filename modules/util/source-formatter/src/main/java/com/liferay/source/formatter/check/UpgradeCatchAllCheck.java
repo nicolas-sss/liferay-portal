@@ -115,14 +115,7 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 			sb.append(StringPool.POUND);
 		}
 
-		int parenthesisIndex = from.indexOf(CharPool.OPEN_PARENTHESIS);
-
-		if (parenthesisIndex != -1) {
-			sb.append(from.substring(0, parenthesisIndex));
-		}
-		else {
-			sb.append(from);
-		}
+		sb.append(from);
 
 		return sb.toString();
 	}
