@@ -1743,11 +1743,6 @@
 			<description name="Replace parameter type long by ItemInfoReference in the getLayoutDisplayPageObjectProvider method" />
 			<weight>1</weight>
 		</check>
-		<check name="UpgradeJavaGetLayoutDisplayPageProviderCheck">
-			<category name="Upgrade" />
-			<description name="Replace getLayoutDisplayPageProvider by getLayoutDisplayPageProviderByClassName" />
-			<weight>2</weight>
-		</check>
 		<check name="UpgradeJavaGetLeftCategoryIdMethodCheck">
 			<category name="Upgrade" />
 			<description name="Replace the AssetCategory's method `getLeftCategoryId` by `getCategoryId` " />
