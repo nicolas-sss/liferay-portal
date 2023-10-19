@@ -1,6 +1,14 @@
 [
 	{
 		"classNames": [
+			"LayoutDisplayPageProviderRegistry"
+		],
+		"from": "getLayoutDisplayPageProvider",
+		"issueKey": "LPS-189225",
+		"to": "getLayoutDisplayPageProviderByClassName"
+	},
+	{
+		"classNames": [
 			"CommerceAddress"
 		],
 		"from": "getCode",
