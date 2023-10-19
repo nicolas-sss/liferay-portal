@@ -35,5 +35,13 @@
 		],
 		"newReference": "HtmlParser _htmlParser",
 		"to": "_htmlParser.extractText"
+	},
+	{
+		"classNames": [
+			"CountryService"
+		],
+		"from": "fetchCommerceCountry",
+		"issueKey": "LPS-199476",
+		"to": "fetchCountryByA2"
 	}
 ]
