@@ -35,5 +35,13 @@
 		],
 		"newReference": "HtmlParser _htmlParser",
 		"to": "_htmlParser.extractText"
+	},
+	{
+		"classNames": [
+			"CommerceAccountHelper"
+		],
+		"from": "getCurrentCommerceAccount(HttpServletRequest)",
+		"issueKey": "LPS-196638",
+		"to": "getCurrentAccountEntry(0, param#0#)"
 	}
 ]
