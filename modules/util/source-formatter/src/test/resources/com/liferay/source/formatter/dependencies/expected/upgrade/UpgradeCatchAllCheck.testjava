@@ -44,11 +44,18 @@ public class UpgradeCatchAllCheck {
 			companyId, 551, "test", start, end);
 	}
 
+	public void method(long companyId) {
+		_countryService.fetchCountryByA2(companyId, "BR");
+	}
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private CountryService _countryService;
 
 	@Reference
 	private HtmlParser _htmlParser;
