@@ -35,5 +35,14 @@
 		],
 		"newReference": "HtmlParser _htmlParser",
 		"to": "_htmlParser.extractText"
+	},
+	{
+		"classNames": [
+			"CommercePriceListLocalService",
+			"CommercePriceListLocalServiceUtil"
+		],
+		"from": "fetchByExternalReferenceCode(long, String)",
+		"issueKey": "LPS-196611",
+		"to": "fetchByExternalReferenceCode(param#1#, param#0#)"
 	}
 ]
