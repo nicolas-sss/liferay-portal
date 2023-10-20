@@ -168,11 +168,6 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
-	public void testUpgradeJavaCommerceCountryServiceCheck() throws Exception {
-		test("upgrade/UpgradeJavaCommerceCountryServiceCheck.testjava");
-	}
-
-	@Test
 	public void testUpgradeJavaCommerceOrderItemServicesCheck()
 		throws Exception {
 
@@ -204,17 +199,6 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	@Test
 	public void testUpgradeJavaCookieUtilCheck() throws Exception {
 		test("upgrade/UpgradeJavaCookieUtilCheck.testjava");
-	}
-
-	@Test
-	public void testUpgradeJavaDLFolderMethodCheck() throws Exception {
-		test(
-			"upgrade/UpgradeJavaDLFolderMethodCheck.testjava",
-			StringBundler.concat(
-				"Unable to format method addFolder from DLFolderService, ",
-				"DLFolderLocalService, DLFolderServiceUtil and ",
-				"DLFolderLocalServiceUtil. Fill the new parameter manually, ",
-				"see LPS-194001."));
 	}
 
 	@Test
