@@ -42,10 +42,21 @@ public class UpgradeCatchAllCheck {
 			companyId, 551, "test", start, end);
 	}
 
+	public void method(
+		long userId, long repositoryId, long folderId, String sourceFileName, String mimeType, String title, String description, String changeLog, byte[] bytes, ServiceContext serviceContext) {
+
+		DLAppLocalServiceUtil.addFileEntry(1234, 1234, folderId, sourceFileName, mimeType, title, description, changeLog, bytes, serviceContext);
+		DLAppLocalServiceUtil.addFileEntry(userId, repositoryId, folderId, sourceFileName, mimeType, title, description, changeLog, bytes, serviceContext);
+		_dlAppLocalService.addFileEntry(userId, repositoryId, folderId, sourceFileName, mimeType, title, description, changeLog, bytes, serviceContext);
+	}
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private DLAppLocalService _dlAppLocalService;
 
 }
