@@ -58,11 +58,28 @@ public class UpgradeCatchAllCheck {
 		_cpInstanceService.fetchByExternalReferenceCode(externalReferenceCode, companyId);
 	}
 
+	public void method(
+		String externalReferenceCode, long cProductId,
+		String cpInstanceUuid, long commercePriceListId, BigDecimal price,
+		BigDecimal promoPrice, ServiceContext serviceContext) {
+
+		_commercePriceEntryLocalService.addCommercePriceEntry(externalReferenceCode, cProductId, cpInstanceUuid, commercePriceListId, price, false, promoPrice, null, serviceContext);
+
+		CommercePriceEntryLocalServiceUtil.addCommercePriceEntry(externalReferenceCode, cProductId, cpInstanceUuid, commercePriceListId, price, false, promoPrice, null, serviceContext);
+
+		_commercePriceEntryLocalService.addCommercePriceEntry(
+			null, cpInstance.getCPDefinition().getCProductId(), cpInstance.getCPInstanceUuid(),
+			commercePriceList.getCommercePriceListId(), price, null, serviceContext);
+	 }
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private CommercePriceEntryLocalService _commercePriceEntryLocalService;
 
 	@Reference
 	private CPInstanceLocalService _cpInstanceLocalService;
