@@ -58,6 +58,14 @@ public class UpgradeCatchAllCheck {
 		_cpInstanceService.fetchByExternalReferenceCode(externalReferenceCode, companyId);
 	}
 
+	public void method(
+		long userId, long groupId, long parentFolderId, String name,
+		String description, ServiceContext serviceContext) {
+
+		JournalFolderLocalServiceUtil.addFolder(1234, 4321, 0, "name", "description", serviceContext);
+		_journalFolderLocalService.addFolder(null, userId, groupId, parentFolderId, name, description, serviceContext);
+	}
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
@@ -69,6 +77,9 @@ public class UpgradeCatchAllCheck {
 
 	@Reference
 	private CPInstanceService _cpInstanceService;
+
+	@Reference
+	private JournalFolderLocalService _journalFolderLocalService;
 
 	@Reference
 	private HtmlParser _htmlParser;
