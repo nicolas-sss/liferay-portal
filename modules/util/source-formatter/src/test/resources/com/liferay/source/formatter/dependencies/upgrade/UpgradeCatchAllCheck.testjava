@@ -52,6 +52,19 @@ public class UpgradeCatchAllCheck {
 		_cpInstanceService.fetchByExternalReferenceCode(companyId, externalReferenceCode);
 	}
 
+	public void method(
+		long userId, String className, long classPK, String number,
+		String extension, long listTypeId, boolean primary) {
+
+		PhoneLocalServiceUtil.addPhone(
+			userId, className, classPK, number, extension, listTypeId,
+			primary);
+
+		PhoneLocalServiceUtil.addPhone(
+			1234, className, classPK, number, extension, listTypeId,
+			primary);
+	}
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
