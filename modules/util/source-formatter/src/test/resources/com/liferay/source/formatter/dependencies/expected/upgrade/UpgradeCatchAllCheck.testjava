@@ -23,6 +23,8 @@ public class UpgradeCatchAllCheck {
 		CommerceOrderPaymentConstants.STATUS_COMPLETED;
 		CommerceOrderPaymentConstants.STATUS_PENDING;
 
+		_countryService.fetchCountryByA2(1234, "BR");
+
 		_htmlParser.extractText(testEntry.getContent());
 
 		if (true) {
@@ -31,6 +33,13 @@ public class UpgradeCatchAllCheck {
 	}
 
 	public void method(CommerceAddress commerceAddress) {
+		Country country = commerceAddress.getCountry();
+
+		country.getA2();
+		country.setA2();
+		country.getA3();
+		country.setA3();
+
 		Region region = commerceAddress.getCountry();
 
 		region.getRegionCode();
@@ -63,6 +72,9 @@ public class UpgradeCatchAllCheck {
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private CountryService _countryService;
 
 	@Reference
 	private CPInstanceLocalService _cpInstanceLocalService;
