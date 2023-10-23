@@ -1,6 +1,32 @@
 [
 	{
 		"classNames": [
+			"Country",
+			"CommerceAddress"
+		],
+		"from": "ThreeLettersISOCode",
+		"issueKey": "LPS-186923",
+		"to": "A3"
+	},
+	{
+		"classNames": [
+			"Country",
+			"CommerceAddress"
+		],
+		"from": "TwoLettersISOCode",
+		"issueKey": "LPS-186923",
+		"to": "A2"
+	},
+	{
+		"classNames": [
+			"CountryService"
+		],
+		"from": "fetchCommerceCountry",
+		"issueKey": "LPS-187663",
+		"to": "fetchCountryByA2"
+	},
+	{
+		"classNames": [
 			"CommerceAddress"
 		],
 		"from": "getCode",
