@@ -58,6 +58,21 @@ public class UpgradeCatchAllCheck {
 		_cpInstanceService.fetchByExternalReferenceCode(externalReferenceCode, companyId);
 	}
 
+	public void method(
+		String className, long classPK, long accountGroupId,
+		ServiceContext serviceContext) {
+		_accountGroupRelLocalService.addAccountGroupRel(accountGroupId, className, classPK);
+		_accountGroupRelService.addAccountGroupRel(accountGroupId, className, classPK);
+		AccountGroupRelLocalServiceUtil.addAccountGroupRel(accountGroupId, className, classPK);
+		AccountGroupRelServiceUtil.addCommerceAccountGroupRel("className", 1234, 4321, serviceContext);
+	}
+
+	@Reference
+	private AccountGroupRelLocalService _accountGroupRelLocalService;
+
+	@Reference
+	private AccountGroupRelService _accountGroupRelService;
+
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
