@@ -148,5 +148,18 @@
 		"from": "SUBSCRIPTION_STATUS",
 		"issueKey": "LPS-197981",
 		"to": "COMMERCE_SUBSCRIPTION_STATUS"
+	},
+	{
+		"from": "AssetCategory::getLeftCategoryId",
+		"issueKey": "LPS-199627",
+		"to": "AssetCategory::getCategoryId"
+	},
+	{
+		"classNames": [
+			"AssetCategory"
+		],
+		"from": "getLeftCategoryId",
+		"issueKey": "LPS-199627",
+		"to": "getCategoryId"
 	}
 ]
