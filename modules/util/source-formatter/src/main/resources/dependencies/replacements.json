@@ -35,5 +35,14 @@
 		],
 		"newReference": "HtmlParser _htmlParser",
 		"to": "_htmlParser.extractText"
+	},
+	{
+		"classNames": [
+			"DLAppLocalService",
+			"DLAppLocalServiceUtil"
+		],
+		"from": "addFileEntry(long, long, long, String, String, String, String, String, byte[], ServiceContext)",
+		"issueKey": "LPS-199367",
+		"to": "addFileEntry(null, param#0#, param#1#, param#2#, param#3#, param#4#, param#5#, null, param#6#, param#7#, param#8#, null, null, param#9#)"
 	}
 ]
