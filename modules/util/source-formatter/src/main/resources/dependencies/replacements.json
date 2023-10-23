@@ -37,6 +37,17 @@
 		"to": "_htmlParser.extractText"
 	},
 	{
+		"classNames": [
+			"AccountGroupRelLocalService",
+			"AccountGroupRelLocalServiceUtil",
+			"AccountGroupRelService",
+			"AccountGroupRelServiceUtil"
+		],
+		"from": "addCommerceAccountGroupRel(String, long, long, ServiceContext)",
+		"issueKey": "LPS-196652",
+		"to": "addAccountGroupRel(param#2#, param#0#, param#1#)"
+	},
+	{
 		"from": "CommerceOrderConstants.PAYMENT_STATUS_AUTHORIZED",
 		"issueKey": "LPS-197623",
 		"newImports": [
