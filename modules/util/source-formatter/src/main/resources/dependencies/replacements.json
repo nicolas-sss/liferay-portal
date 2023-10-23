@@ -37,6 +37,17 @@
 		"to": "_htmlParser.extractText"
 	},
 	{
+		"classNames": [
+			"PhoneLocalServiceUtil"
+		],
+		"from": "addPhone(long, String, long, String, String, long, boolean)",
+		"issueKey": "LPS-193473",
+		"newImports": [
+			"com.liferay.portal.kernel.service.ServiceContextThreadLocal"
+		],
+		"to": "addPhone(param#0#, param#1#, param#2#, param#3#, param#4#, param#5#, param#6#, ServiceContextThreadLocal.getServiceContext())"
+	},
+	{
 		"from": "CommerceOrderConstants.PAYMENT_STATUS_AUTHORIZED",
 		"issueKey": "LPS-197623",
 		"newImports": [
