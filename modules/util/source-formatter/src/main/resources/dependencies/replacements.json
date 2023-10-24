@@ -224,5 +224,14 @@
 		"from": "addCPDefinitionLinkByCProductId(long, long, double, String, ServiceContext)",
 		"issueKey": "LPS-198610",
 		"to": "addCPDefinitionLinkByCProductId(param#0#, param#1#, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, true, param#2#, param#3#, param#4#)"
+	},
+	{
+		"classNames": [
+			"CPDefinitionLocalService",
+			"CPDefinitionService"
+		],
+		"from": "fetchCPDefinitionByCProductExternalReferenceCode(long, String)",
+		"issueKey": "LPS-199602",
+		"to": "fetchCPDefinitionByCProductExternalReferenceCode(param#1#, param#0#)"
 	}
 ]
