@@ -226,15 +226,6 @@ public class UpgradeSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
-	public void testUpgradeJavaFetchCPDefinitionByCProductExternalReferenceCodeCheck()
-		throws Exception {
-
-		test(
-			"upgrade/UpgradeJavaFetchCPDefinitionByCProductExternal" +
-				"ReferenceCodeCheck.testjava");
-	}
-
-	@Test
 	public void testUpgradeJavaGetFDSTableSchemaParameterCheck()
 		throws Exception {
 
