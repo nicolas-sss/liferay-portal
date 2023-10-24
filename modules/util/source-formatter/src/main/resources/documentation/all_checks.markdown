@@ -114,7 +114,7 @@ IllegalImportsCheck | [Bug Prevention](bug_prevention_checks.markdown#bug-preven
 IllegalTaglibsCheck | [Bug Prevention](bug_prevention_checks.markdown#bug-prevention-checks) | .ftl, .jsp, .jspf, .jspx, .tag, .tpl or .vm | Finds cases of incorrect use of certain taglibs. |
 [IncorrectFileLocationCheck](check/incorrect_file_location_check.markdown#incorrectfilelocationcheck) | [Bug Prevention](bug_prevention_checks.markdown#bug-prevention-checks) | | Checks that `/src/*/java/` only contains `.java` files. |
 IncorrectFilePathCheck | [Bug Prevention](bug_prevention_checks.markdown#bug-prevention-checks) | | Checks that file path contains illegal characters. |
-[InstanceInitializerCheck](check/instance_initializer_check.markdown#instanceinitializercheck) | [Styling](styling_checks.markdown#styling-checks) | .java | Performs several checks on class instance initializer. |
+InstanceInitializerCheck | [Styling](styling_checks.markdown#styling-checks) | .java | Performs several checks on class instance initializer. |
 InstanceofOrderCheck | [Styling](styling_checks.markdown#styling-checks) | .java, .jsp, .jspf, .jspx, .tag, .tpl or .vm | Check the order of `instanceof` calls. |
 [ItemBuilderCheck](check/builder_check.markdown#buildercheck) | [Miscellaneous](miscellaneous_checks.markdown#miscellaneous-checks) | .java | Checks that `DropdownItemBuilder`, `LabelItemBuilder` or `NavigationItemBuilder` is used when possible. |
 [ItemListBuilderCheck](check/builder_check.markdown#buildercheck) | [Miscellaneous](miscellaneous_checks.markdown#miscellaneous-checks) | .java | Checks that `DropdownItemListBuilder`, `LabelItemListBuilder` or `NavigationItemListBuilder` is used when possible. |
@@ -282,7 +282,6 @@ JavaUpgradeCommerceShippingOptionCheck | [Upgrade](upgrade_checks.markdown#upgra
 JavaUpgradeConnectionCheck | [Bug Prevention](bug_prevention_checks.markdown#bug-prevention-checks) | .java | Finds cases where `DataAccess.getConnection` is used (instead of using the available global variable `connection`). |
 [JavaUpgradeDropTableCheck](check/java_upgrade_drop_table_check.markdown#javaupgradedroptablecheck) | [Bug Prevention](bug_prevention_checks.markdown#bug-prevention-checks) | .java | Finds cases where `DROP_TABLE_IF_EXISTS` should be used (instead of `drop table if exists`). |
 JavaUpgradeEmptyLinesCheck | [Styling](styling_checks.markdown#styling-checks) | .java | Finds missing and unnecessary empty lines in Upgrade classes. |
-JavaUpgradeFetchCPDefinitionByCProductExternalReferenceCodeCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | .java | Reorder parameters in the fetchCPDefinitionByCProductExternalReferenceCode method |
 [JavaUpgradeIndexCheck](check/java_upgrade_index_check.markdown#javaupgradeindexcheck) | [Bug Prevention](bug_prevention_checks.markdown#bug-prevention-checks) | .java | Finds cases where the service builder indexes are updated manually in Upgrade classes. This is not needed because Liferay takes care of it. |
 JavaUpgradeModelPermissionsCheck | [Upgrade](upgrade_checks.markdown#upgrade-checks) | .java | Replace setGroupPermissions and setGuestPermissions by new implementation |
 JavaUpgradeProcessFactoryCheck | [Styling](styling_checks.markdown#styling-checks) | .java | Sorts and groups method calls. |
