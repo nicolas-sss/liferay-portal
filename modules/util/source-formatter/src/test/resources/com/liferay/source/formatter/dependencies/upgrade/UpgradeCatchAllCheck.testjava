@@ -293,6 +293,10 @@ public class UpgradeCatchAllCheck {
 		_commercePriceEntryLocalService.addCommercePriceEntry(externalReferenceCode, cProductId, cpInstanceUuid, commercePriceListId, price, promoPrice, serviceContext);
 	}
 
+	public void method(Indexer indexer) {
+		List<Indexer> indexers = portlet.getIndexerInstances();
+	}
+
 	@Reference
 	private AccountGroupLocalService _accountGroupLocalService;
 
