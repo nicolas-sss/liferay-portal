@@ -293,6 +293,11 @@ public class UpgradeCatchAllCheck {
 		_commercePriceEntryLocalService.addCommercePriceEntry(externalReferenceCode, cProductId, cpInstanceUuid, commercePriceListId, price, promoPrice, serviceContext);
 	}
 
+	public void method(ThemeDisplay themeDisplay){
+		DLUtil.getGroupIds(serviceContext.getThemeDisplay());
+		DLUtil.getGroupIds(themeDisplay);
+	}
+
 	@Reference
 	private AccountGroupLocalService _accountGroupLocalService;
 
