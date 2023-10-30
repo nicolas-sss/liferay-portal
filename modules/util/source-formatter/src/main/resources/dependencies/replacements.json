@@ -10,6 +10,24 @@
 	},
 	{
 		"classNames": [
+			"ThemeDisplay"
+		],
+		"from": "getPortletGroupId",
+		"issueKey": "LPS-186809",
+		"to": "getScopeGroupId"
+	},
+	{
+		"from": "themeDisplay.getPortletGroupId",
+		"issueKey": "LPS-186809",
+		"to": "themeDisplay.getScopeGroupId",
+		"validExtensions": [
+			"ftl",
+			"jsp",
+			"jspf"
+		]
+	},
+	{
+		"classNames": [
 			"Country",
 			"CommerceAddress"
 		],
