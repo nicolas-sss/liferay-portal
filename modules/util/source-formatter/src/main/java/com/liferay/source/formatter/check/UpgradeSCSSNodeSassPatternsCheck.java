@@ -98,7 +98,7 @@ public class UpgradeSCSSNodeSassPatternsCheck extends BaseUpgradeCheck {
 	}
 
 	private static final Pattern _divisionPattern = Pattern.compile(
-		"(\\$\\w+|[0-9.]+)\\s*\\/\\s*(\\$\\w+|[0-9.]+)");
+		"(\\$\\w+|[0-9]+[.]*[0-9]+)\\s*\\/\\s*(\\$\\w+|[0-9]+[.]*[0-9]+)");
 	private static final Pattern _interpolationPattern = Pattern.compile(
 		"([\\w-\\.]+)\\#\\{([\\w\\.\\$\\(\\), \\&]+)" +
 			"\\}([\\w-\\.\\#\\{\\.\\$\\}]*)");
