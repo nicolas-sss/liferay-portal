@@ -54,6 +54,40 @@
 		"to": "CookiesConstants.NAME_USER_UUID"
 	},
 	{
+		"from": "StructureStructureKeyComparator.INSTANCE_ASCENDING",
+		"issueKey": "LPD-25475",
+		"to": "StructureStructureKeyComparator.getInstance(true)"
+	},
+	{
+		"from": "StructureStructureKeyComparator.INSTANCE_DESCENDING",
+		"issueKey": "LPD-25475",
+		"to": "StructureStructureKeyComparator.getInstance(false)"
+	},
+	{
+		"from": "new AssetTagCountComparator()",
+		"issueKey": "LPD-25475",
+		"skipParametersValidation": true,
+		"to": "AssetTagCountComparator.getInstance(false)"
+	},
+	{
+		"from": "new AssetTagCountComparator(boolean paramName)",
+		"issueKey": "LPD-25475",
+		"skipParametersValidation": true,
+		"to": "AssetTagCountComparator.getInstance(param#0#)"
+	},
+	{
+		"from": "new AssetListEntryCreateDateComparator()",
+		"issueKey": "LPD-25475",
+		"skipParametersValidation": true,
+		"to": "AssetListEntryCreateDateComparator.getInstance(false)"
+	},
+	{
+		"from": "new AssetListEntryCreateDateComparator(boolean paramName)",
+		"issueKey": "LPD-25475",
+		"skipParametersValidation": true,
+		"to": "AssetListEntryCreateDateComparator.getInstance(param#0#)"
+	},
+	{
 		"from": "CookieUtil.get(HttpServletRequest paramName, String paramName)",
 		"issueKey": "LPS-159681",
 		"newImports": [
