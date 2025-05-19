@@ -25,6 +25,7 @@ import com.liferay.source.formatter.parser.JavaVariable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -218,6 +219,26 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 		sb.append(from);
 
 		return sb.toString();
+	}
+
+	private static Pattern _getMethodSignaturePattern(JSONObject jsonObject) {
+		String from = jsonObject.getString("from");
+
+		String regex = StringUtil.replace(from, " ", "\\s+");
+
+		regex = StringUtil.replace(regex, CharPool.OPEN_PARENTHESIS, "\\(");
+
+		regex = StringUtil.replace(regex, CharPool.CLOSE_PARENTHESIS, "\\)");
+
+		regex = StringUtil.replace(regex, CharPool.PERIOD, "\\.\\s*");
+
+		regex = StringUtil.replace(regex, CharPool.COMMA, "\\,\\s*");
+
+
+		regex =  StringBundler.concat("(?:@[A-Za-z]+\\s+)?(?:public|private|protected|static|final|abstract|\\s+)*?\\s*",
+			regex, "(?:\\s+throws\\s+[A-Za-z0-9._<>\\s,]+)?");
+
+		return Pattern.compile(regex);
 	}
 
 	private static Pattern _getPattern(JSONObject jsonObject) {
@@ -418,6 +439,168 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 		String newContent = content;
 
 		JavaClass javaClass = JavaClassParser.parseJavaClass(fileName, content);
+
+		if(!jsonObject.getBoolean("classStructurePattern")) {
+			return _formatCalls(content, fileName, jsonObject, javaClass);
+		}
+
+		String[] classNames = JSONUtil.toStringArray(
+			jsonObject.getJSONArray("classNames"));
+
+		if (ArrayUtil.isEmpty(classNames)) {
+			return newContent;
+		}
+
+		for (String className : classNames) {
+			if(!javaClass.getExtendedClassNames().contains(className) && !javaClass.getImplementedClassNames().contains(className)){
+				return newContent;
+			}
+		}
+
+		String[] newMethods = JSONUtil.toStringArray(
+			jsonObject.getJSONArray("newMethods"));
+
+		// Add method Logic
+
+		if (!ArrayUtil.isEmpty(newMethods)) {
+			for (String newMethod : newMethods){
+				newContent = _insertMethodAlphabetically(newContent, newMethod);
+			}
+		}
+
+		// Modify Method logic
+
+		JSONArray methodsToFormat = jsonObject.getJSONArray("methodsToFormat");
+
+		if (JSONUtil.isEmpty(methodsToFormat)) {
+			return newContent;
+		}
+
+		for (Object method : methodsToFormat){
+			JSONObject methodJSONObject = (JSONObject)method;
+
+			newContent = _formatMethodSignature(newContent, methodJSONObject);
+		}
+
+		return newContent;
+	}
+
+	private String _formatMethodSignature(String content, JSONObject jsonObject){
+		String from = jsonObject.getString("from");
+		String to = jsonObject.getString("to");
+
+		Pattern pattern = _getPattern(jsonObject); // TODO: talvez precise de um novo pra methodos?
+
+		Matcher matcher = pattern.matcher(content);
+
+		while (matcher.find()) {
+			if (from.startsWith("regex:")) {
+				content = content.replaceAll(pattern.toString(), to);
+			}
+			else if (from.contains(StringPool.OPEN_PARENTHESIS)) {
+				content = StringUtil.replace(content, matcher.group(), to);
+			}
+		}
+
+		return content;
+	}
+
+
+	private String _insertMethodAlphabetically(String fileContent, String methodToInsert) {
+		// Regular expression to find method signatures
+		Pattern methodPattern = Pattern.compile("^(?:public|private|protected|static|final|synchronized|abstract|native)\\s+[^\\s]+\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\([^)]*\\)\\s*(?:throws\\s+[^\\s]+(?:,\\s+[^\\s]+)*)?\\s*\\{", Pattern.MULTILINE);
+		Matcher matcher = methodPattern.matcher(fileContent);
+		List<String> methodNames = new ArrayList<>();
+		List<String> existingMethods = new ArrayList<>();
+		int classStartIndex = fileContent.indexOf("{");
+		int classEndIndex = fileContent.lastIndexOf("}");
+		if (classStartIndex == -1 || classEndIndex <= classStartIndex) {
+			System.err.println("Could not find class definition in the file content.");
+			return fileContent;
+		}
+		String classBody = fileContent.substring(classStartIndex + 1, classEndIndex);
+		Matcher bodyMatcher = methodPattern.matcher(classBody);
+
+		while (bodyMatcher.find()) {
+			String methodName = bodyMatcher.group(1);
+			int methodStartIndexInBody = bodyMatcher.start();
+			int methodEndIndexInBody = findMatchingClosingBrace(classBody, bodyMatcher.end() - 1);
+			if (methodEndIndexInBody != -1) {
+				existingMethods.add(classBody.substring(methodStartIndexInBody, methodEndIndexInBody + 1));
+				methodNames.add(methodName);
+			}
+		}
+
+		// Extract the name of the method to be inserted
+		Pattern newMethodNamePattern = Pattern.compile("^(?:public|private|protected|static|final|synchronized|abstract|native)\\s+[^\\s]+\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(", Pattern.MULTILINE);
+		Matcher newMethodMatcher = newMethodNamePattern.matcher(methodToInsert);
+		String newMethodName = null;
+		if (newMethodMatcher.find()) {
+			newMethodName = newMethodMatcher.group(1);
+		} else {
+			System.err.println("Could not extract the name of the method to be inserted.");
+			return fileContent;
+		}
+
+		// Add the new method name to the list and sort
+		methodNames.add(newMethodName);
+		Collections.sort(methodNames);
+
+		// Determine the insertion index
+		int insertIndex = methodNames.indexOf(newMethodName);
+
+		StringBuilder newClassBody = new StringBuilder();
+		if (existingMethods.isEmpty()) {
+			newClassBody.append(methodToInsert);
+		} else {
+			if (insertIndex == 0) {
+				newClassBody.append(methodToInsert).append("\n\n").append(existingMethods.get(0)).append("\n\n");
+				for (int i = 1; i < existingMethods.size(); i++) {
+					newClassBody.append(existingMethods.get(i)).append("\n\n");
+				}
+			} else if (insertIndex == existingMethods.size()) {
+				for (String existingMethod : existingMethods) {
+					newClassBody.append(existingMethod).append("\n\n");
+				}
+				newClassBody.append(methodToInsert);
+			} else {
+				for (int i = 0; i < insertIndex; i++) {
+					newClassBody.append(existingMethods.get(i)).append("\n\n");
+				}
+				newClassBody.append(methodToInsert).append("\n\n");
+				for (int i = insertIndex; i < existingMethods.size(); i++) {
+					newClassBody.append(existingMethods.get(i)).append("\n\n");
+				}
+			}
+		}
+
+		return new StringBuilder(fileContent.substring(0, classStartIndex + 1))
+			.append(newClassBody.toString().trim())
+			.append("\n}")
+			.toString();
+	}
+
+	// Helper function to find the matching closing brace for a method
+	private static int findMatchingClosingBrace(String text, int startIndex) {
+		int braceCount = 1;
+		for (int i = startIndex + 1; i < text.length(); i++) {
+			if (text.charAt(i) == '{') {
+				braceCount++;
+			} else if (text.charAt(i) == '}') {
+				braceCount--;
+				if (braceCount == 0) {
+					return i;
+				}
+			}
+		}
+		return -1; // Matching brace not found
+	}
+
+	private String _formatCalls(
+		String content, String fileName, JSONObject jsonObject,
+		JavaClass javaClass) throws Exception {
+
+		String newContent = content;
 
 		for (JavaTerm childJavaTerm : javaClass.getChildJavaTerms()) {
 			String javaContent = null;
