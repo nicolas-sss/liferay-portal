@@ -16,12 +16,11 @@ package com.liferay.source.formatter.dependencies.upgrade;
 	},
 	service = CommerceShippingEngine.class
 )
-public class CustomCommerceShippingEngine
+public class LPD_53966
 	extends BookmarksFolderModelImpl implements CommerceShippingEngine {
 
 	public static final String KEY = "by-weight";
 
-	@Override
 	public String getCommerceShippingOptionLabel(String name, Locale locale) {
 		// Code implementation
 	}
@@ -35,18 +34,22 @@ public class CustomCommerceShippingEngine
 	}
 
 	@Override
-	public String getDescription(Locale locale) {
+	public String getDescription(Locale locale, String test) {
 		// Code implementation
 	}
 
 	@Override
-	public List<CommerceShippingOption> getEnabledCommerceShippingOptions() {
+	public List<CommerceShippingOption> getEnabledCommerceShippingOptions(String test) {
 		// Code implementation
 	}
 
 	@Override
-	public String getKey() {
-		return KEY;
+	public String getTestLabel(){
+		return KEY + "teste";
+	}
+
+	@Override
+	public void setTestLabel(String name){
 	}
 
 }

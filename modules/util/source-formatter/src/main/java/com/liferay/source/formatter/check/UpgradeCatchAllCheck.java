@@ -509,7 +509,6 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 	private String _insertMethodAlphabetically(String fileContent, String methodToInsert) {
 		// Regular expression to find method signatures
 		Pattern methodPattern = Pattern.compile("^(?:public|private|protected|static|final|synchronized|abstract|native)\\s+[^\\s]+\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\([^)]*\\)\\s*(?:throws\\s+[^\\s]+(?:,\\s+[^\\s]+)*)?\\s*\\{", Pattern.MULTILINE);
-		Matcher matcher = methodPattern.matcher(fileContent);
 		List<String> methodNames = new ArrayList<>();
 		List<String> existingMethods = new ArrayList<>();
 		int classStartIndex = fileContent.indexOf("{");
