@@ -505,24 +505,64 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 		return content;
 	}
 
-
 	private String _insertMethodAlphabetically(String fileContent, String methodToInsert) {
-		// Regular expression to find method signatures
-		Pattern methodPattern = Pattern.compile("^(?:public|private|protected|static|final|synchronized|abstract|native)\\s+[^\\s]+\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\([^)]*\\)\\s*(?:throws\\s+[^\\s]+(?:,\\s+[^\\s]+)*)?\\s*\\{", Pattern.MULTILINE);
-		List<String> methodNames = new ArrayList<>();
-		List<String> existingMethods = new ArrayList<>();
-		int classStartIndex = fileContent.indexOf("{");
-		int classEndIndex = fileContent.lastIndexOf("}");
-		if (classStartIndex == -1 || classEndIndex <= classStartIndex) {
+		// Step 1: Find the main class declaration and its body start/end indices
+		int classBodyStartIndex = -1;
+		int classBodyEndIndex = -1;
+
+		// Pattern to find the class declaration line, including annotations
+		// This looks for an optional '@' followed by word characters (for annotation names),
+		// then optional spaces, then the class declaration itself.
+		// We are more interested in the actual 'class' keyword for precise start.
+		Pattern classDeclarationPattern = Pattern.compile(
+			"^(?:@[a-zA-Z_][a-zA-Z0-9_]*(?:\\([^)]*\\))?\\s*)*" + // Matches zero or more annotations
+			"(?:public|private|protected)?\\s*(?:static)?\\s*class\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?:extends\\s+[^\\s]+)?\\s*(?:implements\\s+[^\\s]+(?:,\\s+[^\\s]+)*)?\\s*\\{",
+			Pattern.MULTILINE
+		);
+		Matcher classDeclarationMatcher = classDeclarationPattern.matcher(fileContent);
+
+		if (classDeclarationMatcher.find()) {
+			// The class body starts right after the '{' of the class declaration
+			classBodyStartIndex = classDeclarationMatcher.end();
+
+			// Now, find the true matching closing brace for the class from this point onwards.
+			// We need to start searching for the matching brace from the character *after* the opening brace.
+			// The classDeclarationMatcher.end() points to the character *after* the opening brace '{'.
+			classBodyEndIndex = findMatchingClosingBrace(fileContent, classBodyStartIndex - 1);
+			if (classBodyEndIndex == -1) {
+				System.err.println("Could not find matching closing brace for the class.");
+				return fileContent;
+			}
+		} else {
 			System.err.println("Could not find class definition in the file content.");
 			return fileContent;
 		}
-		String classBody = fileContent.substring(classStartIndex + 1, classEndIndex);
+
+		// Extract the content of the class body
+		String classBody = fileContent.substring(classBodyStartIndex, classBodyEndIndex);
+
+		// Define the powerful methodPattern here, outside the loop for efficiency
+		Pattern methodPattern = Pattern.compile(
+			"^\\s*(?:(?:@[a-zA-Z_][a-zA-Z0-9_]*(?:\\([^)]*\\))?\\s*\\n\\s*)*" + // Multiline annotations
+			"(?:@[a-zA-Z_][a-zA-Z0-9_]*(?:\\([^)]*\\))?\\s*)?)?" + // End optional annotations group
+			"(?:public|private|protected|static|final|synchronized|abstract|native)\\s+" + // Modifiers
+			"[^\\s]+\\s+" + // Return type
+			"([a-zA-Z_][a-zA-Z0-9_]*)\\s*" + // Method name (captured group 1)
+			"\\([^)]*\\)\\s*" + // Parameters
+			"(?:throws\\s+[^\\s]+(?:,\\s+[^\\s]+)*)?\\s*" + // Optional throws
+			"\\{", // Opening brace
+			Pattern.MULTILINE
+		);
+
+		List<String> methodNames = new ArrayList<>();
+		List<String> existingMethods = new ArrayList<>();
 		Matcher bodyMatcher = methodPattern.matcher(classBody);
 
 		while (bodyMatcher.find()) {
 			String methodName = bodyMatcher.group(1);
 			int methodStartIndexInBody = bodyMatcher.start();
+			// The findMatchingClosingBrace needs to be relative to the 'classBody' string.
+			// We pass the index relative to 'classBody' where the method's '{' was found.
 			int methodEndIndexInBody = findMatchingClosingBrace(classBody, bodyMatcher.end() - 1);
 			if (methodEndIndexInBody != -1) {
 				existingMethods.add(classBody.substring(methodStartIndexInBody, methodEndIndexInBody + 1));
@@ -531,15 +571,14 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 		}
 
 		// Extract the name of the method to be inserted
-		Pattern newMethodNamePattern = Pattern.compile("^(?:public|private|protected|static|final|synchronized|abstract|native)\\s+[^\\s]+\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(", Pattern.MULTILINE);
-		Matcher newMethodMatcher = newMethodNamePattern.matcher(methodToInsert);
-		String newMethodName = null;
-		if (newMethodMatcher.find()) {
-			newMethodName = newMethodMatcher.group(1);
-		} else {
+		Matcher newMethodMatcher = methodPattern.matcher(methodToInsert);
+
+		if (!newMethodMatcher.find()) {
 			System.err.println("Could not extract the name of the method to be inserted.");
 			return fileContent;
 		}
+
+		String newMethodName = newMethodMatcher.group(1);
 
 		// Add the new method name to the list and sort
 		methodNames.add(newMethodName);
@@ -548,14 +587,16 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 		// Determine the insertion index
 		int insertIndex = methodNames.indexOf(newMethodName);
 
+		// --- INSTANTIATE newClassBody HERE ---
 		StringBuilder newClassBody = new StringBuilder();
+
 		if (existingMethods.isEmpty()) {
 			newClassBody.append(methodToInsert);
 		} else {
 			if (insertIndex == 0) {
-				newClassBody.append(methodToInsert).append("\n\n").append(existingMethods.get(0)).append("\n\n");
+				newClassBody.append(methodToInsert).append("\n\n").append(existingMethods.get(0));
 				for (int i = 1; i < existingMethods.size(); i++) {
-					newClassBody.append(existingMethods.get(i)).append("\n\n");
+					newClassBody.append("\n\n").append(existingMethods.get(i));
 				}
 			} else if (insertIndex == existingMethods.size()) {
 				for (String existingMethod : existingMethods) {
@@ -566,33 +607,43 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 				for (int i = 0; i < insertIndex; i++) {
 					newClassBody.append(existingMethods.get(i)).append("\n\n");
 				}
-				newClassBody.append(methodToInsert).append("\n\n");
+				newClassBody.append(methodToInsert);
 				for (int i = insertIndex; i < existingMethods.size(); i++) {
-					newClassBody.append(existingMethods.get(i)).append("\n\n");
+					newClassBody.append("\n\n").append(existingMethods.get(i));
 				}
 			}
 		}
 
-		return new StringBuilder(fileContent.substring(0, classStartIndex + 1))
-			.append(newClassBody.toString().trim())
-			.append("\n}")
-			.toString();
+		// Reconstruct the file content
+		StringBuilder newFileContent = new StringBuilder();
+		// Content before the class body's opening brace
+		newFileContent.append(fileContent.substring(0, classBodyStartIndex));
+		// The newly arranged class body content
+		newFileContent.append(newClassBody.toString().trim());
+		newFileContent.append("\n"); // Add a newline before the closing brace for consistent formatting
+		// Content from the class's closing brace to the end of the file
+		newFileContent.append(fileContent.substring(classBodyEndIndex));
+
+		return newFileContent.toString();
 	}
 
-	// Helper function to find the matching closing brace for a method
-	private static int findMatchingClosingBrace(String text, int startIndex) {
-		int braceCount = 1;
-		for (int i = startIndex + 1; i < text.length(); i++) {
-			if (text.charAt(i) == '{') {
+	// Helper method to find the matching closing brace
+	private int findMatchingClosingBrace(String content, int startFrom) {
+		int braceCount = 0;
+		// Ensure we start counting from the *exact* position of the opening brace
+		// which is 'startFrom' (index of '{')
+		for (int i = startFrom; i < content.length(); i++) {
+			char c = content.charAt(i);
+			if (c == '{') {
 				braceCount++;
-			} else if (text.charAt(i) == '}') {
+			} else if (c == '}') {
 				braceCount--;
-				if (braceCount == 0) {
-					return i;
-				}
+			}
+			if (braceCount == 0) {
+				return i; // Return the index of the matching '}'
 			}
 		}
-		return -1; // Matching brace not found
+		return -1; // No matching brace found
 	}
 
 	private String _formatCalls(

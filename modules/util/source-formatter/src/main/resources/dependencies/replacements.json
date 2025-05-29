@@ -3268,10 +3268,10 @@
 			"CommerceShippingEngine"
 		],
 		"newMethods": [
-			"@Override\n\tpublic String getTestLabel() {\n\t\treturn KEY + \"teste\";\n\t}",
-			"@Override\n\tpublic void setTestLabel(String name) {\n\t}"
+			"\t@Override\n\tpublic String getTestLabel() {\n\t\treturn KEY + \"teste\";\n\t}",
+			"\t@Override\n\tpublic void setTestLabel(String name) {\n\t}"
 		],
-		"issueKey": "LPD-30629"
+		"issueKey": "LPD-53966"
 	},
 	{
 		"classStructurePattern": true,
@@ -3292,7 +3292,7 @@
 				"to":"List<CommerceShippingOption> getEnabledCommerceShippingOptions(String test)"
 			}
 		],
-		"issueKey": "LPD-30629"
+		"issueKey": "LPD-53966"
 	},
 	{
 		"classNames": [
