@@ -36,7 +36,9 @@ import java.util.regex.Pattern;
  */
 public class UpgradeCatchAllCheck extends BaseFileCheck {
 
-	public static String[] getExpectedMessages() throws Exception {
+	public static String[] getExpectedMessages(String fileName)
+		throws Exception {
+
 		List<String> expectedMessages = new ArrayList<>();
 
 		JSONArray jsonArray = _getReplacementsJSONArray("replacements.json");
@@ -48,7 +50,10 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 				jsonObject.getJSONArray("validExtensions"));
 
 			if ((validExtensions.length > 0) &&
-				!ArrayUtil.contains(validExtensions, "java")) {
+				!ArrayUtil.contains(
+					validExtensions,
+					fileName.substring(
+						fileName.lastIndexOf(CharPool.PERIOD) + 5))) {
 
 				continue;
 			}
