@@ -3268,8 +3268,8 @@
 			"CommerceShippingEngine"
 		],
 		"newMethods": [
-			"\t@Override\n\tpublic String getTestLabel() {\n\t\treturn KEY + \"teste\";\n\t}",
-			"\t@Override\n\tpublic void setTestLabel(String name) {\n\t}"
+			"@Override\n\tpublic String getTestLabel() {\n\t\treturn KEY + \"teste\";\n\t}",
+			"@Override\n\tpublic void setTestLabel(String name) {\n\t}"
 		],
 		"issueKey": "LPD-53966"
 	},

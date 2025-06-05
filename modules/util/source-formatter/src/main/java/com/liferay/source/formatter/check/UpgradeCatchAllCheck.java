@@ -523,12 +523,12 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 
 		if (classDeclarationMatcher.find()) {
 			// The class body starts right after the '{' of the class declaration
-			classBodyStartIndex = classDeclarationMatcher.end();
+			classBodyStartIndex = classDeclarationMatcher.end() + 1;
 
 			// Now, find the true matching closing brace for the class from this point onwards.
 			// We need to start searching for the matching brace from the character *after* the opening brace.
 			// The classDeclarationMatcher.end() points to the character *after* the opening brace '{'.
-			classBodyEndIndex = findMatchingClosingBrace(fileContent, classBodyStartIndex - 1);
+			classBodyEndIndex = findMatchingClosingBrace(fileContent, classBodyStartIndex - 2);
 			if (classBodyEndIndex == -1) {
 				System.err.println("Could not find matching closing brace for the class.");
 				return fileContent;
@@ -543,7 +543,7 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 
 		// Define the powerful methodPattern here, outside the loop for efficiency
 		Pattern methodPattern = Pattern.compile(
-			"^\\s*(?:(?:@[a-zA-Z_][a-zA-Z0-9_]*(?:\\([^)]*\\))?\\s*\\n\\s*)*" + // Multiline annotations
+			"^\\n\\t\\s*(?:(?:@[a-zA-Z_][a-zA-Z0-9_]*(?:\\([^)]*\\))?\\s*\\n\\s*)*" + // Multiline annotations
 			"(?:@[a-zA-Z_][a-zA-Z0-9_]*(?:\\([^)]*\\))?\\s*)?)?" + // End optional annotations group
 			"(?:public|private|protected|static|final|synchronized|abstract|native)\\s+" + // Modifiers
 			"[^\\s]+\\s+" + // Return type
@@ -570,6 +570,7 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 			}
 		}
 
+		methodToInsert = "\n\t" + methodToInsert;
 		// Extract the name of the method to be inserted
 		Matcher newMethodMatcher = methodPattern.matcher(methodToInsert);
 
@@ -594,32 +595,40 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 			newClassBody.append(methodToInsert);
 		} else {
 			if (insertIndex == 0) {
-				newClassBody.append(methodToInsert).append("\n\n").append(existingMethods.get(0));
+				newClassBody.append(methodToInsert).append(existingMethods.get(0));
 				for (int i = 1; i < existingMethods.size(); i++) {
-					newClassBody.append("\n\n").append(existingMethods.get(i));
+					newClassBody.append("\n").append(existingMethods.get(i));
 				}
 			} else if (insertIndex == existingMethods.size()) {
+				newClassBody.append("\n");
 				for (String existingMethod : existingMethods) {
-					newClassBody.append(existingMethod).append("\n\n");
+					newClassBody.append(existingMethod).append("\n");
 				}
 				newClassBody.append(methodToInsert);
 			} else {
 				for (int i = 0; i < insertIndex; i++) {
-					newClassBody.append(existingMethods.get(i)).append("\n\n");
+					newClassBody.append(existingMethods.get(i)).append("\n");
 				}
 				newClassBody.append(methodToInsert);
 				for (int i = insertIndex; i < existingMethods.size(); i++) {
-					newClassBody.append("\n\n").append(existingMethods.get(i));
+					newClassBody.append("\n").append(existingMethods.get(i));
 				}
 			}
 		}
 
 		// Reconstruct the file content
 		StringBuilder newFileContent = new StringBuilder();
+
+		String tempFileContent = fileContent.substring(0, classBodyEndIndex);
+
+		for (String existingMethod : existingMethods) {
+			tempFileContent = StringUtil.removeSubstring(tempFileContent, "\n" + existingMethod);
+		}
+
 		// Content before the class body's opening brace
-		newFileContent.append(fileContent.substring(0, classBodyStartIndex));
+		newFileContent.append(tempFileContent.trim());
 		// The newly arranged class body content
-		newFileContent.append(newClassBody.toString().trim());
+		newFileContent.append(newClassBody);
 		newFileContent.append("\n"); // Add a newline before the closing brace for consistent formatting
 		// Content from the class's closing brace to the end of the file
 		newFileContent.append(fileContent.substring(classBodyEndIndex));
