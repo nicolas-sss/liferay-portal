@@ -226,6 +226,10 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 
 		String regex = StringUtil.replace(from, " ", "\\s+");
 
+		regex = StringUtil.replace(regex, "\n", "\\n");
+
+		regex = StringUtil.replace(regex, "\t", "\\t");
+
 		regex = StringUtil.replace(regex, CharPool.OPEN_PARENTHESIS, "\\(");
 
 		regex = StringUtil.replace(regex, CharPool.CLOSE_PARENTHESIS, "\\)");
@@ -234,11 +238,18 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 
 		regex = StringUtil.replace(regex, CharPool.COMMA, "\\,\\s*");
 
+		regex =  StringBundler.concat(regex, ")(?:\\s+throws\\s+[A-Za-z0-9._<>\\s,]+)?");
 
-		regex =  StringBundler.concat("(?:@[A-Za-z]+\\s+)?(?:public|private|protected|static|final|abstract|\\s+)*?\\s*",
-			regex, "(?:\\s+throws\\s+[A-Za-z0-9._<>\\s,]+)?");
+		if (from.contains(StringPool.AT)){
+			regex =  StringBundler.concat("^(\\n\\t(?:@[A-Za-z]+\\s+)?(?:public|private|protected|static|final|abstract|\\s+)*",
+				regex);
+		}
+		else{
+			regex =  StringBundler.concat("^\\n\\t(?:@[A-Za-z]+\\s+)?(?:public|private|protected|static|final|abstract|\\s+)*(",
+				regex);
+		}
 
-		return Pattern.compile(regex);
+		return Pattern.compile(regex, Pattern.MULTILINE);
 	}
 
 	private static Pattern _getPattern(JSONObject jsonObject) {
@@ -489,7 +500,7 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 		String from = jsonObject.getString("from");
 		String to = jsonObject.getString("to");
 
-		Pattern pattern = _getPattern(jsonObject); // TODO: talvez precise de um novo pra methodos?
+		Pattern pattern = _getMethodSignaturePattern(jsonObject); // TODO: talvez precise de um novo pra methodos?
 
 		Matcher matcher = pattern.matcher(content);
 
@@ -498,7 +509,13 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 				content = content.replaceAll(pattern.toString(), to);
 			}
 			else if (from.contains(StringPool.OPEN_PARENTHESIS)) {
-				content = StringUtil.replace(content, matcher.group(), to);
+				String methodSignature = matcher.group(1);
+
+				if(methodSignature.startsWith("\n\t")){
+					to = "\n\t" + to;
+				}
+
+				content = StringUtil.replace(content, matcher.group(1), to);
 			}
 		}
 
@@ -571,6 +588,7 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 		}
 
 		methodToInsert = "\n\t" + methodToInsert;
+
 		// Extract the name of the method to be inserted
 		Matcher newMethodMatcher = methodPattern.matcher(methodToInsert);
 
@@ -580,6 +598,11 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 		}
 
 		String newMethodName = newMethodMatcher.group(1);
+
+		// --- NEW LOGIC TO CHECK FOR DUPLICATES ---
+		if (methodNames.contains(newMethodName)) {
+			return fileContent; // Return original content as no change is needed
+		}
 
 		// Add the new method name to the list and sort
 		methodNames.add(newMethodName);
@@ -604,7 +627,7 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 				for (String existingMethod : existingMethods) {
 					newClassBody.append(existingMethod).append("\n");
 				}
-				newClassBody.append(methodToInsert);
+				newClassBody.append(methodToInsert).append("\n");
 			} else {
 				for (int i = 0; i < insertIndex; i++) {
 					newClassBody.append(existingMethods.get(i)).append("\n");

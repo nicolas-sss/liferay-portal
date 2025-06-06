@@ -44,12 +44,12 @@ public class LPD_53966
 	}
 
 	@Override
-	public String getTestLabel(){
+	public String getTestLabel() {
 		return KEY + "teste";
 	}
 
 	@Override
-	public void setTestLabel(String name){
+	public void setTestLabel(String name) {
 	}
 
 }
