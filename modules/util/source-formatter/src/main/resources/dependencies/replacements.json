@@ -2874,6 +2874,19 @@
 	},
 	{
 		"classNames": [
+			"StrutsAction"
+		],
+		"classStructurePattern": true,
+		"issueKey": "LPD-28369",
+		"methodsToFormat": [
+			{
+				"from": "@Override\n\tpublic String execute(\n\t\tStrutsAction originalStrutsAction, HttpServletRequest request,\n\t\tHttpServletResponse response)",
+				"to": "public String execute(\n\t\tStrutsAction originalStrutsAction, HttpServletRequest request,\n\t\tHttpServletResponse response)"
+			}
+		]
+	},
+	{
+		"classNames": [
 			"CompanyLocalService",
 			"CompanyLocalServiceUtil"
 		],
@@ -3300,6 +3313,16 @@
 			"com.liferay.mail.kernel.service.MailServiceUtil"
 		],
 		"to": "MailServiceUtil.sendEmail(new MailMessage(param#0#, param#1#, param#2#, param#3#, param#4#))"
+	},
+	{
+		"classNames": [
+			"MentionsUserFinder"
+		],
+		"classStructurePattern": true,
+		"issueKey": "LPD-34770",
+		"newMethods": [
+			"@Override\n\tpublic List<User> getUsers(\n\t\tlong companyId, long groupId, long userId, String query,\n\t\tSocialInteractionsConfiguration socialInteractionsConfiguration)\n\t\tthrows PortalException {\n\n\t\treturn getUsers(\n\t\t\tcompanyId, userId, query,\n\t\t\tsocialInteractionsConfiguration);\n\t}"
+		]
 	},
 	{
 		"classNames": [
@@ -4731,6 +4754,31 @@
 		"from": "regex:(?<variableName>\\w+)\\.\\s*(?<prefixMethodName>get|set|fetchBy|findBy|fetch|removeBy|countBy|fetchCommerceOrderItemBy)BookedQuantity",
 		"issueKey": "LPD-53535",
 		"to": "${variableName}.${prefixMethodName}CommerceInventoryBookedQuantity"
+	},
+	{
+		"classNames": [
+			"CommerceShippingEngine"
+		],
+		"classStructurePattern": true,
+		"issueKey": "LPD-53966",
+		"methodsToFormat": [
+			{
+				"from": "@Override\n\tpublic String getCommerceShippingOptionLabel(String name, Locale locale)",
+				"to": "public String getCommerceShippingOptionLabel(String name, Locale locale)"
+			},
+			{
+				"from": "public String getDescription(Locale locale)",
+				"to": "public String getDescription(Locale locale, String test)"
+			},
+			{
+				"from": "List<CommerceShippingOption> getEnabledCommerceShippingOptions()",
+				"to": "List<CommerceShippingOption> getEnabledCommerceShippingOptions(String test)"
+			}
+		],
+		"newMethods": [
+			"@Override\n\tpublic String getTestLabel() {\n\t\treturn KEY + \"teste\";\n\t}",
+			"@Override\n\tpublic void setTestLabel(String name) {\n\t}"
+		]
 	},
 	{
 		"classNames": [
