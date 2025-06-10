@@ -1,0 +1,47 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.source.formatter.dependencies.upgrade;
+
+/**
+ * @author Nícolas Moura
+ */
+@Component(
+	immediate = true,
+	property = {
+		"commerce.shipping.engine.key=" + CustomCommerceShippingEngine.KEY,
+		"service.ranking:Integer=100"
+	},
+	service = CommerceShippingEngine.class
+)
+public class LPD_53966
+	extends BookmarksFolderModelImpl implements CommerceShippingEngine {
+
+	public static final String KEY = "by-weight";
+
+	@Override
+	public String getCommerceShippingOptionLabel(String name, Locale locale) {
+		// Code implementation
+	}
+
+	@Override
+	public List<CommerceShippingOption> getCommerceShippingOptions(
+		CommerceContext commerceContext, CommerceOrder commerceOrder,
+		Locale locale)
+		throws CommerceShippingEngineException {
+		// Code implementation
+	}
+
+	@Override
+	public String getDescription(Locale locale) {
+		// Code implementation
+	}
+
+	@Override
+	public List<CommerceShippingOption> getEnabledCommerceShippingOptions() {
+		// Code implementation
+	}
+
+}
