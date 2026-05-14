@@ -588,6 +588,121 @@ public class ObjectDefinitionResourceTest
 			emptyObjectDefinition.getStatus());
 		Assert.assertTrue(emptyObjectDefinition.getSystem());
 
+		// Empty system object definition created by relationship object field
+		// on a custom object definition
+
+		randomObjectDefinition = randomObjectDefinition();
+
+		externalReferenceCode =
+			ObjectDefinitionConstants.
+				EXTERNAL_REFERENCE_CODE_PREFIX_SYSTEM_OBJECT_DEFINITION +
+					RandomTestUtil.randomString();
+
+		relationshipObjectField = _createRelationshipObjectField(
+			externalReferenceCode);
+
+		randomObjectDefinition.setObjectFields(
+			ArrayUtil.append(
+				randomObjectDefinition.getObjectFields(),
+				relationshipObjectField));
+
+		testPostObjectDefinition_addObjectDefinition(randomObjectDefinition);
+
+		emptyObjectDefinition =
+			objectDefinitionResource.getObjectDefinitionByExternalReferenceCode(
+				externalReferenceCode);
+
+		Assert.assertEquals(
+			new Status() {
+				{
+					code = WorkflowConstants.STATUS_EMPTY;
+					label = WorkflowConstants.getStatusLabel(
+						WorkflowConstants.STATUS_EMPTY);
+					label_i18n = _language.get(
+						LanguageResources.getResourceBundle(
+							LocaleUtil.getDefault()),
+						WorkflowConstants.getStatusLabel(
+							WorkflowConstants.STATUS_EMPTY));
+				}
+			},
+			emptyObjectDefinition.getStatus());
+		Assert.assertTrue(emptyObjectDefinition.getModifiable());
+		Assert.assertTrue(emptyObjectDefinition.getSystem());
+
+		// Empty custom object definition created by relationship object field
+		// on a system object definition
+
+		randomSystemObjectDefinition =
+			_randomModifiableSystemObjectDefinition();
+
+		externalReferenceCode = RandomTestUtil.randomString();
+
+		relationshipObjectField = _createRelationshipObjectField(
+			externalReferenceCode);
+
+		randomSystemObjectDefinition.setObjectFields(
+			ArrayUtil.append(
+				randomSystemObjectDefinition.getObjectFields(),
+				relationshipObjectField));
+
+		testPostObjectDefinition_addObjectDefinition(
+			randomSystemObjectDefinition);
+
+		emptyObjectDefinition =
+			objectDefinitionResource.getObjectDefinitionByExternalReferenceCode(
+				externalReferenceCode);
+
+		Assert.assertEquals(
+			new Status() {
+				{
+					code = WorkflowConstants.STATUS_EMPTY;
+					label = WorkflowConstants.getStatusLabel(
+						WorkflowConstants.STATUS_EMPTY);
+					label_i18n = _language.get(
+						LanguageResources.getResourceBundle(
+							LocaleUtil.getDefault()),
+						WorkflowConstants.getStatusLabel(
+							WorkflowConstants.STATUS_EMPTY));
+				}
+			},
+			emptyObjectDefinition.getStatus());
+		Assert.assertTrue(emptyObjectDefinition.getModifiable());
+		Assert.assertFalse(emptyObjectDefinition.getSystem());
+
+		// Empty object definition populated by upsert via external reference
+		// code
+
+		randomSystemObjectDefinition =
+			_randomModifiableSystemObjectDefinition();
+
+		externalReferenceCode =
+			ObjectDefinitionConstants.
+				EXTERNAL_REFERENCE_CODE_PREFIX_SYSTEM_OBJECT_DEFINITION +
+					RandomTestUtil.randomString();
+
+		relationshipObjectField = _createRelationshipObjectField(
+			externalReferenceCode);
+
+		randomSystemObjectDefinition.setObjectFields(
+			ArrayUtil.append(
+				randomSystemObjectDefinition.getObjectFields(),
+				relationshipObjectField));
+
+		testPostObjectDefinition_addObjectDefinition(
+			randomSystemObjectDefinition);
+
+		ObjectDefinition populatedObjectDefinition =
+			objectDefinitionResource.putObjectDefinitionByExternalReferenceCode(
+				externalReferenceCode,
+				_randomModifiableSystemObjectDefinition());
+
+		Assert.assertNotEquals(
+			(Integer)WorkflowConstants.STATUS_EMPTY,
+			populatedObjectDefinition.getStatus(
+			).getCode());
+		Assert.assertTrue(populatedObjectDefinition.getModifiable());
+		Assert.assertTrue(populatedObjectDefinition.getSystem());
+
 		// Enable index search
 
 		randomObjectDefinition = randomObjectDefinition();
