@@ -1262,7 +1262,10 @@ public class ObjectDefinitionResourceImpl
 						serviceBuilderObjectDefinition2.getCompanyId(),
 						contextUser.getUserId(),
 						serviceBuilderObjectDefinition2.getObjectFolderId(),
-						true, ObjectDefinitionConstants.SCOPE_COMPANY, false);
+						true, ObjectDefinitionConstants.SCOPE_COMPANY,
+						objectDefinitionExternalReferenceCode1.startsWith(
+							ObjectDefinitionConstants.
+								EXTERNAL_REFERENCE_CODE_PREFIX_SYSTEM_OBJECT_DEFINITION));
 
 			com.liferay.object.model.ObjectRelationship objectRelationship =
 				_objectRelationshipLocalService.
