@@ -4,23 +4,29 @@
  */
 
 import {expect, mergeTests} from '@playwright/test';
+import path from 'path';
 
 import {accountSettingsPagesTest} from '../../../fixtures/accountSettingsPagesTest';
 import {consentManagerConfigurationPageTest} from '../../../fixtures/consentManagerConfigurationPageTest';
+import {isolatedSiteTest} from '../../../fixtures/isolatedSiteTest';
 import {loginTest} from '../../../fixtures/loginTest';
+import {siteSettingsPagesTest} from '../../../fixtures/siteSettingsPagesTest';
 import {systemSettingsPageTest} from '../../../fixtures/systemSettingsPageTest';
 import {ConsentManagerConfigurationPage} from '../../../pages/cookies-banner-web/ConsentManagerConfigurationPage';
 import {waitForAlert} from '../../../utils/waitForAlert';
 import {
 	clearConsentCookies,
 	resetConsentManagerConfiguration,
+	saveOrUpdateConfiguration,
 	updateConsentManagerConfiguration,
 } from './utils/consentManagerConfigurationHelper';
 
 export const test = mergeTests(
 	accountSettingsPagesTest,
 	consentManagerConfigurationPageTest,
+	isolatedSiteTest,
 	loginTest(),
+	siteSettingsPagesTest,
 	systemSettingsPageTest
 );
 
@@ -33,6 +39,45 @@ test.afterEach(async ({systemSettingsPage}) => {
 		await clearConsentCookies(systemSettingsPage.page);
 	});
 });
+
+test(
+	'Activate button stays disabled until the Enabled checkbox is saved',
+	{tag: ['@LPD-86660', '@LPD-86661']},
+	async ({consentManagerConfigurationPage, page}) => {
+		await test.step('Ensure Consent Manager is saved as disabled', async () => {
+			await updateConsentManagerConfiguration(page, {
+				enabled: false,
+				forceReload: true,
+			});
+		});
+
+		await test.step('Verify the Activate button is initially disabled', async () => {
+			await consentManagerConfigurationPage.goTo();
+
+			await expect(
+				consentManagerConfigurationPage.toggleActivateButton
+			).toBeDisabled();
+		});
+
+		await test.step('Check the Enabled checkbox without saving and verify the Activate button is still disabled', async () => {
+			await consentManagerConfigurationPage.enabledCheckbox.setChecked(
+				true
+			);
+
+			await expect(
+				consentManagerConfigurationPage.toggleActivateButton
+			).toBeDisabled();
+		});
+
+		await test.step('Save and verify the Activate button becomes enabled', async () => {
+			await saveOrUpdateConfiguration(page);
+
+			await expect(
+				consentManagerConfigurationPage.toggleActivateButton
+			).toBeEnabled();
+		});
+	}
+);
 
 test(
 	'Activation warning is visible on Consent Manager, Cookie Banner, and Cookie Panel pages',
@@ -366,6 +411,94 @@ test(
 					name: 'Cookie Panel',
 				})
 			).toBeVisible();
+		});
+	}
+);
+
+test(
+	'Enabling Consent Manager from Site Settings saves successfully and shows the banner on the site',
+	{tag: '@LPD-92656'},
+	async ({page, site, siteSettingsPage}) => {
+		await test.step('Navigate to Site Settings > Privacy > Consent Manager', async () => {
+			await siteSettingsPage.goToSiteSetting(
+				'Privacy',
+				'Consent Manager',
+				site.friendlyUrlPath
+			);
+		});
+
+		await test.step('Enable Consent Manager with a custom floating icon', async () => {
+			await page
+				.getByRole('checkbox', {exact: true, name: 'Enabled'})
+				.check();
+
+			await expect(
+				page.getByRole('checkbox', {
+					exact: true,
+					name: 'Floating Icon Enabled',
+				})
+			).toBeEnabled();
+
+			await page
+				.getByRole('checkbox', {
+					exact: true,
+					name: 'Floating Icon Enabled',
+				})
+				.check();
+
+			await page.getByText('Custom', {exact: true}).click();
+
+			const fileChooserPromise = page.waitForEvent('filechooser');
+
+			await page
+				.getByRole('button', {name: 'Change Custom Icon'})
+				.click();
+
+			const uploadImageFrame = page.frameLocator(
+				'iframe[title="Upload Custom Icon"]'
+			);
+
+			await uploadImageFrame
+				.getByRole('button', {name: 'Select Image'})
+				.click();
+
+			const fileChooser = await fileChooserPromise;
+
+			await fileChooser.setFiles(
+				path.join(__dirname, 'dependencies/liferay.png')
+			);
+
+			await uploadImageFrame.getByRole('button', {name: 'Done'}).click();
+
+			await siteSettingsPage.saveConfiguration();
+		});
+
+		await test.step('Activate the Consent Manager', async () => {
+			await page
+				.getByRole('button', {exact: true, name: 'Activate'})
+				.click();
+
+			await waitForAlert(page);
+		});
+
+		await test.step('Verify the Consent Manager is now active', async () => {
+			await expect(
+				page.getByRole('button', {exact: true, name: 'Deactivate'})
+			).toBeVisible();
+
+			await expect(page.locator('.cookies-banner')).toBeVisible();
+		});
+
+		await test.step('Reload and verify the custom floating icon persists under GROUP scope', async () => {
+			await page.reload();
+
+			const floatingIconButton = page.locator(
+				'#_com_liferay_cookies_banner_web_portlet_CookiesBannerPortlet_floatingIconButton'
+			);
+
+			const imageSrc = await floatingIconButton.getAttribute('src');
+
+			expect(imageSrc.includes('/image/floating_icon?')).toBeTruthy();
 		});
 	}
 );

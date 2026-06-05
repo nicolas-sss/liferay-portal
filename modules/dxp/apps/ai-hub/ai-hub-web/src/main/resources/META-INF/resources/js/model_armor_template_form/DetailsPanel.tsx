@@ -11,12 +11,14 @@ import {FormikErrors, FormikTouched} from 'formik';
 import {FieldBase, InputLocalized} from 'frontend-js-components-web';
 import React, {FocusEventHandler} from 'react';
 
+import {maskExternalReferenceCode} from '../utils/externalReferenceCode';
 import {GUARDRAIL_TYPE_OPTIONS} from './constants';
 import {ModelArmorTemplate} from './types/ModelArmorTemplate';
 
 interface IProps {
 	errors: FormikErrors<ModelArmorTemplate>;
 	handleBlur: FocusEventHandler;
+	readOnly: boolean;
 	setField: <K extends keyof ModelArmorTemplate>(
 		field: K,
 		value: ModelArmorTemplate[K]
@@ -29,6 +31,7 @@ interface IProps {
 const DetailsPanel: React.FC<IProps> = ({
 	errors,
 	handleBlur,
+	readOnly,
 	setField,
 	setFieldTouched,
 	touched,
@@ -44,6 +47,7 @@ const DetailsPanel: React.FC<IProps> = ({
 					<h2>{Liferay.Language.get('details')}</h2>
 
 					<ClayToggle
+						disabled={readOnly}
 						label={Liferay.Language.get('active')}
 						onToggle={(toggled) => setField('active', toggled)}
 						toggled={values.active}
@@ -51,6 +55,7 @@ const DetailsPanel: React.FC<IProps> = ({
 				</div>
 
 				<InputLocalized
+					disabled={readOnly}
 					error={
 						touched.title_i18n
 							? (errors.title_i18n as string | undefined)
@@ -83,13 +88,14 @@ const DetailsPanel: React.FC<IProps> = ({
 								? 'is-invalid'
 								: ''
 						}
+						disabled={readOnly}
 						id="externalReferenceCode"
 						name="externalReferenceCode"
 						onBlur={handleBlur}
 						onChange={(event) =>
 							setField(
 								'externalReferenceCode',
-								event.target.value
+								maskExternalReferenceCode(event.target.value)
 							)
 						}
 						required
@@ -105,6 +111,7 @@ const DetailsPanel: React.FC<IProps> = ({
 
 					<textarea
 						className="form-control"
+						disabled={readOnly}
 						id="description"
 						onChange={(event) =>
 							setField('description', event.target.value)
@@ -113,35 +120,6 @@ const DetailsPanel: React.FC<IProps> = ({
 						value={values.description}
 					/>
 				</ClayForm.Group>
-
-				<FieldBase
-					errorMessage={
-						touched.location ? errors.location : undefined
-					}
-					helpMessage={Liferay.Language.get(
-						'guardrail-location-help'
-					)}
-					id="location"
-					label={Liferay.Language.get('location')}
-					required
-				>
-					<ClayInput
-						className={
-							touched.location && errors.location
-								? 'is-invalid'
-								: ''
-						}
-						id="location"
-						name="location"
-						onBlur={handleBlur}
-						onChange={(event) =>
-							setField('location', event.target.value)
-						}
-						required
-						type="text"
-						value={values.location || ''}
-					/>
-				</FieldBase>
 
 				<ClayForm.Group>
 					<label htmlFor="guardrailType">
@@ -161,6 +139,7 @@ const DetailsPanel: React.FC<IProps> = ({
 
 					<Picker
 						className="model-armor-template-form-picker"
+						disabled={readOnly}
 						id="guardrailType"
 						items={GUARDRAIL_TYPE_OPTIONS}
 						onSelectionChange={(value) =>
@@ -176,11 +155,12 @@ const DetailsPanel: React.FC<IProps> = ({
 
 				<ClayForm.Group>
 					<ClayCheckbox
-						checked={values.multiLanguageDetectionEnabled}
+						checked={values.multilanguageDetectionEnabled}
+						disabled={readOnly}
 						label={Liferay.Language.get('multilanguage-detection')}
 						onChange={(event) =>
 							setField(
-								'multiLanguageDetectionEnabled',
+								'multilanguageDetectionEnabled',
 								event.target.checked
 							)
 						}

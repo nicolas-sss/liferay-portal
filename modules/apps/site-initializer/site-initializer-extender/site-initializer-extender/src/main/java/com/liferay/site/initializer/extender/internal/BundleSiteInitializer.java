@@ -2805,6 +2805,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 				type, pageJSONObject.getBoolean("hidden"),
 				layout.getFriendlyURLMap(), layout.getIconImage(), null,
 				layout.getStyleBookEntryERC(),
+				layout.getStyleBookEntryScopeERC(),
 				pageJSONObject.getString("faviconFileEntryERC"),
 				pageJSONObject.getString("faviconFileEntryScopeERC"),
 				layout.getMasterLayoutPageTemplateEntryERC(), serviceContext);
@@ -3784,7 +3785,8 @@ public class BundleSiteInitializer implements SiteInitializer {
 				if (jsonObject.getInt("type") == RoleConstants.TYPE_ACCOUNT) {
 					com.liferay.account.model.AccountRole accountRole =
 						_accountRoleLocalService.addAccountRole(
-							null, serviceContext.getUserId(),
+							jsonObject.getString("externalReferenceCode"),
+							serviceContext.getUserId(),
 							AccountConstants.ACCOUNT_ENTRY_ID_DEFAULT,
 							jsonObject.getString("name"),
 							SiteInitializerUtil.toMap(
@@ -3796,7 +3798,8 @@ public class BundleSiteInitializer implements SiteInitializer {
 				}
 				else {
 					role = _roleLocalService.addRole(
-						null, serviceContext.getUserId(), null, 0,
+						jsonObject.getString("externalReferenceCode"),
+						serviceContext.getUserId(), null, 0,
 						jsonObject.getString("name"),
 						SiteInitializerUtil.toMap(
 							jsonObject.getString("name_i18n")),

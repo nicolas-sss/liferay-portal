@@ -8,6 +8,7 @@ package com.liferay.jenkins.results.parser.persistent.resource;
 import com.liferay.jenkins.results.parser.Build;
 import com.liferay.jenkins.results.parser.BuildDatabase;
 import com.liferay.jenkins.results.parser.BuildFactory;
+import com.liferay.jenkins.results.parser.Environment;
 import com.liferay.jenkins.results.parser.JenkinsAPIUtil;
 import com.liferay.jenkins.results.parser.JenkinsMaster;
 import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
@@ -200,11 +201,11 @@ public abstract class BaseBundlePersistentResource
 		buildParameters.put("AXIS_VARIABLE", _getAxisVariable());
 		buildParameters.put("BUILD_PRIORITY", _BUILD_PRIORITY);
 		buildParameters.put("JOB_VARIANT", _JOB_VARIANT);
-		buildParameters.put("SLAVE_LABEL", _SLAVE_LABEL);
+		buildParameters.put("SLAVE_LABEL", "slave-bundle-builder");
 
 		JenkinsMaster producerJenkinsMaster =
 			JenkinsResultsParserUtil.getMostAvailableJenkinsMaster(
-				_getBaseInvocationURL(), 1, _SLAVE_LABEL);
+				_getBaseInvocationURL(), 1);
 
 		long producerQueueId = JenkinsResultsParserUtil.invokeJenkinsBuild(
 			producerJenkinsMaster, _JOB_NAME, buildParameters);
@@ -413,7 +414,7 @@ public abstract class BaseBundlePersistentResource
 
 		buildDatabase.rsyncBuildDatabaseFileToJenkinsMaster(
 			JenkinsResultsParserUtil.combine(
-				System.getenv("JENKINS_HOME"), "/userContent/jobs/",
+				Environment.get("JENKINS_HOME"), "/userContent/jobs/",
 				getStartProperty("TOP_LEVEL_JOB_NAME"), "/builds/",
 				getStartProperty("TOP_LEVEL_BUILD_NUMBER")),
 			JenkinsMaster.getInstance(
@@ -432,8 +433,6 @@ public abstract class BaseBundlePersistentResource
 	private static final int _MAX_FAIL_COUNT = 2;
 
 	private static final int _MAX_MISSING_COUNT = 2;
-
-	private static final String _SLAVE_LABEL = "slave-bundle-builder";
 
 	private Build _build;
 	private int _failCount;

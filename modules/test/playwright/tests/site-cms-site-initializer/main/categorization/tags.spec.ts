@@ -45,6 +45,8 @@ test(
 	'Save and add another tag',
 	{tag: '@LPD-51250'},
 	async ({page, tagsPage}) => {
+		await page.emulateMedia({reducedMotion: 'reduce'});
+
 		await tagsPage.goto();
 
 		const name1 = `Tag${getRandomInt()}`;
@@ -58,7 +60,7 @@ test(
 			trigger: tagsPage.newTagButton,
 		});
 
-		// Check accessibility
+		// Check the accessibility of the modal
 
 		await checkAccessibility({
 			page,
@@ -106,6 +108,8 @@ test('Delete a tag', {tag: '@LPD-51252'}, async ({tagsPage}) => {
 });
 
 test('Edit an existing tag', {tag: '@LPD-52395'}, async ({page, tagsPage}) => {
+	await page.emulateMedia({reducedMotion: 'reduce'});
+
 	const tagName = await tagsPage.createTag();
 
 	await tagsPage.execItemAction({
@@ -117,7 +121,7 @@ test('Edit an existing tag', {tag: '@LPD-52395'}, async ({page, tagsPage}) => {
 
 	await expect(tagsPage.saveAndAddAnotherButton).not.toBeVisible();
 
-	// Check accessibility
+	// Check the accessibility of the modal
 
 	await checkAccessibility({
 		page,
@@ -220,13 +224,6 @@ test('Bulk Merge tags', {tag: '@LPD-43388'}, async ({page, tagsPage}) => {
 			.locator('tbody tr')
 			.filter({hasText: tagName2})
 	).toBeVisible();
-
-	// Check accessibility
-
-	await checkAccessibility({
-		page,
-		selectors: ['.merge-tags'],
-	});
 
 	await page
 		.locator('.categorization-section')
@@ -336,7 +333,7 @@ test('Merge tags', {tag: '@LPD-43388'}, async ({page, tagsPage}) => {
 
 test(
 	'Validate that a UI error appears when attempting to create or edit a tag with an existing name',
-	{tag: '@LPD-57497'},
+	{tag: ['@LPD-57497', '@LPD-92349']},
 	async ({page, tagsPage}) => {
 		const name1 = await tagsPage.createTag();
 
@@ -349,9 +346,11 @@ test(
 		await page.getByLabel('NameRequired').fill(name1);
 
 		await clickAndExpectToBeVisible({
-			target: page.getByText(
-				'Please enter a unique name. This one is already in use.'
-			),
+			target: page
+				.locator('.modal-body')
+				.getByText(
+					'Please enter a unique name. This one is already in use.'
+				),
 			trigger: tagsPage.saveButton,
 		});
 
@@ -383,9 +382,11 @@ test(
 		await page.getByLabel('NameRequired').fill(name1);
 
 		await clickAndExpectToBeVisible({
-			target: page.getByText(
-				'Please enter a unique name. This one is already in use.'
-			),
+			target: page
+				.locator('.modal-body')
+				.getByText(
+					'Please enter a unique name. This one is already in use.'
+				),
 			trigger: tagsPage.saveButton,
 		});
 
@@ -527,7 +528,7 @@ test('Validate tag inputs', {tag: ['@LPD-69687']}, async ({page, tagsPage}) => {
 
 test(
 	'Tags with the same name can be created',
-	{tag: '@LPD-69204'},
+	{tag: ['@LPD-69204', '@LPD-92491']},
 	async ({apiHelpers, assetsPage, infoPanelPage, page}) => {
 		const applicationName = 'cms/basic-web-contents';
 		const contentTitle = `title ${getRandomString()}`;

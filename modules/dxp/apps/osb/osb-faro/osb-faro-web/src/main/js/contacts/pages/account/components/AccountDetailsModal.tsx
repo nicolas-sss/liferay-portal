@@ -1,11 +1,7 @@
 import * as API from 'shared/api';
 import ClayModal, {useModal} from '@clayui/modal';
 import React from 'react';
-import {columns} from 'shared/util/frontend-data-set';
-import {
-	EConfigInURLBehavior,
-	FrontendDataSet
-} from '@liferay/frontend-data-set-web';
+import {columns, FrontendDataSet} from 'shared/components/FrontendDataSet';
 import {Routes} from 'shared/util/router';
 import {sub} from 'shared/util/lang';
 import {useParams} from 'react-router-dom';
@@ -44,7 +40,7 @@ const AccountDetailsModal: React.FC<IAccountDetailsModalProps> = ({
 		variables: {accountId, channelId, groupId}
 	});
 
-	const items: IAccountDetailsField[] = data?.fields ?? [];
+	const items: IAccountDetailsField[] = data?.items ?? [];
 
 	return (
 		<ClayModal observer={observer} size='lg'>
@@ -56,7 +52,6 @@ const AccountDetailsModal: React.FC<IAccountDetailsModalProps> = ({
 
 			<ClayModal.Body className='px-0'>
 				<FrontendDataSet
-					configInURLBehavior={EConfigInURLBehavior.OFF}
 					customDataRenderers={{
 						attributeNameAndValueRenderer: ({
 							itemData,
@@ -124,12 +119,11 @@ const AccountDetailsModal: React.FC<IAccountDetailsModalProps> = ({
 										fieldName: 'dataSourceName',
 										label: Liferay.Language.get(
 											'data-source'
-										),
-										sortable: true
+										)
 									},
 									{
 										contentRenderer: 'lastModifiedRenderer',
-										fieldName: 'lastModified',
+										fieldName: 'modifiedDate',
 										label: Liferay.Language.get(
 											'last-modified'
 										)

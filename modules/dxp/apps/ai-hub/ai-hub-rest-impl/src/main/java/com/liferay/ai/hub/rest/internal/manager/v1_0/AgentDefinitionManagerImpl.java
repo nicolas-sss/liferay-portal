@@ -29,7 +29,9 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
@@ -101,7 +103,8 @@ public class AgentDefinitionManagerImpl implements AgentDefinitionManager {
 	@Override
 	public Page<AgentDefinition> getAgentDefinitionsPage(
 			long companyId, DTOConverterContext dtoConverterContext,
-			String filter, Pagination pagination, String search, Sort[] sorts)
+			String filterString, Pagination pagination, String search,
+			Sort[] sorts)
 		throws Exception {
 
 		Map<String, Map<String, String>> actions = null;
@@ -119,7 +122,8 @@ public class AgentDefinitionManagerImpl implements AgentDefinitionManager {
 
 		Page<ObjectEntry> page = _objectEntryManager.getObjectEntries(
 			companyId, _getObjectDefinition(companyId), null, null,
-			dtoConverterContext, filter, pagination, search, sorts);
+			dtoConverterContext, _getFilterString(filterString), pagination,
+			search, sorts);
 
 		return Page.of(
 			actions,
@@ -282,6 +286,15 @@ public class AgentDefinitionManagerImpl implements AgentDefinitionManager {
 			dtoConverterContext.getUriInfo());
 	}
 
+	private String _getFilterString(String filterString) {
+		if (Validator.isNull(filterString)) {
+			return "externalReferenceCode ne 'L_PAGE_BUILDER'";
+		}
+
+		return "(" + filterString +
+			") and externalReferenceCode ne 'L_PAGE_BUILDER'";
+	}
+
 	private ObjectDefinition _getObjectDefinition(long companyId)
 		throws Exception {
 
@@ -364,6 +377,18 @@ public class AgentDefinitionManagerImpl implements AgentDefinitionManager {
 								dtoConverterContext,
 								"deleteAgentDefinitionByExternalReferenceCode",
 								workflowDefinition)
+						).put(
+							"permissions",
+							() -> {
+								Map<String, Map<String, String>> actions =
+									objectEntry.getActions();
+
+								if (MapUtil.isEmpty(actions)) {
+									return null;
+								}
+
+								return actions.get("permissions");
+							}
 						).build();
 					});
 				setActive(

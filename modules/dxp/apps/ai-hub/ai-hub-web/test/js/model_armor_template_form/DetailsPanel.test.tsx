@@ -100,12 +100,10 @@ const baseValues: ModelArmorTemplate = {
 	description: '',
 	externalReferenceCode: '',
 	guardrailType: 'input',
-	location: '',
 	maliciousUriFilterEnabled: false,
-	multiLanguageDetectionEnabled: false,
+	multilanguageDetectionEnabled: false,
 	piAndJailbreakConfidenceLevel: 'mediumAndAbove',
 	piAndJailbreakFilterEnabled: false,
-	r_accountToAIHubModelArmorTemplates_accountEntryERC: 'ACCOUNT',
 	raiDangerousLevel: 'none',
 	raiHarassmentLevel: 'none',
 	raiHateSpeechLevel: 'none',
@@ -129,12 +127,12 @@ function renderPanel(
 		<DetailsPanel
 			errors={overrides.errors || {}}
 			handleBlur={handleBlur}
+			readOnly={false}
 			setField={setField}
 			setFieldTouched={setFieldTouched}
 			touched={
 				overrides.touched ?? {
 					externalReferenceCode: true,
-					location: true,
 					title_i18n: true,
 				}
 			}
@@ -192,36 +190,24 @@ describe('DetailsPanel', () => {
 			);
 		});
 
+		it('masks out a leading hyphen, spaces, and special characters', () => {
+			const {setField} = renderPanel();
+
+			fireEvent.change(
+				screen.getByLabelText(/^external-reference-code/i),
+				{target: {value: '-a b_c!1-2'}}
+			);
+
+			expect(setField).toHaveBeenCalledWith(
+				'externalReferenceCode',
+				'ab_c1-2'
+			);
+		});
+
 		it('surfaces the validation error when present', () => {
 			renderPanel({errors: {externalReferenceCode: 'ERC required'}});
 
 			expect(screen.getByText('ERC required')).toBeInTheDocument();
-		});
-	});
-
-	describe('location input', () => {
-		it('calls setField on each keystroke', () => {
-			const {setField} = renderPanel();
-
-			fireEvent.change(screen.getByLabelText(/^location/i), {
-				target: {value: 'us-central1'},
-			});
-
-			expect(setField).toHaveBeenCalledWith('location', 'us-central1');
-		});
-
-		it('renders the help message below the field', () => {
-			renderPanel();
-
-			expect(
-				screen.getByText('guardrail-location-help')
-			).toBeInTheDocument();
-		});
-
-		it('surfaces the validation error when present', () => {
-			renderPanel({errors: {location: 'Location required'}});
-
-			expect(screen.getByText('Location required')).toBeInTheDocument();
 		});
 	});
 
@@ -246,7 +232,7 @@ describe('DetailsPanel', () => {
 	describe('multi-language detection checkbox', () => {
 		it('toggles the value via setField', () => {
 			const {setField} = renderPanel({
-				values: {...baseValues, multiLanguageDetectionEnabled: false},
+				values: {...baseValues, multilanguageDetectionEnabled: false},
 			});
 
 			fireEvent.click(
@@ -254,7 +240,7 @@ describe('DetailsPanel', () => {
 			);
 
 			expect(setField).toHaveBeenCalledWith(
-				'multiLanguageDetectionEnabled',
+				'multilanguageDetectionEnabled',
 				true
 			);
 		});

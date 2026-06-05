@@ -6,7 +6,7 @@
 import ClayForm, {ClayInput, ClayToggle} from '@clayui/form';
 import ClayLayout from '@clayui/layout';
 import ClayPanel from '@clayui/panel';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 
 import './InstructionDefinitionForm.scss';
 
@@ -19,7 +19,12 @@ import {InputLocalized} from 'frontend-js-components-web';
 
 import Toolbar from '../components/ToolBar';
 import {
+	generateExternalReferenceCode,
+	maskExternalReferenceCode,
+} from '../utils/externalReferenceCode';
+import {
 	getInstructionDefinition,
+	postInstructionDefinition,
 	putInstructionDefinition,
 } from './services/InstructionDefinitionService';
 import {
@@ -44,6 +49,11 @@ export default function InstructionDefinitionForm({
 	);
 	const [scopeOptions, setScopeOptions] = useState<ListTypeEntry[]>([]);
 
+	const generatedExternalReferenceCode = useMemo(
+		() => generateExternalReferenceCode(),
+		[]
+	);
+
 	const handleActive = () => {
 		setFormData((prev) => ({
 			...prev,
@@ -65,7 +75,9 @@ export default function InstructionDefinitionForm({
 
 	const handleSubmit = async () => {
 		try {
-			const response = await putInstructionDefinition(formData);
+			const response = externalReferenceCode
+				? await putInstructionDefinition(formData)
+				: await postInstructionDefinition(formData);
 
 			if (response?.externalReferenceCode) {
 				openToast({
@@ -86,7 +98,10 @@ export default function InstructionDefinitionForm({
 			console.error(error);
 
 			openToast({
-				message: Liferay.Language.get('an-unexpected-error-occurred'),
+				message:
+					error instanceof Error && error.message
+						? error.message
+						: Liferay.Language.get('an-unexpected-error-occurred'),
 				type: 'danger',
 			});
 		}
@@ -98,12 +113,13 @@ export default function InstructionDefinitionForm({
 				setFormData({
 					active: false,
 					description: '',
-					externalReferenceCode: '',
+					externalReferenceCode: generatedExternalReferenceCode,
 					instruction: '',
 					occasion: '',
 					r_accountToAIHubInstructionDefinitions_accountEntryERC:
 						accountEntryExternalReferenceCode,
 					scope: '',
+					system: false,
 					title_i18n: {},
 				});
 
@@ -125,6 +141,7 @@ export default function InstructionDefinitionForm({
 					r_accountToAIHubInstructionDefinitions_accountEntryERC:
 						instructionDefinition.r_accountToAIHubInstructionDefinitions_accountEntryERC,
 					scope: instructionDefinition.scope?.key || '',
+					system: instructionDefinition.system,
 					title_i18n: instructionDefinition.title_i18n,
 				});
 			}
@@ -139,7 +156,11 @@ export default function InstructionDefinitionForm({
 		}
 
 		fetchFormData();
-	}, [accountEntryExternalReferenceCode, externalReferenceCode]);
+	}, [
+		accountEntryExternalReferenceCode,
+		externalReferenceCode,
+		generatedExternalReferenceCode,
+	]);
 
 	useEffect(() => {
 		async function fetchScopeOptions() {
@@ -274,7 +295,15 @@ export default function InstructionDefinitionForm({
 											disabled={readOnly}
 											id="externalReferenceCode"
 											name="externalReferenceCode"
-											onChange={handleInputChange}
+											onChange={(event) =>
+												setFormData((prev) => ({
+													...prev,
+													externalReferenceCode:
+														maskExternalReferenceCode(
+															event.target.value
+														),
+												}))
+											}
 											placeholder={Liferay.Language.get(
 												'external-reference-code'
 											)}

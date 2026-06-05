@@ -8,6 +8,7 @@ package com.liferay.marketplace;
 import com.liferay.client.extension.util.spring.boot3.BaseRestController;
 import com.liferay.headless.commerce.admin.catalog.client.dto.v1_0.Catalog;
 import com.liferay.headless.commerce.admin.catalog.client.dto.v1_0.Product;
+import com.liferay.headless.commerce.admin.catalog.client.dto.v1_0.Sku;
 import com.liferay.headless.commerce.admin.order.client.dto.v1_0.Account;
 import com.liferay.headless.commerce.admin.order.client.dto.v1_0.BillingAddress;
 import com.liferay.headless.commerce.admin.order.client.dto.v1_0.Order;
@@ -15,11 +16,14 @@ import com.liferay.headless.commerce.admin.order.client.dto.v1_0.OrderItem;
 import com.liferay.headless.commerce.admin.order.client.resource.v1_0.OrderResource;
 import com.liferay.marketplace.constants.MarketplaceConstants;
 import com.liferay.marketplace.model.SalesforceOpportunity;
+import com.liferay.marketplace.service.AnalyticsService;
 import com.liferay.marketplace.service.KoroneikiService;
 import com.liferay.marketplace.service.MarketplaceService;
 import com.liferay.marketplace.service.SalesforceService;
 import com.liferay.marketplace.util.MarketplaceUtil;
+import com.liferay.osb.koroneiki.phloem.rest.client.dto.v1_0.ProductPurchase;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 
 import java.util.Map;
@@ -435,17 +439,21 @@ public class ObjectActionProductPurchaseRestController
 
 		String solutionType = productSpecificationsMap.get("solution-type");
 
+		if (Objects.equals(solutionType, "ai-hub")) {
+			_setUpCustomAddOn(
+				productSpecificationsMap.get("license-type"), order);
+
+			return;
+		}
+
 		if (Objects.equals(solutionType, "analytics")) {
 			_setUpAnalyticsAddOn(jwt, order);
 
 			return;
 		}
 
-		if (Objects.equals(solutionType, "ai-hub") ||
-			Objects.equals(solutionType, "liferay-data-platform")) {
-
-			_setUpCustomAddOn(
-				productSpecificationsMap.get("license-type"), order);
+		if (Objects.equals(solutionType, "liferay-data-platform")) {
+			_setUpLDPAddOn(jwt, order);
 		}
 	}
 
@@ -492,13 +500,23 @@ public class ObjectActionProductPurchaseRestController
 	private void _setUpCustomAddOn(String licenseType, Order order)
 		throws Exception {
 
+		OrderItem[] orderItems = order.getOrderItems();
+
+		if (ArrayUtil.isEmpty(orderItems)) {
+			return;
+		}
+
 		BillingAddress billingAddress = order.getBillingAddress();
+
+		OrderItem orderItem = orderItems[0];
+
+		Sku sku = _marketplaceService.getSku(orderItem.getSkuId());
 
 		JSONObject jsonObject = _salesforceService.postSalesforceOpportunity(
 			new SalesforceOpportunity(
 				_marketplaceService.getCountryByA2(
 					billingAddress.getCountryISOCode()),
-				licenseType, order,
+				licenseType, order, sku,
 				_marketplaceService.getUserAccount(
 					order.getCreatorEmailAddress())));
 
@@ -526,8 +544,38 @@ public class ObjectActionProductPurchaseRestController
 			});
 	}
 
+	private void _setUpLDPAddOn(Jwt jwt, Order order) throws Exception {
+		ProductPurchase[] productPurchases =
+			_koroneikiService.postAccountProductPurchases(
+				jwt, "3 Months Limited Beta", order);
+
+		ProductPurchase productPurchase = productPurchases[0];
+
+		if (productPurchase == null) {
+			return;
+		}
+
+		JSONObject orderMetadataJSONObject = MarketplaceUtil.getOrderMetadata(
+			order);
+
+		_marketplaceService.updateOrder(
+			HashMapBuilder.put(
+				"order-metadata",
+				orderMetadataJSONObject.put(
+					"analyticsProject",
+					_analyticsService.provisionAnalyticsProject(
+						orderMetadataJSONObject.getJSONObject("analyticsForm"),
+						"internal", order.getAccountExternalReferenceCode())
+				).toString()
+			).build(),
+			order.getId(), MarketplaceConstants.ORDER_STATUS_COMPLETED);
+	}
+
 	private static final Log _log = LogFactory.getLog(
 		ObjectActionProductPurchaseRestController.class);
+
+	@Autowired
+	private AnalyticsService _analyticsService;
 
 	@Autowired
 	private KoroneikiService _koroneikiService;

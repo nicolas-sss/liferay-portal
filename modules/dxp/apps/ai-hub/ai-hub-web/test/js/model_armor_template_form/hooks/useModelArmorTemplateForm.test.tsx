@@ -8,6 +8,7 @@ import {act, renderHook, waitFor} from '@testing-library/react';
 import {useModelArmorTemplateForm} from '../../../../src/main/resources/META-INF/resources/js/model_armor_template_form/hooks/useModelArmorTemplateForm';
 
 const mockGetModelArmorTemplate = jest.fn();
+const mockPostModelArmorTemplate = jest.fn();
 const mockPutModelArmorTemplate = jest.fn();
 const mockOpenToast = jest.fn();
 
@@ -16,6 +17,8 @@ jest.mock(
 	() => ({
 		getModelArmorTemplate: (...args: any[]) =>
 			mockGetModelArmorTemplate(...args),
+		postModelArmorTemplate: (...args: any[]) =>
+			mockPostModelArmorTemplate(...args),
 		putModelArmorTemplate: (...args: any[]) =>
 			mockPutModelArmorTemplate(...args),
 	})
@@ -32,15 +35,12 @@ jest.mock('@liferay/object-js-components-web', () => ({
 };
 
 function renderModelArmorHook({
-	accountEntryExternalReferenceCode = 'ACCOUNT',
 	externalReferenceCode = '',
 }: {
-	accountEntryExternalReferenceCode?: string;
 	externalReferenceCode?: string;
 } = {}) {
 	return renderHook(() =>
 		useModelArmorTemplateForm({
-			accountEntryExternalReferenceCode,
 			externalReferenceCode,
 		})
 	);
@@ -58,12 +58,10 @@ describe('fetch lifecycle', () => {
 			description: 'Loaded from API',
 			externalReferenceCode: 'TEMPLATE_X',
 			guardrailType: 'output',
-			location: 'us-central1',
 			maliciousUriFilterEnabled: true,
-			multiLanguageDetectionEnabled: false,
+			multilanguageDetectionEnabled: false,
 			piAndJailbreakConfidenceLevel: 'high',
 			piAndJailbreakFilterEnabled: true,
-			r_accountToAIHubModelArmorTemplates_accountEntryERC: 'ACCOUNT',
 			raiDangerousLevel: 'lowAndAbove',
 			raiHarassmentLevel: 'mediumAndAbove',
 			raiHateSpeechLevel: 'high',
@@ -84,7 +82,6 @@ describe('fetch lifecycle', () => {
 
 		expect(result.current.values.active).toBe(false);
 		expect(result.current.values.guardrailType).toBe('output');
-		expect(result.current.values.location).toBe('us-central1');
 		expect(result.current.values.raiDangerousLevel).toBe('lowAndAbove');
 	});
 
@@ -115,6 +112,7 @@ describe('fetch lifecycle', () => {
 describe('useModelArmorTemplateForm', () => {
 	beforeEach(() => {
 		mockGetModelArmorTemplate.mockReset();
+		mockPostModelArmorTemplate.mockReset();
 		mockPutModelArmorTemplate.mockReset();
 		mockOpenToast.mockReset();
 	});
@@ -131,17 +129,6 @@ describe('useModelArmorTemplateForm', () => {
 			expect(result.current.values.raiDangerousLevel).toBe('none');
 			expect(result.current.values.maliciousUriFilterEnabled).toBe(false);
 		});
-
-		it('seeds the account-relationship field from the prop', () => {
-			const {result} = renderModelArmorHook({
-				accountEntryExternalReferenceCode: 'ACCOUNT_42',
-			});
-
-			expect(
-				result.current.values
-					.r_accountToAIHubModelArmorTemplates_accountEntryERC
-			).toBe('ACCOUNT_42');
-		});
 	});
 
 	describe('setField', () => {
@@ -149,10 +136,10 @@ describe('useModelArmorTemplateForm', () => {
 			const {result} = renderModelArmorHook();
 
 			await act(async () => {
-				result.current.setField('multiLanguageDetectionEnabled', true);
+				result.current.setField('multilanguageDetectionEnabled', true);
 			});
 
-			expect(result.current.values.multiLanguageDetectionEnabled).toBe(
+			expect(result.current.values.multilanguageDetectionEnabled).toBe(
 				true
 			);
 		});
@@ -174,7 +161,7 @@ describe('useModelArmorTemplateForm', () => {
 
 	describe('submit', () => {
 		it("surfaces the thrown error's message in a danger toast", async () => {
-			mockPutModelArmorTemplate.mockRejectedValueOnce(
+			mockPostModelArmorTemplate.mockRejectedValueOnce(
 				new Error('External reference code already in use')
 			);
 
@@ -185,7 +172,6 @@ describe('useModelArmorTemplateForm', () => {
 					en_US: 'My Template',
 				});
 				result.current.setField('externalReferenceCode', 'TEMPLATE_X');
-				result.current.setField('location', 'us-central1');
 			});
 
 			await act(async () => {
@@ -203,7 +189,7 @@ describe('useModelArmorTemplateForm', () => {
 		});
 
 		it('falls back to the localized error when the thrown error has no message', async () => {
-			mockPutModelArmorTemplate.mockRejectedValueOnce(new Error());
+			mockPostModelArmorTemplate.mockRejectedValueOnce(new Error());
 
 			const {result} = renderModelArmorHook();
 
@@ -212,7 +198,6 @@ describe('useModelArmorTemplateForm', () => {
 					en_US: 'My Template',
 				});
 				result.current.setField('externalReferenceCode', 'TEMPLATE_X');
-				result.current.setField('location', 'us-central1');
 			});
 
 			await act(async () => {
@@ -229,8 +214,8 @@ describe('useModelArmorTemplateForm', () => {
 			});
 		});
 
-		it('shows a success toast when the API echoes back the ERC', async () => {
-			mockPutModelArmorTemplate.mockResolvedValueOnce({
+		it('calls postModelArmorTemplate in create mode', async () => {
+			mockPostModelArmorTemplate.mockResolvedValueOnce({
 				externalReferenceCode: 'TEMPLATE_X',
 			});
 
@@ -241,7 +226,6 @@ describe('useModelArmorTemplateForm', () => {
 					en_US: 'My Template',
 				});
 				result.current.setField('externalReferenceCode', 'TEMPLATE_X');
-				result.current.setField('location', 'us-central1');
 			});
 
 			await act(async () => {
@@ -249,13 +233,65 @@ describe('useModelArmorTemplateForm', () => {
 			});
 
 			await waitFor(() => {
-				expect(mockOpenToast).toHaveBeenCalledWith(
-					expect.objectContaining({
-						message: 'guardrail-saved-successfully',
-						type: 'success',
-					})
+				expect(mockPostModelArmorTemplate).toHaveBeenCalled();
+			});
+
+			expect(mockPutModelArmorTemplate).not.toHaveBeenCalled();
+			expect(mockOpenToast).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: 'guardrail-saved-successfully',
+					type: 'success',
+				})
+			);
+		});
+
+		it('calls putModelArmorTemplate in edit mode', async () => {
+			mockGetModelArmorTemplate.mockResolvedValueOnce({
+				active: true,
+				description: '',
+				externalReferenceCode: 'TEMPLATE_X',
+				guardrailType: 'input',
+				location: 'us-central1',
+				maliciousUriFilterEnabled: false,
+				multilanguageDetectionEnabled: false,
+				piAndJailbreakConfidenceLevel: 'mediumAndAbove',
+				piAndJailbreakFilterEnabled: false,
+				raiDangerousLevel: 'none',
+				raiHarassmentLevel: 'none',
+				raiHateSpeechLevel: 'none',
+				raiSexuallyExplicitLevel: 'none',
+				sdpFilterEnabled: false,
+				title_i18n: {en_US: 'My Template'},
+			});
+			mockPutModelArmorTemplate.mockResolvedValueOnce({
+				externalReferenceCode: 'TEMPLATE_X',
+			});
+
+			const {result} = renderModelArmorHook({
+				externalReferenceCode: 'TEMPLATE_X',
+			});
+
+			await waitFor(() => {
+				expect(result.current.values.externalReferenceCode).toBe(
+					'TEMPLATE_X'
 				);
 			});
+
+			await act(async () => {
+				result.current.handleSubmit();
+			});
+
+			await waitFor(() => {
+				expect(mockPutModelArmorTemplate).toHaveBeenCalled();
+			});
+
+			expect(mockPostModelArmorTemplate).not.toHaveBeenCalled();
+			expect(mockOpenToast).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: 'guardrail-saved-successfully',
+					type: 'success',
+				})
+			);
 		});
 	});
 
@@ -271,7 +307,7 @@ describe('useModelArmorTemplateForm', () => {
 				expect(result.current.errors.title_i18n).toBe('required');
 			});
 
-			mockPutModelArmorTemplate.mockResolvedValueOnce({
+			mockPostModelArmorTemplate.mockResolvedValueOnce({
 				externalReferenceCode: 'TEMPLATE_X',
 			});
 
@@ -280,7 +316,6 @@ describe('useModelArmorTemplateForm', () => {
 					en_US: 'My Template',
 				});
 				result.current.setField('externalReferenceCode', 'TEMPLATE_X');
-				result.current.setField('location', 'us-central1');
 			});
 
 			await act(async () => {
@@ -292,12 +327,15 @@ describe('useModelArmorTemplateForm', () => {
 				expect(
 					result.current.errors.externalReferenceCode
 				).toBeUndefined();
-				expect(result.current.errors.location).toBeUndefined();
 			});
 		});
 
 		it('flags missing required fields on submit', async () => {
 			const {result} = renderModelArmorHook();
+
+			await act(async () => {
+				result.current.setField('externalReferenceCode', '');
+			});
 
 			await act(async () => {
 				result.current.handleSubmit();
@@ -308,9 +346,9 @@ describe('useModelArmorTemplateForm', () => {
 				expect(result.current.errors.externalReferenceCode).toBe(
 					'required'
 				);
-				expect(result.current.errors.location).toBe('required');
 			});
 
+			expect(mockPostModelArmorTemplate).not.toHaveBeenCalled();
 			expect(mockPutModelArmorTemplate).not.toHaveBeenCalled();
 		});
 	});

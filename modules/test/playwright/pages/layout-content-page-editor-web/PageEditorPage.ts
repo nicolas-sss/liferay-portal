@@ -12,7 +12,6 @@ import {collapseSection} from '../../utils/collapseSection';
 import {expandSection} from '../../utils/expandSection';
 import fillAndClickOutside from '../../utils/fillAndClickOutside';
 import getRandomString from '../../utils/getRandomString';
-import {hoverAndExpectToBeVisible} from '../../utils/hoverAndExpectToBeVisible';
 import {selectElement} from '../../utils/selectElement';
 import {waitForAlert} from '../../utils/waitForAlert';
 import {SegmentEditorPage} from '../segments-web/SegmentEditorPage';
@@ -640,7 +639,7 @@ export class PageEditorPage {
 				trigger: content.getByTitle('Open Actions Menu'),
 			});
 
-			await hoverAndExpectToBeVisible({
+			await clickAndExpectToBeVisible({
 				autoClick: true,
 				target: this.page.locator(`[data-label="${subMenuAction}"]`),
 				trigger: this.page.getByRole('menuitem', {name: action}),
@@ -1947,6 +1946,10 @@ export class PageEditorPage {
 		if (await loadingIndicator.isVisible()) {
 			await loadingIndicator.waitFor({state: 'hidden'});
 		}
+	}
+
+	async toggleSidebars({timeout}: {timeout?: number} = {}) {
+		await this.page.getByLabel('Toggle Sidebars').click({timeout});
 	}
 
 	async undoAction() {

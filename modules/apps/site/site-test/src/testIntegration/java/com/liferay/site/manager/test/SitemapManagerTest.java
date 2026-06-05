@@ -72,6 +72,7 @@ import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TreeMapBuilder;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -88,7 +89,9 @@ import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 import com.liferay.redirect.model.RedirectEntry;
 import com.liferay.redirect.service.RedirectEntryLocalService;
+import com.liferay.site.constants.SitemapConstants;
 import com.liferay.site.manager.SitemapManager;
+import com.liferay.site.storage.helper.SitemapStorageHelper;
 import com.liferay.translation.info.item.provider.InfoItemLanguagesProvider;
 
 import java.io.Serializable;
@@ -106,6 +109,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -159,6 +163,14 @@ public class SitemapManagerTest {
 			_group.getGroupId());
 
 		_setUpThemeDisplay();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		if (_group != null) {
+			_sitemapStorageHelper.deleteSitemaps(
+				TestPropsValues.getCompanyId(), _group.getGroupId());
+		}
 	}
 
 	@Test
@@ -336,7 +348,8 @@ public class SitemapManagerTest {
 						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			ObjectEntry includedObjectEntry = _addObjectEntry(
@@ -387,7 +400,8 @@ public class SitemapManagerTest {
 						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			JournalArticle journalArticle = _addJournalArticle();
@@ -412,7 +426,8 @@ public class SitemapManagerTest {
 						HashMapDictionaryBuilder.<String, Object>put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			JournalArticle journalArticle = _addJournalArticle();
@@ -1164,7 +1179,8 @@ public class SitemapManagerTest {
 						HashMapDictionaryBuilder.<String, Object>put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			List<String> urls = new ArrayList<>();
@@ -1202,7 +1218,8 @@ public class SitemapManagerTest {
 						HashMapDictionaryBuilder.<String, Object>put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			JournalArticle journalArticle = _addJournalArticle();
@@ -1251,7 +1268,8 @@ public class SitemapManagerTest {
 						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			_assertSitemap(
@@ -1272,7 +1290,8 @@ public class SitemapManagerTest {
 						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			_assertSitemap(
@@ -1290,7 +1309,8 @@ public class SitemapManagerTest {
 						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			_assertSitemap(
@@ -1312,7 +1332,8 @@ public class SitemapManagerTest {
 						).put(
 							"xmlSitemapIndexEnabled", true
 						).put(
-							"xmlSitemapIndexMode", _INDEX_MODE_ASSET_TYPE
+							"xmlSitemapIndexMode",
+							SitemapConstants.INDEX_MODE_ASSET_TYPE
 						).build())) {
 
 			_assertSitemap(false, _group.getGroupId(), StringPool.BLANK);
@@ -1683,7 +1704,10 @@ public class SitemapManagerTest {
 			_company, group, layout);
 
 		_themeDisplay.setPortalDomain(serverName);
-		_themeDisplay.setPortalURL("http://" + serverName + ":8080");
+		_themeDisplay.setPortalURL(
+			StringBundler.concat(
+				"http://", serverName, ":",
+				PortalUtil.getPortalServerPort(false)));
 
 		MockHttpServletRequest mockHttpServletRequest =
 			new MockHttpServletRequest();
@@ -1695,7 +1719,7 @@ public class SitemapManagerTest {
 		_themeDisplay.setRequest(mockHttpServletRequest);
 
 		_themeDisplay.setServerName(serverName);
-		_themeDisplay.setServerPort(8080);
+		_themeDisplay.setServerPort(PortalUtil.getPortalServerPort(false));
 	}
 
 	private void _testCompanySitemapIncludePages(
@@ -1849,8 +1873,6 @@ public class SitemapManagerTest {
 	private static final String _CLASS_NAME_OBJECT_ENTRY =
 		ObjectEntry.class.getName();
 
-	private static final String _INDEX_MODE_ASSET_TYPE = "asset-type";
-
 	private static final String _PID_SITEMAP_COMPANY_CONFIGURATION =
 		"com.liferay.site.internal.configuration.SitemapCompanyConfiguration";
 
@@ -1926,6 +1948,9 @@ public class SitemapManagerTest {
 
 	@Inject
 	private SitemapManager _sitemapManager;
+
+	@Inject
+	private SitemapStorageHelper _sitemapStorageHelper;
 
 	private ThemeDisplay _themeDisplay;
 

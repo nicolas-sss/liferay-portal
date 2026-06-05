@@ -10,7 +10,7 @@
  */
 
 module.exports = {
-	hash: '05097b20f14f210f442152c224b132906879fa39404d1f8afc696bf8fe3e3276',
+	hash: '670ceb6206f55f62e32cbfbf81c4c6302fd7ce63c392308cc88a9607356a5406',
 	imports: {
 		'@liferay/accessibility-menu-web': [],
 		'@liferay/accessibility-settings-state-web': [],
@@ -91,8 +91,10 @@ module.exports = {
 		'@liferay/frontend-data-set-sample-web': [],
 		'@liferay/frontend-data-set-taglib': [],
 		'@liferay/frontend-data-set-web': [],
-		'@liferay/frontend-editor-ckeditor-sample-web': [],
+		'@liferay/frontend-editor-ckeditor4-sample-web': [],
+		'@liferay/frontend-editor-ckeditor5-sample-web': [],
 		'@liferay/frontend-icons-web': [],
+		'@liferay/frontend-js-audiences-web': [],
 		'@liferay/frontend-js-bootstrap-support-web': [],
 		'@liferay/frontend-js-clay-web': [
 			'@clayui/alert',
@@ -182,6 +184,7 @@ module.exports = {
 			'react-text-mask',
 			'text-mask-addons',
 			'text-mask-core',
+			'ua-parser-js',
 		],
 		'@liferay/frontend-js-importmaps-extender': [],
 		'@liferay/frontend-js-item-selector-sample-web': [],
@@ -219,7 +222,6 @@ module.exports = {
 		'@liferay/layout-type-controller-embedded': [],
 		'@liferay/layout-type-controller-panel': [],
 		'@liferay/layout-utility-page-terms-of-use': [],
-		'@liferay/liferay-ai-hub-theme': [],
 		'@liferay/liferay-cms-theme': [],
 		'@liferay/locked-items-web': [],
 		'@liferay/login-web': [],
@@ -522,6 +524,7 @@ module.exports = {
 			'Heading',
 			'Icon',
 			'IconSelector',
+			'KeyboardArrowsIndicator',
 			'LanguagePicker',
 			'Modal',
 			'ModalContext',

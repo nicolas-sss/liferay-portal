@@ -33,6 +33,7 @@ import com.liferay.dynamic.data.mapping.util.NumberUtil;
 import com.liferay.exportimport.kernel.empty.model.EmptyModelManager;
 import com.liferay.exportimport.kernel.empty.model.EmptyModelManagerUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
+import com.liferay.friendly.url.constants.FriendlyURLEntryConstants;
 import com.liferay.friendly.url.model.FriendlyURLEntry;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.list.type.exception.NoSuchListTypeEntryException;
@@ -1051,6 +1052,8 @@ public class ObjectEntryLocalServiceImpl
 				groupId,
 				_classNameLocalService.getClassNameId(
 					objectDefinition.getClassName()),
+				FriendlyURLEntryConstants.
+					FRIENDLY_URL_ENTRY_PARENT_CLASS_PK_DEFAULT,
 				urlTitle);
 
 		if (friendlyURLEntry == null) {
@@ -3237,6 +3240,8 @@ public class ObjectEntryLocalServiceImpl
 					ObjectEntryTable.INSTANCE.status.notIn(
 						new Integer[] {
 							WorkflowConstants.STATUS_DRAFT,
+							WorkflowConstants.STATUS_EXPIRED,
+							WorkflowConstants.STATUS_IN_TRASH,
 							WorkflowConstants.STATUS_PENDING
 						})
 				)
@@ -4741,8 +4746,12 @@ public class ObjectEntryLocalServiceImpl
 				dynamicObjectDefinitionLocalizationTable,
 				dynamicObjectDefinitionTable, null)
 		).where(
-			ObjectEntryTable.INSTANCE.objectDefinitionId.eq(
-				objectDefinition.getObjectDefinitionId()
+			ObjectEntrySearchUtil.getObjectEntryIndexPredicate(
+				groupIds, objectDefinition,
+				Predicate.withParentheses(
+					_fillPredicate(
+						objectDefinition.getObjectDefinitionId(), predicate,
+						search))
 			).and(
 				ObjectEntryTable.INSTANCE.rootObjectEntryId.eq(
 					ObjectEntryTable.INSTANCE.objectEntryId
@@ -4752,19 +4761,6 @@ public class ObjectEntryLocalServiceImpl
 			).and(
 				ObjectEntryTable.INSTANCE.status.neq(
 					WorkflowConstants.STATUS_IN_TRASH)
-			).and(
-				() -> {
-					if (ArrayUtil.isEmpty(groupIds)) {
-						return null;
-					}
-
-					return ObjectEntryTable.INSTANCE.groupId.in(groupIds);
-				}
-			).and(
-				Predicate.withParentheses(
-					_fillPredicate(
-						objectDefinition.getObjectDefinitionId(), predicate,
-						search))
 			).and(
 				_getHeadObjectEntryPredicate(preferApproved)
 			).and(

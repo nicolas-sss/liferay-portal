@@ -49,12 +49,10 @@ const baseValues: ModelArmorTemplate = {
 	description: '',
 	externalReferenceCode: '',
 	guardrailType: 'input',
-	location: '',
 	maliciousUriFilterEnabled: false,
-	multiLanguageDetectionEnabled: false,
+	multilanguageDetectionEnabled: false,
 	piAndJailbreakConfidenceLevel: 'mediumAndAbove',
 	piAndJailbreakFilterEnabled: false,
-	r_accountToAIHubModelArmorTemplates_accountEntryERC: 'ACCOUNT',
 	raiDangerousLevel: 'none',
 	raiHarassmentLevel: 'none',
 	raiHateSpeechLevel: 'none',
@@ -68,6 +66,7 @@ function renderPanel(overrides: Partial<ModelArmorTemplate> = {}) {
 
 	render(
 		<ResponsibleAIPanel
+			readOnly={false}
 			setField={setField}
 			values={{...baseValues, ...overrides}}
 		/>

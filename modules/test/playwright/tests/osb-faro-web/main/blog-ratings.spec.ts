@@ -8,13 +8,14 @@ import {expect, mergeTests} from '@playwright/test';
 import {apiHelpersTest} from '../../../fixtures/apiHelpersTest';
 import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {instanceSettingsPagesTest} from '../../../fixtures/instanceSettingsPagesTest';
+import {isolatedChannelTest} from '../../../fixtures/isolatedChannelTest';
 import {isolatedSiteTest} from '../../../fixtures/isolatedSiteTest';
 import {loginAnalyticsCloudTest} from '../../../fixtures/loginAnalyticsCloudTest';
 import {loginTest} from '../../../fixtures/loginTest';
 import {clickAndExpectToBeVisible} from '../../../utils/clickAndExpectToBeVisible';
 import getRandomString from '../../../utils/getRandomString';
 import {waitForAlert} from '../../../utils/waitForAlert';
-import {syncAnalyticsCloud} from '../../analytics-settings-web/main/utils/analytics-settings';
+import {syncAnalyticsCloudViaAPI} from '../../analytics-settings-web/main/utils/analytics-settings';
 import getPageDefinition from '../../layout-content-page-editor-web/main/utils/getPageDefinition';
 import getWidgetDefinition from '../../layout-content-page-editor-web/main/utils/getWidgetDefinition';
 import {ACPage, navigateToACPageViaURL} from './utils/navigation';
@@ -25,6 +26,7 @@ const test = mergeTests(
 	featureFlagsTest({
 		'LPS-178052': {enabled: true},
 	}),
+	isolatedChannelTest,
 	isolatedSiteTest,
 	instanceSettingsPagesTest,
 	loginAnalyticsCloudTest(),
@@ -36,7 +38,14 @@ test(
 	{
 		tag: ['@LRAC-10601', '@LRAC-7848'],
 	},
-	async ({apiHelpers, instanceSettingsPage, page, site}) => {
+	async ({
+		analyticsChannel: channel,
+		apiHelpers,
+		instanceSettingsPage,
+		page,
+		project,
+		site,
+	}) => {
 		test.setTimeout(120000);
 
 		// Switch the instance-wide blogs rating type to stars (Instance Settings > Community Tools > Ratings)
@@ -78,11 +87,11 @@ test(
 			title: getRandomString(),
 		});
 
-		const {channel, project} = await syncAnalyticsCloud({
+		await syncAnalyticsCloudViaAPI({
 			apiHelpers,
-			channelName: 'My Property - ' + getRandomString(),
-			page,
-			siteName: site.name,
+			channel,
+			project,
+			siteId: Number(site.id),
 		});
 
 		await page.goto(
