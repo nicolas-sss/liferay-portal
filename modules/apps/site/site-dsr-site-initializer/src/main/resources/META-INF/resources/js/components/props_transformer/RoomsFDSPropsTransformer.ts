@@ -8,9 +8,12 @@ import {openModal} from 'frontend-js-components-web';
 
 import {openFDSDeleteConfirmationModal} from '../../common/utils/openModalUtil';
 import {IRoom} from '../../common/utils/types';
+import DuplicateRoom from '../DuplicateRoom';
 import RoomInitializer from '../RoomInitializer';
 import RoomShare from '../RoomShare';
 import RoomNameRenderer from './cell_renderers/RoomNameRenderer';
+import RoomStatusRenderer from './cell_renderers/RoomStatusRenderer';
+import RoomTrendRenderer from './cell_renderers/RoomTrendRenderer';
 
 export default function RoomsFDSPropsTransformer({
 	additionalProps,
@@ -69,6 +72,16 @@ export default function RoomsFDSPropsTransformer({
 					name: 'roomNameTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,
+				{
+					component: RoomStatusRenderer,
+					name: 'roomStatusTableCellRenderer',
+					type: 'internal',
+				} as IInternalRenderer,
+				{
+					component: RoomTrendRenderer,
+					name: 'roomTrendTableCellRenderer',
+					type: 'internal',
+				} as IInternalRenderer,
 			],
 		},
 		itemsActions: itemsActions.map((action) => {
@@ -105,6 +118,28 @@ export default function RoomsFDSPropsTransformer({
 						'delete-digital-sales-room-confirmation-title'
 					),
 					url: itemData.actions?.delete?.href,
+				});
+			}
+			else if (action.data.id === 'duplicate') {
+				event?.preventDefault();
+
+				openModal({
+					containerProps: {
+						className: '',
+					},
+					contentComponent: ({
+						closeModal,
+					}: {
+						closeModal: () => void;
+					}) =>
+						DuplicateRoom({
+							closeModal,
+							loadData,
+							name: itemData.embedded.name,
+							roomId: itemData.embedded.id,
+							siteId: itemData.embedded.siteId,
+						}),
+					size: 'lg',
 				});
 			}
 			else if (action.data.id === 'share') {

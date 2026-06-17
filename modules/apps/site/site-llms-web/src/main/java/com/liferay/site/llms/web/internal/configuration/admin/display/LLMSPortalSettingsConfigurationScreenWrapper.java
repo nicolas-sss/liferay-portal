@@ -7,7 +7,9 @@ package com.liferay.site.llms.web.internal.configuration.admin.display;
 
 import com.liferay.configuration.admin.display.ConfigurationScreen;
 import com.liferay.configuration.admin.display.ConfigurationScreenWrapper;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.settings.configuration.admin.display.PortalSettingsConfigurationScreenContributor;
@@ -55,7 +57,7 @@ public class LLMSPortalSettingsConfigurationScreenWrapper
 
 		@Override
 		public String getCategoryKey() {
-			return "aeo-seo";
+			return "seo";
 		}
 
 		@Override
@@ -85,7 +87,8 @@ public class LLMSPortalSettingsConfigurationScreenWrapper
 
 		@Override
 		public boolean isVisible() {
-			return true;
+			return FeatureFlagManagerUtil.isEnabled(
+				CompanyThreadLocal.getCompanyId(), "LPD-80518");
 		}
 
 		@Override

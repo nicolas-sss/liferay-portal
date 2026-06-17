@@ -54,12 +54,12 @@ export function OptionRow({
 	return (
 		<label
 			className={classnames(
-				'cursor-pointer d-block mb-2 text-3',
+				'cursor-pointer d-block text-3',
 				bordered && 'border p-3 rounded'
 			)}
 		>
-			<ClayLayout.ContentRow className="align-items-center">
-				<ClayLayout.ContentCol className="pr-2" expand={false}>
+			<ClayLayout.ContentRow className="align-items-start">
+				<ClayLayout.ContentCol className="pr-2 pt-1" expand={false}>
 					{input}
 				</ClayLayout.ContentCol>
 

@@ -5,6 +5,7 @@
 
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
+import classnames from 'classnames';
 import {sub} from 'frontend-js-web';
 import React, {ReactNode, useId} from 'react';
 
@@ -25,6 +26,7 @@ import PortletDataControlChoice from './PortletDataControlChoice';
 import SectionTags from './SectionTags';
 
 export default function PortletDataControl({
+	compact = false,
 	control,
 	onChange,
 	pageTreeModalConfiguration,
@@ -32,6 +34,7 @@ export default function PortletDataControl({
 	topLevel = false,
 	value,
 }: {
+	compact?: boolean;
 	control: PreviewPortletDataHandlerControl;
 	onChange: (value: HandlerSelection | undefined) => void;
 	pageTreeModalConfiguration?: PageTreeModalConfiguration;
@@ -79,12 +82,21 @@ export default function PortletDataControl({
 		control.type === 'Boolean' && showDeletions
 			? control.deletionCount
 			: undefined;
+	const description =
+		topLevel && control.type === 'Boolean'
+			? control.description
+			: undefined;
+	const tag =
+		topLevel && control.type === 'Boolean' ? control.tag : undefined;
 
 	const rowProps = {
 		checkboxId,
+		description,
 		indeterminate: !!value && !selected,
 		label: control.label,
-		labelClassName: topLevel ? 'font-weight-semi-bold' : '',
+		labelClassName: topLevel
+			? 'font-weight-semi-bold'
+			: 'font-weight-normal',
 		onToggle: () =>
 			onChange(selected ? undefined : getInitialSelection(control)),
 		selected,
@@ -92,6 +104,7 @@ export default function PortletDataControl({
 			<SectionTags
 				additionCount={additionCount}
 				deletionCount={deletionCount}
+				tag={tag}
 			/>
 		),
 	};
@@ -118,6 +131,7 @@ export default function PortletDataControl({
 		return (
 			<PortletDataHandlerPanel
 				bodyChildren={body}
+				compact={compact}
 				currentSelection={currentSelection}
 				expandable={expandable}
 				nestedControls={nestedControls}
@@ -139,19 +153,21 @@ export default function PortletDataControl({
 
 function PortletDataHandlerPanel({
 	bodyChildren,
+	compact = false,
 	currentSelection,
 	expandable,
 	nestedControls,
 	rowProps,
 }: {
 	bodyChildren: ReactNode;
+	compact?: boolean;
 	currentSelection: Record<string, HandlerSelection>;
 	expandable: boolean;
 	nestedControls: PreviewPortletDataHandlerControl[];
 	rowProps: React.ComponentProps<typeof ControlRow>;
 }) {
 	return (
-		<div className="p-3">
+		<div className={classnames('px-3', compact ? 'py-2' : 'py-3')}>
 			{expandable ? (
 				<CollapsibleGroup
 					{...rowProps}
@@ -171,6 +187,7 @@ function PortletDataHandlerPanel({
 											rowProps.label
 										)
 							}
+							className="font-weight-semi-bold"
 							displayType="link"
 							size="sm"
 						>

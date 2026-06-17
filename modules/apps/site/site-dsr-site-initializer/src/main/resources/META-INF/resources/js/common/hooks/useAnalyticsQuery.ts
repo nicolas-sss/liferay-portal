@@ -4,6 +4,10 @@
  */
 
 import {useIsMounted} from '@liferay/frontend-js-react-web';
+
+// @ts-ignore - Check possibility to install package in ts format
+
+import sha256 from 'hash.js/lib/hash/sha/256';
 import {useCallback, useEffect, useRef, useState} from 'react';
 
 import {
@@ -17,7 +21,7 @@ import {toFilters} from '../../main_view/analytics/utils';
 import AnalyticsService from '../services/AnalyticsService';
 import useIsInViewport from './useIsInViewport';
 
-function toRequestParams(
+export function toRequestParams(
 	filters: TAnalyticsFilter,
 	variables: Record<string, unknown>
 ) {
@@ -27,9 +31,14 @@ function toRequestParams(
 		.value as TDateRangeAnalyticsFilterValue;
 	const userFilter = filters[AnalyticsFilters.USER] as IAnalyticsUserFilter;
 
+	const emailAddress = userFilter?.value?.[0];
+
 	return {
 		...variables,
-		emailAddresses: userFilter.value,
+		emailAddresses: userFilter?.value ?? [],
+		entityId: emailAddress
+			? sha256().update(emailAddress.toLowerCase().trim()).digest('hex')
+			: '',
 		groupIds: roomFilterValue.room?.siteId
 			? [roomFilterValue.room?.siteId]
 			: [],
@@ -68,6 +77,7 @@ export default function useAnalyticsQuery({
 	const isMounted = useIsMounted();
 	const isVisible = useIsInViewport(element);
 
+	const lastFetchedFiltersRef = useRef<string | null>(null);
 	const queryRef = useRef(query);
 	const settingsRef = useRef(settings);
 	const variablesRef = useRef(variables);
@@ -152,6 +162,18 @@ export default function useAnalyticsQuery({
 	}, [isMounted]);
 
 	useEffect(() => {
+		if (settingsRef.current.checkViewportVisibility && !isVisible) {
+			return;
+		}
+
+		const serializedFilters = JSON.stringify(filters);
+
+		if (lastFetchedFiltersRef.current === serializedFilters) {
+			return;
+		}
+
+		lastFetchedFiltersRef.current = serializedFilters;
+
 		sendRequest(filters);
 	}, [filters, isVisible, sendRequest]);
 

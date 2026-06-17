@@ -327,11 +327,11 @@ public class SegmentsEntryLocalServiceImpl
 
 	@Override
 	public List<SegmentsEntry> getSegmentsEntries(
-		long groupId, String source, int start, int end,
+		long groupId, String[] sources, int start, int end,
 		OrderByComparator<SegmentsEntry> orderByComparator) {
 
 		return segmentsEntryPersistence.findByG_SRC(
-			_portal.getCurrentAndAncestorSiteGroupIds(groupId), source, start,
+			_portal.getCurrentAndAncestorSiteGroupIds(groupId), sources, start,
 			end, orderByComparator);
 	}
 
@@ -364,6 +364,12 @@ public class SegmentsEntryLocalServiceImpl
 	public int getSegmentsEntriesCount(long groupId) {
 		return segmentsEntryPersistence.countByGroupId(
 			_portal.getCurrentAndAncestorSiteGroupIds(groupId));
+	}
+
+	@Override
+	public int getSegmentsEntriesCount(long groupId, String[] sources) {
+		return segmentsEntryPersistence.countByG_SRC(
+			_portal.getCurrentAndAncestorSiteGroupIds(groupId), sources);
 	}
 
 	@Override
@@ -530,6 +536,10 @@ public class SegmentsEntryLocalServiceImpl
 	}
 
 	private String _getSource(String criteria, String source) {
+		if (SegmentsEntryConstants.SOURCE_AUDIENCE.equals(source)) {
+			return source;
+		}
+
 		if (Validator.isNotNull(criteria)) {
 			Criteria deserializedCriteria = CriteriaSerializer.deserialize(
 				criteria);

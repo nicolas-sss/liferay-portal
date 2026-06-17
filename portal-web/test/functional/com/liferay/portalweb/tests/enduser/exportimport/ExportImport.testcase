@@ -156,6 +156,8 @@ definition {
 
 			LexiconEntry.gotoAdd();
 
+			LAR.configureExportOptions();
+
 			LAR.exportWithAssertionOnSuccess();
 		}
 
@@ -877,8 +879,10 @@ definition {
 	@description = "Verify is possible export/import a Private Page."
 	@priority = 3
 	test ExportImportPrivatePage {
-		task ("Enable private pages") {
+		task ("Enable private pages and widget pages") {
 			PagesAdmin.enablePrivatePages();
+
+			PagesAdmin.enableWidgetPages();
 		}
 
 		task ("Given: User adds a new private page") {
@@ -1091,6 +1095,8 @@ definition {
 
 			LexiconEntry.gotoAdd();
 
+			LAR.configureExportOptions();
+
 			LAR.exportWithAssertionOnSuccess();
 
 			LAR.downloadLar();
@@ -1235,6 +1241,10 @@ definition {
 	@description = "Verify is possible export/import theme settings."
 	@priority = 3
 	test ExportImportThemeSettings {
+		task ("Enable widget pages") {
+			PagesAdmin.enableWidgetPages();
+		}
+
 		task ("Given: User adds a new site with a page") {
 			HeadlessSite.addSite(siteName = "Site Name");
 
@@ -1246,7 +1256,7 @@ definition {
 
 			PagesAdmin.openPagesAdmin(siteURLKey = "Site Name");
 
-			PagesAdmin.addPage(pageName = "Test Page");
+			PagesAdmin.addPublicPage(pageName = "Test Page");
 
 			PagesAdmin.openPagesAdmin(siteURLKey = "Site Name");
 		}
@@ -1608,6 +1618,8 @@ definition {
 				portlet = "Export");
 
 			LexiconEntry.gotoAdd();
+
+			LAR.configureExportOptions();
 
 			LAR.exportWithAssertionOnSuccess();
 

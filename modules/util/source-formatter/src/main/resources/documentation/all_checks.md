@@ -528,6 +528,7 @@ TXTStylingCheck | [Styling](styling_checks.md#styling-checks) | .txt | Applies r
 TernaryOperatorCheck | [Styling](styling_checks.md#styling-checks) | .java, .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds use of ternary operator in `java` files (use if statement instead). |
 TestClassCheck | [Naming Conventions](naming_conventions_checks.md#naming-conventions-checks) | .java | Checks that names of test classes follow naming conventions. |
 TestClassDBConnectionCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Finds cases of incorrect use of database connection. |
+TestClassHardcodedPortCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Finds cases where `PortalUtil.getPortalServerPort` should be used. |
 TestClassMissingLiferayUnitTestRuleCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Finds missing LiferayUnitTestRule. |
 TestClassStaticVariableCheck | [Performance](performance_checks.md#performance-checks) | .java | Finds unnecessary static modifiers in test classes. |
 TextBlockCheck | [Styling](styling_checks.md#styling-checks) | .java | Finds usage of text block. |
@@ -660,7 +661,6 @@ XMLWorkflowDefinitionFileStylingCheck | [Styling](styling_checks.md#styling-chec
 YMLDefinitionOrderCheck | [Styling](styling_checks.md#styling-checks) | .tpl, .yaml, or .yml | Sorts definitions alphabetically in `.yml` files. |
 YMLEmptyLinesCheck | [Styling](styling_checks.md#styling-checks) | .tpl, .yaml, or .yml | Finds missing and unnecessary empty lines. |
 YMLIndentationCheck | [Styling](styling_checks.md#styling-checks) | .tpl, .yaml, or .yml | Finds incorrect indentation in YAML files. |
-YMLLongLinesCheck | [Styling](styling_checks.md#styling-checks) | .tpl, .yaml, or .yml | Finds lines that are longer than the specified maximum line length. |
 YMLRESTConfigFileBreakingChangeCommitMessageCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .tpl, .yaml, or .yml | Checks that commit message should contain the schematized breaking changes. |
 YMLStylingCheck | [Styling](styling_checks.md#styling-checks) | .tpl, .yaml, or .yml | Applies rules to enforce consistency in code style. |
 YMLWhitespaceCheck | [Styling](styling_checks.md#styling-checks) | .tpl, .yaml, or .yml | Finds missing and unnecessary whitespace in `.yml` files. |

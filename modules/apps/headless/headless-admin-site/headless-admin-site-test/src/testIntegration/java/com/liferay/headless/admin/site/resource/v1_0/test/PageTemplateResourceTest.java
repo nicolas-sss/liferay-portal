@@ -24,6 +24,7 @@ import com.liferay.headless.admin.site.client.dto.v1_0.ThumbnailURLReference;
 import com.liferay.headless.admin.site.client.dto.v1_0.WidgetPageSpecification;
 import com.liferay.headless.admin.site.client.dto.v1_0.WidgetPageTemplate;
 import com.liferay.headless.admin.site.client.dto.v1_0.WidgetPageTemplateSettings;
+import com.liferay.headless.admin.site.client.http.HttpInvoker;
 import com.liferay.headless.admin.site.client.pagination.Page;
 import com.liferay.headless.admin.site.client.problem.Problem;
 import com.liferay.headless.admin.site.client.resource.v1_0.PageTemplateResource;
@@ -71,12 +72,16 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.test.util.IdempotentRetryAssert;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.FeatureFlag;
+import com.liferay.portal.test.rule.FeatureFlags;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -101,7 +106,9 @@ import org.junit.runner.RunWith;
 /**
  * @author Rubén Pulido
  */
-@FeatureFlag("LPD-35443")
+@FeatureFlags(
+	featureFlags = {@FeatureFlag("LPD-35443"), @FeatureFlag("LPD-76864")}
+)
 @RunWith(Arquillian.class)
 public class PageTemplateResourceTest extends BasePageTemplateResourceTestCase {
 
@@ -363,6 +370,7 @@ public class PageTemplateResourceTest extends BasePageTemplateResourceTestCase {
 		_testPostSitePageTemplateWithPageSpecifications();
 		_testPostSitePageTemplateWithPageTemplateSet();
 		_testPostSitePageTemplateWithThumbnail();
+		_testPostSitePageTemplateWithWidgetPageTypeIsDeprecated();
 
 		_enableLocalStaging();
 
@@ -511,7 +519,26 @@ public class PageTemplateResourceTest extends BasePageTemplateResourceTestCase {
 		_testPutSitePageTemplateWithPageTemplateSet();
 		_testPutSitePageTemplateWithThumbnail();
 
+		Repository repository = _portletFileRepository.addPortletRepository(
+			testGroup.getGroupId(), RandomTestUtil.randomString(),
+			ServiceContextTestUtil.getServiceContext(
+				testGroup, TestPropsValues.getUserId()));
+
+		FileEntry fileEntry = _addPortletFileEntry(repository.getDlFolderId());
+
+		contentPageTemplate.setThumbnailURLReference(
+			() -> ThumbnailURLReferenceUtil.getThumbnailURLReference(
+				fileEntry, null));
+
+		pageTemplateResource.putSitePageTemplate(
+			testGroup.getExternalReferenceCode(),
+			contentPageTemplate.getExternalReferenceCode(),
+			contentPageTemplate);
+
 		_enableLocalStaging();
+
+		_assertStagingGroupPageTemplateThumbnail(
+			fileEntry, contentPageTemplate);
 
 		_assertProblemException(
 			"BAD_REQUEST", null,
@@ -732,6 +759,28 @@ public class PageTemplateResourceTest extends BasePageTemplateResourceTestCase {
 		}
 	}
 
+	private void _assertStagingGroupPageTemplateThumbnail(
+			FileEntry liveGroupFileEntry, PageTemplate pageTemplate)
+		throws Exception {
+
+		Group stagingGroup = testGroup.getStagingGroup();
+
+		FileEntry stagingGroupFileEntry =
+			_portletFileRepository.getPortletFileEntryByExternalReferenceCode(
+				liveGroupFileEntry.getExternalReferenceCode(),
+				stagingGroup.getGroupId());
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_layoutPageTemplateEntryLocalService.
+				getLayoutPageTemplateEntryByExternalReferenceCode(
+					pageTemplate.getExternalReferenceCode(),
+					stagingGroup.getGroupId());
+
+		Assert.assertEquals(
+			stagingGroupFileEntry.getFileEntryId(),
+			layoutPageTemplateEntry.getPreviewFileEntryId());
+	}
+
 	private void _assertThumbnailFileEntryId(
 			Boolean defaultValue, String pageTemplateExternalReferenceCode,
 			String thumbnailExternalReferenceCode)
@@ -762,10 +811,18 @@ public class PageTemplateResourceTest extends BasePageTemplateResourceTestCase {
 	}
 
 	private void _enableLocalStaging(Group group) throws Exception {
-		_stagingLocalService.enableLocalStaging(
-			TestPropsValues.getUserId(), group, true, false,
-			ServiceContextTestUtil.getServiceContext(
-				group, TestPropsValues.getUserId()));
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.batch.engine.internal." +
+					"BatchEngineImportTaskExecutorImpl",
+				LoggerTestUtil.OFF)) {
+
+			_stagingLocalService.enableLocalStaging(
+				TestPropsValues.getUserId(), group, true, false,
+				ServiceContextTestUtil.getServiceContext(
+					group, TestPropsValues.getUserId()));
+		}
+
+		Assert.assertTrue(group.hasStagingGroup());
 	}
 
 	private ContentPageTemplate _getContentPageTemplate(Group group)
@@ -1734,6 +1791,30 @@ public class PageTemplateResourceTest extends BasePageTemplateResourceTestCase {
 				"Unable to download file from " +
 					thumbnailURLReference.getUrl(),
 				problem.getTitle());
+		}
+	}
+
+	private void _testPostSitePageTemplateWithWidgetPageTypeIsDeprecated()
+		throws Exception {
+
+		PropsUtil.set("feature.flag.LPD-76864", "false");
+
+		try {
+			HttpInvoker.HttpResponse httpResponse =
+				pageTemplateResource.postSitePageTemplateHttpResponse(
+					testGroup.getExternalReferenceCode(),
+					_getWidgetPageTemplate(testGroup));
+
+			String content = httpResponse.getContent();
+
+			Assert.assertEquals(content, 400, httpResponse.getStatusCode());
+			Assert.assertTrue(
+				content,
+				content.contains(
+					"Feature flag LPD-76864 is disabled for company"));
+		}
+		finally {
+			PropsUtil.set("feature.flag.LPD-76864", "true");
 		}
 	}
 

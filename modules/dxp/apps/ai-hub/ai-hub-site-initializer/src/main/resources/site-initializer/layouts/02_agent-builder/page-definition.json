@@ -63,6 +63,9 @@
 					},
 					{
 						"definition": {
+							"cssClasses": [
+								"ai-hub-tabs"
+							],
 							"fragment": {
 								"key": "BASIC_COMPONENT-tabs"
 							},
@@ -194,7 +197,7 @@
 									{
 										"definition": {
 											"fragment": {
-												"key": "com.liferay.ai.hub.web.internal.fragment.renderer.ViewModelArmorTemplatesFragmentRenderer"
+												"key": "com.liferay.ai.hub.web.internal.fragment.renderer.ViewGuardrailsFragmentRenderer"
 											},
 											"fragmentConfig": {
 											},

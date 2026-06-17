@@ -22,9 +22,9 @@ Use this workflow to scaffold a brand-new REST Builder module bundle from scratc
 ### Files To Author Before `buildREST`
 
 ```
-<name>-rest-api/{bnd.bnd, build.gradle, .lfrbuild-portal}
-<name>-rest-impl/{bnd.bnd, build.gradle, .lfrbuild-portal, rest-config.yaml, rest-openapi.yaml}
-<name>-rest-client/{bnd.bnd, build.gradle}
+<name>-rest-api/{.lfrbuild-portal, bnd.bnd, build.gradle}
+<name>-rest-impl/{.lfrbuild-portal, bnd.bnd, build.gradle, rest-config.yaml, rest-openapi.yaml}
+<name>-rest-client/{.lfrbuild-portal, bnd.bnd, build.gradle}
 <name>-rest-test/{bnd.bnd, build.gradle}
 ```
 
@@ -100,6 +100,7 @@ application:
 author: "<Your Name>"
 clientDir: "../<name>-rest-client/src/main/java"
 compatibilityVersion: 15
+forcePredictableOperationId: true
 javaEEPackage: "jakarta"
 testDir: "../<name>-rest-test/src/testIntegration/java"
 ```
@@ -108,13 +109,13 @@ Endpoints land at `/o/<baseURI>/v1.0/...` — do not collide with existing servl
 
 #### `<name>-rest-impl/rest-openapi.yaml`
 
-Standard OpenAPI 3.0.1. Minimum shape:
+The file is standard OpenAPI 3.0.1, with the following minimum shape:
 
 - `info`: set `title`, `description`, `version: "v1.0"`. Title and description are not validator-required, but tooling (including the MCP `/discover` endpoint) relies on them.
 - `paths`: each operation needs `operationId`, `description`, and `tags: [<Tag>]`. The first tag becomes the resource name (`<Tag>Resource`); use one tag per resource.
 - `components.schemas`: each schema needs `description`, typed `properties`, and `required`.
 
-Response shape drives the generated return type. The two cases worth knowing:
+Response shape drives the generated return type. Two cases are worth knowing:
 
 - `application/json` with `{type: array, items: {$ref: ...}}` → `Page<DTO>`.
 - `application/json` with `$ref` → the DTO.

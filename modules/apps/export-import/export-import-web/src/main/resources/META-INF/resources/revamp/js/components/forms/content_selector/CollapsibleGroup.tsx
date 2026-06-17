@@ -4,15 +4,17 @@
  */
 
 import classnames from 'classnames';
-import React, {ReactNode, useId, useState} from 'react';
+import React, {ReactNode, Ref, useId, useState} from 'react';
 
 import ControlRow from './ControlRow';
 
 export default function CollapsibleGroup({
 	bodyClassName,
+	bodyRef,
 	bodyVisibleClassName,
 	checkboxId,
 	children,
+	description,
 	disclosure,
 	indeterminate,
 	label,
@@ -23,9 +25,11 @@ export default function CollapsibleGroup({
 	tags,
 }: {
 	bodyClassName?: string;
+	bodyRef?: Ref<HTMLDivElement>;
 	bodyVisibleClassName?: string;
 	checkboxId: string;
 	children: ReactNode;
+	description?: string;
 	disclosure: (props: {
 		'aria-controls': string;
 		'aria-expanded': boolean;
@@ -47,6 +51,7 @@ export default function CollapsibleGroup({
 		<>
 			<ControlRow
 				checkboxId={checkboxId}
+				description={description}
 				disclosure={disclosure({
 					'aria-controls': bodyId,
 					'aria-expanded': expanded,
@@ -72,6 +77,7 @@ export default function CollapsibleGroup({
 				)}
 				hidden={!expanded}
 				id={bodyId}
+				ref={bodyRef}
 			>
 				{children}
 			</div>

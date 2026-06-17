@@ -19,10 +19,10 @@ import {
 	ProfileTypes,
 	RelationalOperators
 } from 'segment/segment-editor/dynamic/utils/constants';
-import {FilterOptionType, RangeSelectors} from 'shared/types';
-import {getSafeRangeSelectors} from 'shared/util/util';
+import {FilterByType, FilterInputType, FilterOptionType} from 'shared/types';
 import {IndividualsListCDPColumns} from 'shared/util/table-columns';
-import {Sizes} from 'shared/util/constants';
+import {Map, Set} from 'immutable';
+import {RangeKeyTimeRanges, Sizes} from 'shared/util/constants';
 import {useParams} from 'react-router-dom';
 import {useRequest} from 'shared/hooks/useRequest';
 import {useStatefulPagination} from 'shared/hooks/useStatefulPagination';
@@ -56,6 +56,45 @@ const ORDER_BY_OPTIONS = [
 
 const DEFAULT_FILTER_BY_OPTIONS: FilterOptionType[] = [
 	{
+		key: 'activeUsers',
+		label: Liferay.Language.get('active-individuals'),
+		type: 'radio' as FilterInputType,
+		values: [
+			{
+				label: Liferay.Language.get('last-24-hours'),
+				value: RangeKeyTimeRanges.Last24Hours
+			},
+			{
+				label: Liferay.Language.get('yesterday'),
+				value: RangeKeyTimeRanges.Yesterday
+			},
+			{
+				label: Liferay.Language.get('last-seven-days'),
+				value: RangeKeyTimeRanges.Last7Days
+			},
+			{
+				label: Liferay.Language.get('last-28-days'),
+				value: RangeKeyTimeRanges.Last28Days
+			},
+			{
+				label: Liferay.Language.get('last-30-days'),
+				value: RangeKeyTimeRanges.Last30Days
+			},
+			{
+				label: Liferay.Language.get('last-90-days'),
+				value: RangeKeyTimeRanges.Last90Days
+			},
+			{
+				label: Liferay.Language.get('last-180-days'),
+				value: RangeKeyTimeRanges.Last180Days
+			},
+			{
+				label: Liferay.Language.get('last-year'),
+				value: RangeKeyTimeRanges.LastYear
+			}
+		]
+	},
+	{
 		key: 'profileTypes',
 		label: Liferay.Language.get('profile-type'),
 		values: [
@@ -84,20 +123,16 @@ function transformCountriesInQueryString(countries: string[]) {
 		.join(Conjunctions.Or);
 }
 
-interface IIndividualsList {
-	rangeSelectors: RangeSelectors;
-}
-
-const IndividualsList: React.FC<IIndividualsList> = ({rangeSelectors}) => {
+const IndividualsList: React.FC = () => {
 	const {channelId = '', groupId = ''} = useParams<{
 		channelId: string;
 		groupId: string;
 	}>();
 
-	const {rangeEnd, rangeKey, rangeStart} =
-		getSafeRangeSelectors(rangeSelectors);
-
 	const paginationParams = useStatefulPagination(undefined, {
+		initialFilterBy: Map({
+			activeUsers: Set([RangeKeyTimeRanges.Last30Days])
+		}) as FilterByType,
 		initialOrderIOMap: createOrderIOMap(NAME)
 	});
 
@@ -129,6 +164,11 @@ const IndividualsList: React.FC<IIndividualsList> = ({rangeSelectors}) => {
 
 		return DEFAULT_FILTER_BY_OPTIONS;
 	}, [countriesData, countriesLoading]);
+
+	const activeUsersValue =
+		paginationParams.filterBy.get('activeUsers')?.first() ?? null;
+
+	const rangeKey = activeUsersValue ? parseInt(activeUsersValue) : null;
 
 	const selectedFilters = {
 		filter: transformCountriesInQueryString(
@@ -198,9 +238,9 @@ const IndividualsList: React.FC<IIndividualsList> = ({rangeSelectors}) => {
 							profileTypes: selectedFilters.profileTypes.length
 								? selectedFilters.profileTypes
 								: undefined,
-							rangeEnd,
+							rangeEnd: null,
 							rangeKey,
-							rangeStart
+							rangeStart: null
 						}}
 						filterByOptions={FILTER_BY_OPTIONS}
 						key='individuals-list-table'

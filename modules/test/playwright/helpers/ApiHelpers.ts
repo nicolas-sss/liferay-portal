@@ -12,6 +12,7 @@ import {
 import {Page} from '@playwright/test';
 
 import {liferayConfig} from '../liferay.config';
+import {AnalyticsSettingsRestApiHelper} from './AnalyticsSettingsRestApiHelper';
 import {ApiBuilderHelper} from './ApiBuilderHelper';
 import {CookiesApiHelper} from './CookiesApiHelper';
 import {DataEngineApiHelper} from './DataEngineApiHelper';
@@ -49,6 +50,7 @@ import {ObjectAdminApiHelper} from './ObjectAdminApiHelper';
 import {ObjectEntryApiHelper} from './ObjectEntryApiHelper';
 import {ObjectEntryFolderApiHelper} from './ObjectEntryFolderApiHelper';
 import {SCIMApiHelper} from './SCIMApiHelper';
+import {SEOStudioApiHelper} from './SEOStudioApiHelper';
 import {SearchExperiencesApiHelper} from './SearchExperiencesApiHelper';
 import {JSONWebServicesAnnouncementsEntryApiHelper} from './json-web-services/JSONWebServicesAnnouncementsEntryApiHelper';
 import {JSONWebServicesAssetDisplayPageEntryApiHelper} from './json-web-services/JSONWebServicesAssetDisplayPageEntryApiHelper';
@@ -118,6 +120,7 @@ export async function getHeader(
 }
 
 export class ApiHelpers {
+	readonly analyticsSettingsRest: AnalyticsSettingsRestApiHelper;
 	readonly apiBuilder: ApiBuilderHelper;
 	readonly baseUrl: string;
 	readonly cookies: CookiesApiHelper;
@@ -188,12 +191,14 @@ export class ApiHelpers {
 	readonly page: Page;
 	readonly scim: SCIMApiHelper;
 	readonly searchExperiences: SearchExperiencesApiHelper;
+	readonly seoStudio: SEOStudioApiHelper;
 
 	private static readonly _authorization = `Basic ${btoa(
 		`test@liferay.com:test`
 	)}`;
 
 	constructor(page: Page, baseUrl?: string) {
+		this.analyticsSettingsRest = new AnalyticsSettingsRestApiHelper(this);
 		this.apiBuilder = new ApiBuilderHelper(this);
 		this.baseUrl = baseUrl
 			? baseUrl + '/o/'
@@ -300,6 +305,7 @@ export class ApiHelpers {
 		this.page = page;
 		this.scim = new SCIMApiHelper(this);
 		this.searchExperiences = new SearchExperiencesApiHelper(this);
+		this.seoStudio = new SEOStudioApiHelper(this);
 	}
 
 	async buildRestClient<

@@ -22,7 +22,13 @@
 			},
 			{
 				"externalReferenceCode": "AIHUBPRIMARYNAVIGATION4",
-				"friendlyURL": "/activity",
+				"friendlyURL": "/account-management",
+				"privateLayout": false,
+				"type": "layout"
+			},
+			{
+				"externalReferenceCode": "AIHUBPRIMARYNAVIGATION5",
+				"friendlyURL": "/configurations",
 				"privateLayout": false,
 				"type": "layout"
 			}

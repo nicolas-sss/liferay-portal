@@ -12,19 +12,29 @@ import ClayLoadingIndicator from '@clayui/loading-indicator';
 import {EventSource} from 'eventsource';
 import React, {useEffect, useRef, useState} from 'react';
 
+import ReportFeedbackModal from '../ReportFeedback/ReportFeedbackModal';
+import submitPositiveReportFeedback from '../ReportFeedback/submitPositiveReportFeedback';
 import {
 	ChatContext,
 	createEventSource,
 	postChatByExternalReferenceCodeMessage,
 } from './api';
+import AIAssistantFooterDisclaimer from './components/AIAssistantFooterDisclaimer';
 import AIAssistantMessageBalloon from './components/AIAssistantMessageBalloon';
 import UserMessageBalloon from './components/UserMessageBalloon';
 
 import './chat.scss';
 
 interface message {
+	agentDefinitionExternalReferenceCodes?: string[];
+	error?: boolean;
 	sender: string;
 	text: string;
+}
+
+interface ReportContext {
+	agentDefinitionExternalReferenceCodes: string[];
+	index: number;
 }
 
 interface AIAssistantChatProps {
@@ -37,9 +47,32 @@ const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
 	instructionDefinitionScope,
 }) => {
 	const [active, setActive] = useState<boolean>(false);
+	const [feedbackGiven, setFeedbackGiven] = useState<Record<number, boolean>>(
+		{}
+	);
 	const [isGenerating, setIsGenerating] = useState<boolean>(false);
 	const [messages, setMessages] = useState<message[]>([]);
 	const [message, setMessage] = useState<string>('');
+	const [reportContext, setReportContext] = useState<ReportContext | null>(
+		null
+	);
+
+	const handleThumbsUp = (index: number, item: message) => {
+		if (feedbackGiven[index]) {
+			return;
+		}
+
+		setFeedbackGiven((previousFeedbackGiven) => ({
+			...previousFeedbackGiven,
+			[index]: true,
+		}));
+
+		submitPositiveReportFeedback({
+			agentDefinitionExternalReferenceCodes:
+				item.agentDefinitionExternalReferenceCodes ?? [],
+			surface: 'aiAssistant',
+		});
+	};
 	const eventSourceRef = useRef<EventSource | null>(null);
 	const eventSourceReference = useRef<string | null>(null);
 	const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -51,6 +84,7 @@ const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
 		if (!message.trim()) {
 			return;
 		}
+
 		setMessages((previousMessages) => {
 			setTimeout(() => {
 				messagesEndRef.current?.scrollIntoView({behavior: 'smooth'});
@@ -140,25 +174,37 @@ const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
 			eventSourceRef.current.addEventListener(
 				'Chat Message Sent',
 				(event) => {
-					setMessages((previousMessages) => {
-						setTimeout(() => {
-							messagesEndRef.current?.scrollIntoView({
-								behavior: 'smooth',
-							});
-						}, 0);
-
+					try {
 						const dataJSON = JSON.parse(event.data);
 
-						return [
-							...previousMessages,
-							{
-								sender: 'assistant',
-								text: dataJSON['data'],
-							},
-						];
-					});
+						setMessages((previousMessages) => {
+							setTimeout(() => {
+								messagesEndRef.current?.scrollIntoView({
+									behavior: 'smooth',
+								});
+							}, 0);
 
-					setMessage('');
+							return [
+								...previousMessages,
+								{
+									agentDefinitionExternalReferenceCodes:
+										dataJSON[
+											'agentDefinitionExternalReferenceCodes'
+										] ?? [],
+									sender: 'assistant',
+									text: dataJSON['data'],
+								},
+							];
+						});
+
+						setMessage('');
+					}
+					catch {
+						setMessages((previousMessages) => [
+							...previousMessages,
+							{error: true, sender: 'assistant', text: ''},
+						]);
+					}
 
 					setIsGenerating(false);
 				}
@@ -167,6 +213,39 @@ const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
 			eventSourceRef.current.addEventListener('Subscribe', (event) => {
 				eventSourceReference.current = event.data;
 			});
+
+			eventSourceRef.current.addEventListener(
+				'Agent Invocation Failed',
+				(event) => {
+					let text = '';
+
+					try {
+						text = JSON.parse(event.data)['data'];
+					}
+					catch {
+						text = '';
+					}
+
+					setMessages((previousMessages) => {
+						setTimeout(() => {
+							messagesEndRef.current?.scrollIntoView({
+								behavior: 'smooth',
+							});
+						}, 0);
+
+						return [
+							...previousMessages,
+							{
+								error: true,
+								sender: 'assistant',
+								text,
+							},
+						];
+					});
+
+					setIsGenerating(false);
+				}
+			);
 		});
 	}
 
@@ -259,9 +338,26 @@ const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
 							/>
 						) : (
 							<AIAssistantMessageBalloon
-								error={false}
+								error={item.error ?? false}
+								feedbackGiven={Boolean(feedbackGiven[index])}
 								key={index}
 								message={item.text}
+								onReport={
+									!item.error
+										? () =>
+												setReportContext({
+													agentDefinitionExternalReferenceCodes:
+														item.agentDefinitionExternalReferenceCodes ??
+														[],
+													index,
+												})
+										: undefined
+								}
+								onThumbsUp={
+									!item.error
+										? () => handleThumbsUp(index, item)
+										: undefined
+								}
 							/>
 						)
 					)}
@@ -282,10 +378,10 @@ const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
 				</div>
 
 				<ClayForm
-					className="flex-shrink-0 p-3"
+					className="flex-shrink-0 pt-3 px-3"
 					onSubmit={(event) => onSubmit(event)}
 				>
-					<div className="align-items-end border-top d-flex flex-row pt-4">
+					<div className="align-items-end d-flex flex-row">
 						<textarea
 							className="ai-assistant-chat__input form-control mr-2"
 							disabled={isGenerating}
@@ -321,7 +417,25 @@ const AIAssistantChat: React.FC<AIAssistantChatProps> = ({
 						</ClayButton>
 					</div>
 				</ClayForm>
+
+				<AIAssistantFooterDisclaimer />
 			</div>
+
+			{reportContext !== null && (
+				<ReportFeedbackModal
+					agentDefinitionExternalReferenceCodes={
+						reportContext.agentDefinitionExternalReferenceCodes
+					}
+					onClose={() => setReportContext(null)}
+					onSubmitted={() =>
+						setFeedbackGiven((previousFeedbackGiven) => ({
+							...previousFeedbackGiven,
+							[reportContext.index]: true,
+						}))
+					}
+					surface="aiAssistant"
+				/>
+			)}
 		</ClayDropDown>
 	);
 };

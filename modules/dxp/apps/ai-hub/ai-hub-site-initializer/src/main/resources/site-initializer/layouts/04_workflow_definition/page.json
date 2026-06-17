@@ -7,8 +7,29 @@
 	"permissions": [
 		{
 			"actionIds": [
+				"VIEW"
+			],
+			"roleName": "AI Hub Administrator",
+			"scope": 4
+		},
+		{
+			"actionIds": [
+				"VIEW"
+			],
+			"roleName": "AI Hub Agent Administrator",
+			"scope": 4
+		},
+		{
+			"actionIds": [
 			],
 			"roleName": "Guest",
+			"scope": 4
+		},
+		{
+			"actionIds": [
+				"VIEW"
+			],
+			"roleName": "Site Member",
 			"scope": 4
 		}
 	],

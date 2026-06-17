@@ -500,7 +500,26 @@ public class DisplayPageTemplateResourceTest
 
 		_testPutSiteDisplayPageTemplateWithPageSpecifications();
 
+		Repository repository = _portletFileRepository.addPortletRepository(
+			testGroup.getGroupId(), RandomTestUtil.randomString(),
+			ServiceContextTestUtil.getServiceContext(
+				testGroup, TestPropsValues.getUserId()));
+
+		FileEntry fileEntry = _addPortletFileEntry(repository.getDlFolderId());
+
+		displayPageTemplate.setThumbnailURLReference(
+			() -> ThumbnailURLReferenceUtil.getThumbnailURLReference(
+				fileEntry, null));
+
+		displayPageTemplateResource.putSiteDisplayPageTemplate(
+			testGroup.getExternalReferenceCode(),
+			displayPageTemplate.getExternalReferenceCode(),
+			displayPageTemplate);
+
 		_enableLocalStaging();
+
+		_assertStagingGroupDisplayPageTemplateThumbnail(
+			displayPageTemplate, fileEntry);
 
 		_assertProblemException(
 			"BAD_REQUEST", null,
@@ -694,6 +713,29 @@ public class DisplayPageTemplateResourceTest
 		}
 	}
 
+	private void _assertStagingGroupDisplayPageTemplateThumbnail(
+			DisplayPageTemplate displayPageTemplate,
+			FileEntry liveGroupFileEntry)
+		throws Exception {
+
+		Group stagingGroup = testGroup.getStagingGroup();
+
+		FileEntry stagingGroupFileEntry =
+			_portletFileRepository.getPortletFileEntryByExternalReferenceCode(
+				liveGroupFileEntry.getExternalReferenceCode(),
+				stagingGroup.getGroupId());
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_layoutPageTemplateEntryLocalService.
+				getLayoutPageTemplateEntryByExternalReferenceCode(
+					displayPageTemplate.getExternalReferenceCode(),
+					stagingGroup.getGroupId());
+
+		Assert.assertEquals(
+			stagingGroupFileEntry.getFileEntryId(),
+			layoutPageTemplateEntry.getPreviewFileEntryId());
+	}
+
 	private void _assertThumbnailFileEntryId(
 			Boolean defaultValue,
 			String displayPageTemplateExternalReferenceCode,
@@ -726,10 +768,18 @@ public class DisplayPageTemplateResourceTest
 	}
 
 	private void _enableLocalStaging(Group group) throws Exception {
-		_stagingLocalService.enableLocalStaging(
-			TestPropsValues.getUserId(), group, true, false,
-			ServiceContextTestUtil.getServiceContext(
-				group, TestPropsValues.getUserId()));
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.batch.engine.internal." +
+					"BatchEngineImportTaskExecutorImpl",
+				LoggerTestUtil.OFF)) {
+
+			_stagingLocalService.enableLocalStaging(
+				TestPropsValues.getUserId(), group, true, false,
+				ServiceContextTestUtil.getServiceContext(
+					group, TestPropsValues.getUserId()));
+		}
+
+		Assert.assertTrue(group.hasStagingGroup());
 	}
 
 	private ClassSubtypeReference _getClassSubtypeReference(String className) {

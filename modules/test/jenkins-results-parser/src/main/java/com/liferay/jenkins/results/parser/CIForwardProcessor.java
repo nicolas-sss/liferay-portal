@@ -417,10 +417,14 @@ public class CIForwardProcessor {
 		for (String requiredPassingTestSuiteName :
 				requiredPassingTestSuiteNames) {
 
-			if (!passingTestSuiteNames.contains(requiredPassingTestSuiteName)) {
-				failingRequiredPassingTestSuiteNames.add(
-					requiredPassingTestSuiteName);
+			if (passingTestSuiteNames.contains(requiredPassingTestSuiteName) ||
+				_hasPassingStatus(requiredPassingTestSuiteName)) {
+
+				continue;
 			}
+
+			failingRequiredPassingTestSuiteNames.add(
+				requiredPassingTestSuiteName);
 		}
 
 		return failingRequiredPassingTestSuiteNames;
@@ -608,6 +612,29 @@ public class CIForwardProcessor {
 		return sb.toString();
 	}
 
+	private String _getPRCheckMessage() {
+		if (_pullRequest.hasLabel("pr-check - skipped")) {
+			return JenkinsResultsParserUtil.combine(
+				"Pull requests with a skipped `pr-check` may not be ",
+				"forwarded. Please send this pull request manually using ",
+				"the `pr` Claude Code skill.");
+		}
+
+		if (_pullRequest.hasLabel("pr-check - failure") ||
+			_pullRequest.hasLabel("pr-check - success")) {
+
+			return JenkinsResultsParserUtil.combine(
+				"The `pr-check` result does not match the current head ",
+				"commit. Please rerun the `/pr-check` Claude Code skill ",
+				"and publish the result with `/pr-check-publish`.");
+		}
+
+		return JenkinsResultsParserUtil.combine(
+			"This pull request has no `pr-check` result. Please run the ",
+			"`/pr-check` Claude Code skill and publish the result with ",
+			"`/pr-check-publish`.");
+	}
+
 	private String[] _getRequiredCompletedTestSuiteNames() throws IOException {
 		return _getBuildPropertyAsArray(
 			JenkinsResultsParserUtil.combine(
@@ -724,6 +751,13 @@ public class CIForwardProcessor {
 				sb.append(requiredPassingTestSuiteName);
 				sb.append("`");
 
+				if (requiredPassingTestSuiteName.equals("pr-check") &&
+					failedRequiredPassingTestSuiteNames.contains("pr-check")) {
+
+					sb.append(" - ");
+					sb.append(_getPRCheckMessage());
+				}
+
 				if (requiredPassingTestSuiteName.equals("stable")) {
 					sb.append(" - If you believe that the stable test ");
 					sb.append("failures were caused by flaky tests, please ");
@@ -768,55 +802,26 @@ public class CIForwardProcessor {
 			gitWorkingDirectory.getRemoteGitBranch(
 				upstreamBranchName, receiverRemoteURL, true);
 
-		GitCommit mergeBaseCommit = receiverRemoteGitBranch.getMergeBaseCommit(
-			senderRemoteGitBranch);
+		if (receiverRemoteGitBranch.getMergeBaseCommit(senderRemoteGitBranch) ==
+				null) {
 
-		if (mergeBaseCommit == null) {
 			return false;
 		}
 
-		String expectedMergeBaseSHA = mergeBaseCommit.getSHA();
-		String receiverSHA = receiverRemoteGitBranch.getSHA();
-		String senderSHA = _pullRequest.getSenderSHA();
-
-		Date mergeBaseCommitDate = mergeBaseCommit.getCommitDate();
-
-		gitWorkingDirectory.fetch(receiverRemoteGitBranch, mergeBaseCommitDate);
-		gitWorkingDirectory.fetch(senderRemoteGitBranch, mergeBaseCommitDate);
-
-		if (!_localMergeBaseMatches(
-				gitWorkingDirectory, senderSHA, receiverSHA,
-				expectedMergeBaseSHA)) {
-
-			Date deepenedSinceDate = new Date(
-				mergeBaseCommitDate.getTime() -
-					_BRANCH_DEEPENING_STEP_SIZE_MILLIS);
-
-			gitWorkingDirectory.fetch(
-				receiverRemoteGitBranch, deepenedSinceDate);
-			gitWorkingDirectory.fetch(senderRemoteGitBranch, deepenedSinceDate);
-
-			if (!_localMergeBaseMatches(
-					gitWorkingDirectory, senderSHA, receiverSHA,
-					expectedMergeBaseSHA)) {
-
-				System.out.println(
-					"WARNING: Unable to identify merge base SHA");
-
-				return false;
-			}
-		}
+		gitWorkingDirectory.fetch(receiverRemoteGitBranch);
+		gitWorkingDirectory.fetch(senderRemoteGitBranch);
 
 		LocalGitBranch receiverLocalGitBranch =
 			gitWorkingDirectory.createLocalGitBranch(
 				JenkinsResultsParserUtil.combine(
 					_recipientUsername, "-", upstreamBranchName, "-precheck"),
-				true, receiverSHA);
+				true, receiverRemoteGitBranch.getSHA(),
+				receiverRemoteGitBranch);
 
 		LocalGitBranch senderLocalGitBranch =
 			gitWorkingDirectory.createLocalGitBranch(
 				_pullRequest.getLocalSenderBranchName() + "-precheck", true,
-				senderSHA);
+				_pullRequest.getSenderSHA(), senderRemoteGitBranch);
 
 		try {
 			gitWorkingDirectory.rebase(
@@ -829,9 +834,7 @@ public class CIForwardProcessor {
 
 			String message = gitWorkingDirectoryRuntimeException.getMessage();
 
-			if ((message != null) && message.contains("Unable to rebase ") &&
-				message.contains("CONFLICT (")) {
-
+			if ((message != null) && message.contains("Unable to rebase ")) {
 				System.out.println(
 					JenkinsResultsParserUtil.combine(
 						"Detected merge conflict between ",
@@ -844,11 +847,44 @@ public class CIForwardProcessor {
 			}
 
 			System.out.println(
-				"WARNING: Unable to detect merge conflict marker but rebase " +
-					"failed\n" + String.valueOf(message));
+				"WARNING: Unable to determine merge conflict status\n" +
+					String.valueOf(message));
 
 			return false;
 		}
+	}
+
+	private boolean _hasPassingStatus(String statusContext) {
+		JSONObject statusJSONObject =
+			_pullRequest.getSenderSHAStatusJSONObject();
+
+		if (statusJSONObject == null) {
+			return false;
+		}
+
+		JSONArray statusesJSONArray = statusJSONObject.optJSONArray("statuses");
+
+		if (statusesJSONArray == null) {
+			return false;
+		}
+
+		for (int i = 0; i < statusesJSONArray.length(); i++) {
+			JSONObject statusesJSONObject = statusesJSONArray.getJSONObject(i);
+
+			String context = statusesJSONObject.getString("context");
+
+			if (!context.equals(statusContext)) {
+				continue;
+			}
+
+			String state = statusesJSONObject.getString("state");
+
+			if (state.equals("success")) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private boolean _isForwardEligible() throws IOException {
@@ -864,31 +900,6 @@ public class CIForwardProcessor {
 
 		return failedRequiredPassingTestSuiteNames.isEmpty();
 	}
-
-	private boolean _localMergeBaseMatches(
-		GitWorkingDirectory gitWorkingDirectory, String senderSHA,
-		String receiverSHA, String expectedMergeBaseSHA) {
-
-		try {
-			String localMergeBaseSHA =
-				gitWorkingDirectory.getMergeBaseCommitSHA(
-					senderSHA, receiverSHA);
-
-			if (localMergeBaseSHA != null) {
-				localMergeBaseSHA = localMergeBaseSHA.trim();
-			}
-
-			return expectedMergeBaseSHA.equals(localMergeBaseSHA);
-		}
-		catch (GitWorkingDirectory.GitWorkingDirectoryRuntimeException
-					gitWorkingDirectoryRuntimeException) {
-
-			return false;
-		}
-	}
-
-	private static final long _BRANCH_DEEPENING_STEP_SIZE_MILLIS =
-		1000L * 60L * 60L * 24L;
 
 	private static final long _RETRY_PERIOD = 1000L * 60L;
 

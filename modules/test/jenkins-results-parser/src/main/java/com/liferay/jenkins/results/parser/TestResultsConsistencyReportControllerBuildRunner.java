@@ -54,7 +54,7 @@ public class TestResultsConsistencyReportControllerBuildRunner
 	}
 
 	protected String getInvocationCohortName() {
-		String invocationCohortName = System.getenv("INVOCATION_COHORT_NAME");
+		String invocationCohortName = Environment.get("INVOCATION_COHORT_NAME");
 
 		if ((invocationCohortName != null) && !invocationCohortName.isEmpty()) {
 			return invocationCohortName;
@@ -71,9 +71,7 @@ public class TestResultsConsistencyReportControllerBuildRunner
 		return JenkinsResultsParserUtil.combine(
 			JenkinsResultsParserUtil.getMostAvailableMasterURL(
 				"http://" + getInvocationCohortName() + ".liferay.com", null, 1,
-				jobName, getLabelExpression(jobName),
-				JenkinsMaster.getSlaveRAMMinimumDefault(),
-				JenkinsMaster.getSlavesPerHostDefault()),
+				jobName),
 			"/job/", jobName);
 	}
 

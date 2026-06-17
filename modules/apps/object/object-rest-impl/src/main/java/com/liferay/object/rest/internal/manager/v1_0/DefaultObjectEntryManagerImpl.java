@@ -786,7 +786,7 @@ public class DefaultObjectEntryManagerImpl
 		Long[] groupIds = groupIdsList.toArray(new Long[0]);
 
 		Predicate predicate = _filterFactory.create(
-			filterExpression, objectDefinition);
+			filterExpression, groupIds, objectDefinition);
 
 		int start = _getStartPosition(pagination);
 		int end = _getEndPosition(pagination);
@@ -915,6 +915,7 @@ public class DefaultObjectEntryManagerImpl
 
 				searchContext.setCompanyId(companyId);
 				searchContext.setGroupIds(new long[] {groupId});
+				searchContext.setLocale(dtoConverterContext.getLocale());
 
 				SearchRequestBuilder searchRequestBuilder =
 					_searchRequestBuilderFactory.builder(searchContext);
@@ -2947,7 +2948,8 @@ public class DefaultObjectEntryManagerImpl
 			com.liferay.object.model.ObjectEntry serviceBuilderObjectEntry)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564") ||
+		if (!FeatureFlagManagerUtil.isEnabled(
+				objectDefinition.getCompanyId(), "LPD-17564") ||
 			!objectDefinition.isEnableObjectEntrySubscription() ||
 			ObjectEntryFolderSubscriptionUtil.isSubscribedToObjectEntryFolder(
 				serviceBuilderObjectEntry.getCompanyId(),
@@ -3002,13 +3004,8 @@ public class DefaultObjectEntryManagerImpl
 			_systemObjectDefinitionManagerRegistry.
 				getSystemObjectDefinitionManager(objectDefinition.getName());
 
-		PersistedModelLocalService persistedModelLocalService =
-			PersistedModelLocalServiceRegistryUtil.
-				getPersistedModelLocalService(
-					systemObjectDefinitionManager.getModelClassName());
-
 		PersistedModel persistedModel =
-			persistedModelLocalService.getPersistedModel(objectEntryId);
+			systemObjectDefinitionManager.getPersistedModel(objectEntryId);
 
 		if (Objects.equals(
 				systemObjectDefinitionManager.getScope(),
@@ -3644,7 +3641,8 @@ public class DefaultObjectEntryManagerImpl
 			).put(
 				"restore",
 				() -> {
-					if (!FeatureFlagManagerUtil.isEnabled("LPD-17564") ||
+					if (!FeatureFlagManagerUtil.isEnabled(
+							objectDefinition.getCompanyId(), "LPD-17564") ||
 						!serviceBuilderObjectEntry.isInTrash()) {
 
 						return null;

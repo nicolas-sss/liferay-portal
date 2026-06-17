@@ -664,9 +664,9 @@ test(
 
 		await expect(async () => {
 			await accountUserSelectorPage.usersTable.orderButton.click();
-			await accountUserSelectorPage.usersTable
-				.orderMenuItem('First Name')
-				.click({timeout: 1000});
+			await accountUserSelectorPage.usersTable.clickOrderMenuItem(
+				'First Name'
+			);
 		}).toPass();
 
 		await expect(
@@ -681,9 +681,9 @@ test(
 
 		await expect(async () => {
 			await accountUserSelectorPage.usersTable.orderButton.click();
-			await accountUserSelectorPage.usersTable
-				.orderMenuItem('Last Name')
-				.click({timeout: 1000});
+			await accountUserSelectorPage.usersTable.clickOrderMenuItem(
+				'Last Name'
+			);
 		}).toPass();
 
 		await expect(
@@ -698,9 +698,9 @@ test(
 
 		await expect(async () => {
 			await accountUserSelectorPage.usersTable.orderButton.click();
-			await accountUserSelectorPage.usersTable
-				.orderMenuItem('Email Address')
-				.click({timeout: 1000});
+			await accountUserSelectorPage.usersTable.clickOrderMenuItem(
+				'Email Address'
+			);
 		}).toPass();
 
 		await expect(
@@ -715,9 +715,9 @@ test(
 
 		await expect(async () => {
 			await accountUserSelectorPage.usersTable.orderButton.click();
-			await accountUserSelectorPage.usersTable
-				.orderMenuItem('Last Name')
-				.click({timeout: 1000});
+			await accountUserSelectorPage.usersTable.clickOrderMenuItem(
+				'Last Name'
+			);
 		}).toPass();
 
 		await expect(
@@ -1934,7 +1934,7 @@ test(
 
 		await accountUsersPage.usersTable
 			.filterMenuItem('No Assigned Account')
-			.click();
+			.click({force: true});
 
 		await expect(
 			accountUsersPage.usersTable.cell(user1.emailAddress)
@@ -1956,7 +1956,7 @@ test(
 
 		await accountUsersPage.usersTable
 			.filterMenuItem('Selected Accounts')
-			.click();
+			.click({force: true});
 
 		await expect(
 			accountUsersAccountSelectorPage.accountsTable.searchInput
@@ -2007,6 +2007,8 @@ test(
 			accountUsersPage.usersTable.cell(user3.emailAddress)
 		).toHaveCount(0);
 
+		await accountUsersPage.usersTable.clearButton.click();
+
 		await expect(async () => {
 			await accountUsersPage.usersTable.filterButton.click();
 
@@ -2017,7 +2019,7 @@ test(
 
 		await accountUsersPage.usersTable
 			.filterMenuItem('Selected Accounts')
-			.click();
+			.click({force: true});
 
 		await expect(
 			accountUsersAccountSelectorPage.accountsTable.searchInput
