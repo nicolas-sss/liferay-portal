@@ -23,7 +23,7 @@ import org.mockito.Mockito;
 /**
  * @author Nathaly Gomes
  */
-public class ObjectFieldDescriptionUtilTest {
+public class ObjectDescriptionUtilTest {
 
 	@ClassRule
 	@Rule
@@ -40,12 +40,74 @@ public class ObjectFieldDescriptionUtilTest {
 	}
 
 	@Test
-	public void testGetDescription() {
+	public void testGetDescriptionWithObjectDefinition() {
 
 		// No description
 
 		Assert.assertNull(
-			ObjectFieldDescriptionUtil.getDescription(
+			ObjectDescriptionUtil.getDescription(_objectDefinition));
+
+		Mockito.when(
+			_objectDefinition.getDescription(_DEFAULT_LANGUAGE_ID, false)
+		).thenReturn(
+			StringPool.BLANK
+		);
+
+		Mockito.when(
+			_objectDefinition.getDescription(LocaleUtil.US, false)
+		).thenReturn(
+			StringPool.BLANK
+		);
+
+		Assert.assertNull(
+			ObjectDescriptionUtil.getDescription(_objectDefinition));
+
+		// With English translation
+
+		String description = RandomTestUtil.randomString();
+
+		Mockito.when(
+			_objectDefinition.getDescription(_DEFAULT_LANGUAGE_ID, false)
+		).thenReturn(
+			RandomTestUtil.randomString()
+		);
+
+		Mockito.when(
+			_objectDefinition.getDescription(LocaleUtil.US, false)
+		).thenReturn(
+			description
+		);
+
+		Assert.assertEquals(
+			description,
+			ObjectDescriptionUtil.getDescription(_objectDefinition));
+
+		// Without English translation
+
+		Mockito.when(
+			_objectDefinition.getDescription(_DEFAULT_LANGUAGE_ID, false)
+		).thenReturn(
+			description
+		);
+
+		Mockito.when(
+			_objectDefinition.getDescription(LocaleUtil.US, false)
+		).thenReturn(
+			StringPool.BLANK
+		);
+
+		Assert.assertEquals(
+			description,
+			ObjectDescriptionUtil.getDescription(_objectDefinition));
+	}
+
+	@Test
+	public void testGetDescriptionWithObjectField() {
+
+		// No description
+
+		Assert.assertNull(
+			ObjectDescriptionUtil.getDescription(
 				_objectDefinition, _objectField));
 
 		Mockito.when(
@@ -61,7 +123,7 @@ public class ObjectFieldDescriptionUtilTest {
 		);
 
 		Assert.assertNull(
-			ObjectFieldDescriptionUtil.getDescription(
+			ObjectDescriptionUtil.getDescription(
 				_objectDefinition, _objectField));
 
 		// With English translation
@@ -82,7 +144,7 @@ public class ObjectFieldDescriptionUtilTest {
 
 		Assert.assertEquals(
 			description,
-			ObjectFieldDescriptionUtil.getDescription(
+			ObjectDescriptionUtil.getDescription(
 				_objectDefinition, _objectField));
 
 		// Without English translation
@@ -101,7 +163,7 @@ public class ObjectFieldDescriptionUtilTest {
 
 		Assert.assertEquals(
 			description,
-			ObjectFieldDescriptionUtil.getDescription(
+			ObjectDescriptionUtil.getDescription(
 				_objectDefinition, _objectField));
 	}
 
